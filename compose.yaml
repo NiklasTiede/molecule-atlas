@@ -1,0 +1,35 @@
+name: molecule-atlas
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    image: molecule-atlas-backend:local
+    ports:
+      - "${MOLECULE_ATLAS_BACKEND_PORT:-8000}:8000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+      start_period: 20s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_BASE_URL: ""
+    image: molecule-atlas-frontend:local
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${MOLECULE_ATLAS_FRONTEND_PORT:-8080}:80"

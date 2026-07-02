@@ -55,6 +55,23 @@ make e2e
 cd frontend && npm run build
 ```
 
+Build production containers:
+
+```bash
+make container-build
+```
+
+Run a local container smoke test:
+
+```bash
+make container-smoke
+```
+
+The compose smoke test serves the frontend at `http://localhost:8080` and the
+backend at `http://localhost:8000`. The production frontend image proxies
+`/api/*` and `/health` to the backend service, so the browser does not need a
+cluster-internal backend URL baked into the Vite build.
+
 Useful backend URLs:
 
 - `http://localhost:8000/health`
