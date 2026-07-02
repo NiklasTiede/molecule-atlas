@@ -18,3 +18,10 @@ def test_parse_smiles_returns_error_note_for_invalid_input() -> None:
     assert result.mol is None
     assert result.validation_notes[0].level == "error"
     assert "Invalid SMILES" in result.validation_notes[0].message
+
+
+def test_parse_smiles_does_not_write_rdkit_parse_errors_to_stderr(capfd) -> None:
+    parse_smiles("not_a_smiles")
+
+    captured = capfd.readouterr()
+    assert "SMILES Parse Error" not in captured.err

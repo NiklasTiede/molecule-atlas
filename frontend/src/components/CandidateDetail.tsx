@@ -41,6 +41,7 @@ export function CandidateDetail({ candidate }: CandidateDetailProps) {
     candidateId: string;
     message: string;
   } | null>(null);
+  const [loadingConformerId, setLoadingConformerId] = useState<string | null>(null);
   const pendingConformerId = useRef<string | null>(null);
 
   useEffect(() => {
@@ -55,6 +56,7 @@ export function CandidateDetail({ candidate }: CandidateDetailProps) {
     }
 
     pendingConformerId.current = candidate.id;
+    setLoadingConformerId(candidate.id);
     fetchCandidateConformer(candidate.id)
       .then((loadedConformer) =>
         setConformer({ candidateId: loadedConformer.candidate_id, molBlock: loadedConformer.mol_block }),
@@ -70,6 +72,7 @@ export function CandidateDetail({ candidate }: CandidateDetailProps) {
       .finally(() => {
         if (pendingConformerId.current === candidate.id) {
           pendingConformerId.current = null;
+          setLoadingConformerId(null);
         }
       });
   }, [activeView, candidate, conformer, conformerError]);
@@ -117,7 +120,14 @@ export function CandidateDetail({ candidate }: CandidateDetailProps) {
         {activeView === '3d' && conformerError?.candidateId === candidate.id ? (
           <div className="empty-structure">{conformerError.message}</div>
         ) : null}
-        {activeView === '3d' && conformerError?.candidateId !== candidate.id ? (
+        {activeView === '3d' &&
+        conformerError?.candidateId !== candidate.id &&
+        loadingConformerId === candidate.id ? (
+          <div className="empty-structure">Loading 3D conformer...</div>
+        ) : null}
+        {activeView === '3d' &&
+        conformerError?.candidateId !== candidate.id &&
+        loadingConformerId !== candidate.id ? (
           <Molecule3D molBlock={conformer?.candidateId === candidate.id ? conformer.molBlock : null} />
         ) : null}
         <span className="structure-caveat">

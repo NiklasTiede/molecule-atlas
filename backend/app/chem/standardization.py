@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from rdkit import Chem
+from rdkit import Chem, rdBase
 
 from app.models.candidate import ValidationNote
 
@@ -14,7 +14,8 @@ class ParsedMolecule:
 
 
 def parse_smiles(smiles: str) -> ParsedMolecule:
-    mol = Chem.MolFromSmiles(smiles)
+    with rdBase.BlockLogs():
+        mol = Chem.MolFromSmiles(smiles)
     if mol is None:
         return ParsedMolecule(
             mol=None,

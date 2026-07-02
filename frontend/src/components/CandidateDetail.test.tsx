@@ -1,8 +1,14 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 
 import { CandidateDetail } from './CandidateDetail';
 import type { Candidate } from '../types/candidate';
+import { fetchCandidateConformer } from '../api/candidates';
+
+vi.mock('../api/candidates', () => ({
+  fetchCandidateConformer: vi.fn(),
+}));
 
 const candidate: Candidate = {
   id: 'demo-1',
@@ -48,5 +54,18 @@ describe('CandidateDetail', () => {
     expect(screen.getByText('Mol weight')).toBeInTheDocument();
     expect(screen.getByText('No rule flags')).toBeInTheDocument();
     expect(screen.getByText('Acetaminophen')).toBeInTheDocument();
+  });
+
+  it('shows a stable loading state while the 3D conformer is loading', async () => {
+    vi.mocked(fetchCandidateConformer).mockReturnValue(new Promise(() => {}));
+
+    render(<CandidateDetail candidate={candidate} />);
+
+    await userEvent.click(screen.getByRole('button', { name: '3D conformer' }));
+
+    expect(screen.getByText('Loading 3D conformer...')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Select a valid molecule to view a 3D conformer.'),
+    ).not.toBeInTheDocument();
   });
 });
