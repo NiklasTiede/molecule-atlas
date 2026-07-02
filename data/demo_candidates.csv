@@ -1,0 +1,7 @@
+name,smiles,source,external_id,score,target,notes
+Aspirin,CC(=O)Oc1ccccc1C(=O)O,manual_demo,DEMO-001,-7.1,demo-target,Known small molecule used as a demo reference
+Caffeine,Cn1cnc2c1c(=O)n(C)c(=O)n2C,manual_demo,DEMO-002,-6.4,demo-target,Known stimulant used as a heterocycle-rich demo molecule
+Ibuprofen,CC(C)Cc1ccc(cc1)[C@@H](C)C(=O)O,manual_demo,DEMO-003,-6.8,demo-target,Known small molecule used for descriptor contrast
+Acetaminophen,CC(=O)Nc1ccc(O)cc1,manual_demo,DEMO-004,-5.9,demo-target,Known small molecule used for descriptor contrast
+Lidocaine,CCN(CC)CC(=O)Nc1c(C)cccc1C,manual_demo,DEMO-005,-6.2,demo-target,Known small molecule used as a flexible amide demo
+Invalid Demo,not_a_smiles,manual_demo,DEMO-BAD,,demo-target,Intentional invalid row for validation behavior
