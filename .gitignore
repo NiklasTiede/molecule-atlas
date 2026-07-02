@@ -55,3 +55,5 @@ docs/superpowers/
 backend/.pytest_cache/
 backend/.coverage
 frontend/.vite/
+frontend/test-results/
+frontend/playwright-report/
