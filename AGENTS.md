@@ -36,7 +36,7 @@ It is acceptable to design data structures that can later support `target_id`, `
 
 Backend:
 
-- Python
+- Python 3.13
 - FastAPI
 - Pydantic
 - RDKit
@@ -116,6 +116,9 @@ cd backend
 UV_CACHE_DIR=../.uv-cache uv run pytest
 UV_CACHE_DIR=../.uv-cache uv run pytest tests/test_api_health.py -v
 UV_CACHE_DIR=../.uv-cache uv run ruff check .
+UV_CACHE_DIR=../.uv-cache uv run ruff format --check .
+UV_CACHE_DIR=../.uv-cache uv run pyright
+UV_CACHE_DIR=../.uv-cache uv run python -m scripts.export_openapi
 UV_CACHE_DIR=../.uv-cache uv run uvicorn app.main:app --reload
 ```
 
@@ -127,6 +130,7 @@ npm install
 npm run dev
 npm run build
 npm run lint
+npm run generate:api
 npm test
 npm run e2e
 ```
@@ -136,14 +140,18 @@ Root-level convenience commands:
 ```bash
 make backend-test
 make backend-lint
+make backend-typecheck
+make backend-openapi
 make backend-dev
 make frontend-test
 make frontend-lint
 make frontend-build
+make frontend-api-types
 make frontend-dev
 make frontend-e2e
 make test
 make lint
+make api-contract-check
 make e2e
 ```
 
@@ -225,6 +233,10 @@ Backend tests should cover:
 - triage flag calculation;
 - conformer generation success and failure paths;
 - API response schemas for main endpoints.
+- API not-found, invalid-candidate, and expected chemistry failure responses;
+- enforced backend import directions and third-party dependency ownership;
+- Python-version alignment across project metadata, lockfile, tooling, Docker, and CI;
+- presence of all required lint, type, test, browser, and container gates in CI.
 
 Frontend tests should cover:
 
@@ -236,6 +248,10 @@ Frontend tests should cover:
 - Playwright e2e smoke tests for loading the workbench, selecting a candidate, seeing detail content, opening the 3D conformer tab, seeing the chemical-space plot, and keeping invalid SMILES non-fatal.
 
 Use a tiny deterministic fixture dataset for tests. Do not make tests depend on external network calls.
+
+CI must run backend and frontend static checks and tests, generated API contract
+checks, Playwright browser tests, container configuration checks, and the
+Compose production-image smoke test.
 
 ## Data And Scientific Claims
 

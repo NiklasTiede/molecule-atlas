@@ -1,10 +1,17 @@
-.PHONY: backend-test backend-lint backend-dev frontend-test frontend-lint frontend-build frontend-dev frontend-e2e container-config-test container-build container-smoke test lint e2e
+.PHONY: backend-test backend-lint backend-typecheck backend-openapi backend-dev frontend-test frontend-lint frontend-build frontend-api-types frontend-dev frontend-e2e api-contract-check container-config-test container-build container-smoke test lint e2e
 
 backend-test:
 	cd backend && UV_CACHE_DIR=../.uv-cache uv run pytest
 
 backend-lint:
 	cd backend && UV_CACHE_DIR=../.uv-cache uv run ruff check .
+	cd backend && UV_CACHE_DIR=../.uv-cache uv run ruff format --check .
+
+backend-typecheck:
+	cd backend && UV_CACHE_DIR=../.uv-cache uv run pyright
+
+backend-openapi:
+	cd backend && UV_CACHE_DIR=../.uv-cache uv run python -m scripts.export_openapi
 
 backend-dev:
 	cd backend && UV_CACHE_DIR=../.uv-cache uv run uvicorn app.main:app --reload
@@ -17,6 +24,9 @@ frontend-lint:
 
 frontend-build:
 	cd frontend && npm run build
+
+frontend-api-types:
+	cd frontend && npm run generate:api
 
 frontend-dev:
 	cd frontend && npm run dev
@@ -36,6 +46,9 @@ container-smoke:
 
 test: backend-test frontend-test
 
-lint: backend-lint frontend-lint
+lint: backend-lint backend-typecheck frontend-lint
+
+api-contract-check: backend-openapi frontend-api-types
+	git diff --exit-code -- frontend/openapi.json frontend/src/types/openapi.d.ts
 
 e2e: frontend-e2e

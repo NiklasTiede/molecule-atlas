@@ -20,6 +20,9 @@ See [docs/product-vision.md](docs/product-vision.md) for the longer-term directi
 
 ## Development
 
+The backend is standardized on Python 3.13. `uv` reads the repository's
+`.python-version` file and creates a matching environment.
+
 Install backend dependencies:
 
 ```bash
@@ -51,9 +54,21 @@ Run verification:
 ```bash
 make test
 make lint
+make api-contract-check
 make e2e
 cd frontend && npm run build
 ```
+
+Backend verification includes Ruff formatting and linting, strict Pyright
+checking, and pytest. The FastAPI OpenAPI schema is checked in at
+`frontend/openapi.json`; `openapi-typescript` generates the frontend API types
+from that schema. Backend tests also enforce module import boundaries and keep
+the Python version aligned across uv, project metadata, Ruff, Pyright, Docker,
+and CI.
+
+GitHub CI runs the complete verification stack: backend and frontend checks,
+Playwright browser tests, container configuration checks, and a Compose smoke
+test against the production images and frontend API proxy.
 
 Build production containers:
 
