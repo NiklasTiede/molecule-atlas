@@ -16,6 +16,7 @@ const candidates: Candidate[] = [
     score: -7.1,
     target: 'demo-target',
     notes: null,
+    status: 'valid',
     is_valid: true,
     validation_notes: [],
     descriptors: {
@@ -49,6 +50,7 @@ const candidates: Candidate[] = [
     score: null,
     target: 'demo-target',
     notes: null,
+    status: 'invalid',
     is_valid: false,
     validation_notes: [{ level: 'error', message: 'Invalid SMILES: not_a_smiles' }],
     descriptors: null,

@@ -1,0 +1,793 @@
+{
+  "components": {
+    "schemas": {
+      "CandidateSet": {
+        "additionalProperties": false,
+        "properties": {
+          "candidates": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "invalid": "#/components/schemas/InvalidCandidate",
+                  "valid": "#/components/schemas/ValidCandidate"
+                },
+                "propertyName": "status"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ValidCandidate"
+                },
+                {
+                  "$ref": "#/components/schemas/InvalidCandidate"
+                }
+              ]
+            },
+            "title": "Candidates",
+            "type": "array"
+          },
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "candidates"
+        ],
+        "title": "CandidateSet",
+        "type": "object"
+      },
+      "ConformerResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_id": {
+            "minLength": 1,
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "mol_block": {
+            "minLength": 1,
+            "title": "Mol Block",
+            "type": "string"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "mol_block"
+        ],
+        "title": "ConformerResponse",
+        "type": "object"
+      },
+      "DescriptorSet": {
+        "additionalProperties": false,
+        "properties": {
+          "fraction_csp3": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Fraction Csp3",
+            "type": "number"
+          },
+          "hbond_acceptors": {
+            "minimum": 0.0,
+            "title": "Hbond Acceptors",
+            "type": "integer"
+          },
+          "hbond_donors": {
+            "minimum": 0.0,
+            "title": "Hbond Donors",
+            "type": "integer"
+          },
+          "heavy_atom_count": {
+            "minimum": 0.0,
+            "title": "Heavy Atom Count",
+            "type": "integer"
+          },
+          "logp": {
+            "title": "Logp",
+            "type": "number"
+          },
+          "molecular_weight": {
+            "minimum": 0.0,
+            "title": "Molecular Weight",
+            "type": "number"
+          },
+          "murcko_scaffold": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Murcko Scaffold"
+          },
+          "ring_count": {
+            "minimum": 0.0,
+            "title": "Ring Count",
+            "type": "integer"
+          },
+          "rotatable_bonds": {
+            "minimum": 0.0,
+            "title": "Rotatable Bonds",
+            "type": "integer"
+          },
+          "tpsa": {
+            "minimum": 0.0,
+            "title": "Tpsa",
+            "type": "number"
+          }
+        },
+        "required": [
+          "molecular_weight",
+          "logp",
+          "tpsa",
+          "hbond_donors",
+          "hbond_acceptors",
+          "rotatable_bonds",
+          "ring_count",
+          "heavy_atom_count",
+          "fraction_csp3",
+          "murcko_scaffold"
+        ],
+        "title": "DescriptorSet",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "detail": {
+            "minLength": 1,
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "const": "ok",
+            "default": "ok",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "InvalidCandidate": {
+        "additionalProperties": false,
+        "properties": {
+          "canonical_smiles": {
+            "title": "Canonical Smiles",
+            "type": "null"
+          },
+          "descriptors": {
+            "title": "Descriptors",
+            "type": "null"
+          },
+          "external_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Id"
+          },
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "is_valid": {
+            "const": false,
+            "default": false,
+            "title": "Is Valid",
+            "type": "boolean"
+          },
+          "name": {
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "neighbors": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/SimilarityNeighbor"
+            },
+            "title": "Neighbors",
+            "type": "array"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "smiles": {
+            "minLength": 1,
+            "title": "Smiles",
+            "type": "string"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "status": {
+            "const": "invalid",
+            "default": "invalid",
+            "title": "Status",
+            "type": "string"
+          },
+          "structure_svg": {
+            "title": "Structure Svg",
+            "type": "null"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target"
+          },
+          "triage_flags": {
+            "title": "Triage Flags",
+            "type": "null"
+          },
+          "validation_notes": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationNote"
+            },
+            "title": "Validation Notes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "smiles",
+          "validation_notes"
+        ],
+        "title": "InvalidCandidate",
+        "type": "object"
+      },
+      "ProjectionPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_id": {
+            "minLength": 1,
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "name": {
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "title": "Y",
+            "type": "number"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "name",
+          "x",
+          "y"
+        ],
+        "title": "ProjectionPoint",
+        "type": "object"
+      },
+      "SimilarityNeighbor": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_id": {
+            "minLength": 1,
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "name": {
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "similarity": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Similarity",
+            "type": "number"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "name",
+          "similarity"
+        ],
+        "title": "SimilarityNeighbor",
+        "type": "object"
+      },
+      "TriageFlags": {
+        "additionalProperties": false,
+        "properties": {
+          "lipinski_notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Lipinski Notes",
+            "type": "array"
+          },
+          "lipinski_violations": {
+            "minimum": 0.0,
+            "title": "Lipinski Violations",
+            "type": "integer"
+          },
+          "veber_notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Veber Notes",
+            "type": "array"
+          },
+          "veber_violations": {
+            "minimum": 0.0,
+            "title": "Veber Violations",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "lipinski_violations",
+          "lipinski_notes",
+          "veber_violations",
+          "veber_notes"
+        ],
+        "title": "TriageFlags",
+        "type": "object"
+      },
+      "ValidCandidate": {
+        "additionalProperties": false,
+        "properties": {
+          "canonical_smiles": {
+            "minLength": 1,
+            "title": "Canonical Smiles",
+            "type": "string"
+          },
+          "descriptors": {
+            "$ref": "#/components/schemas/DescriptorSet"
+          },
+          "external_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Id"
+          },
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "is_valid": {
+            "const": true,
+            "default": true,
+            "title": "Is Valid",
+            "type": "boolean"
+          },
+          "name": {
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "neighbors": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/SimilarityNeighbor"
+            },
+            "title": "Neighbors",
+            "type": "array"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "smiles": {
+            "minLength": 1,
+            "title": "Smiles",
+            "type": "string"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "status": {
+            "const": "valid",
+            "default": "valid",
+            "title": "Status",
+            "type": "string"
+          },
+          "structure_svg": {
+            "minLength": 1,
+            "title": "Structure Svg",
+            "type": "string"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target"
+          },
+          "triage_flags": {
+            "$ref": "#/components/schemas/TriageFlags"
+          },
+          "validation_notes": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationNote"
+            },
+            "title": "Validation Notes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "smiles",
+          "validation_notes",
+          "canonical_smiles",
+          "descriptors",
+          "triage_flags",
+          "structure_svg"
+        ],
+        "title": "ValidCandidate",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "ValidationNote": {
+        "additionalProperties": false,
+        "properties": {
+          "level": {
+            "enum": [
+              "info",
+              "warning",
+              "error"
+            ],
+            "title": "Level",
+            "type": "string"
+          },
+          "message": {
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "level",
+          "message"
+        ],
+        "title": "ValidationNote",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Candidate review API for small-molecule datasets.",
+    "title": "Molecule Atlas API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/candidate-sets/demo": {
+      "get": {
+        "operationId": "get_demo_candidate_set_api_candidate_sets_demo_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CandidateSet"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Demo Candidate Set",
+        "tags": [
+          "candidate-sets"
+        ]
+      }
+    },
+    "/api/candidate-sets/demo/candidates/{candidate_id}/conformer": {
+      "get": {
+        "operationId": "get_candidate_conformer_api_candidate_sets_demo_candidates__candidate_id__conformer_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "candidate_id",
+            "required": true,
+            "schema": {
+              "title": "Candidate Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConformerResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Candidate not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conformer cannot be generated"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Stored candidate data is inconsistent"
+          }
+        },
+        "summary": "Get Candidate Conformer",
+        "tags": [
+          "candidate-sets"
+        ]
+      }
+    },
+    "/api/candidate-sets/demo/candidates/{candidate_id}/neighbors": {
+      "get": {
+        "operationId": "get_candidate_neighbors_api_candidate_sets_demo_candidates__candidate_id__neighbors_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "candidate_id",
+            "required": true,
+            "schema": {
+              "title": "Candidate Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SimilarityNeighbor"
+                  },
+                  "title": "Response Get Candidate Neighbors Api Candidate Sets Demo Candidates  Candidate Id  Neighbors Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Candidate not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Candidate Neighbors",
+        "tags": [
+          "candidate-sets"
+        ]
+      }
+    },
+    "/api/candidate-sets/demo/projection": {
+      "get": {
+        "operationId": "get_demo_projection_api_candidate_sets_demo_projection_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectionPoint"
+                  },
+                  "title": "Response Get Demo Projection Api Candidate Sets Demo Projection Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Demo Projection",
+        "tags": [
+          "candidate-sets"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health"
+      }
+    }
+  }
+}

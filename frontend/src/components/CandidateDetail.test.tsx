@@ -20,6 +20,7 @@ const candidate: Candidate = {
   score: -7.1,
   target: 'demo-target',
   notes: null,
+  status: 'valid',
   is_valid: true,
   validation_notes: [],
   descriptors: {

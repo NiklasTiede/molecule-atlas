@@ -1,4 +1,5 @@
 import type { CandidateSet, ProjectionPoint } from '../types/candidate';
+import type { paths } from '../types/openapi';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
 
@@ -18,10 +19,7 @@ export function fetchDemoProjection(): Promise<ProjectionPoint[]> {
   return fetchJson<ProjectionPoint[]>('/api/candidate-sets/demo/projection');
 }
 
-export type CandidateConformer = {
-  candidate_id: string;
-  mol_block: string;
-};
+export type CandidateConformer = paths['/api/candidate-sets/demo/candidates/{candidate_id}/conformer']['get']['responses'][200]['content']['application/json'];
 
 export function fetchCandidateConformer(candidateId: string): Promise<CandidateConformer> {
   return fetchJson<CandidateConformer>(

@@ -116,7 +116,9 @@ export function CandidateDetail({ candidate }: CandidateDetailProps) {
       </div>
 
       <div className="structure-frame">
-        {activeView === '2d' ? <Molecule2D svg={candidate.structure_svg} name={candidate.name} /> : null}
+        {activeView === '2d' ? (
+          <Molecule2D svg={candidate.structure_svg ?? null} name={candidate.name} />
+        ) : null}
         {activeView === '3d' && conformerError?.candidateId === candidate.id ? (
           <div className="empty-structure">{conformerError.message}</div>
         ) : null}
@@ -159,7 +161,7 @@ export function CandidateDetail({ candidate }: CandidateDetailProps) {
 
       <section className="detail-section">
         <h3>Triage Flags</h3>
-        <TriageFlags flags={candidate.triage_flags} />
+        <TriageFlags flags={candidate.triage_flags ?? null} />
       </section>
 
       <section className="detail-section">
