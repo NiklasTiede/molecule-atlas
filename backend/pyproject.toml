@@ -2,7 +2,7 @@
 name = "molecule-atlas-backend"
 version = "0.1.0"
 description = "FastAPI and RDKit backend for Molecule Atlas"
-requires-python = ">=3.11"
+requires-python = ">=3.13,<3.14"
 dependencies = [
   "fastapi>=0.130.0",
   "uvicorn[standard]>=0.38.0",
@@ -15,7 +15,9 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-  "httpx>=0.28.0",
+  "httpx2>=2.5.0",
+  "pandas-stubs>=3.0.3.260530",
+  "pyright>=1.1.411",
   "pytest>=9.0.0",
   "ruff>=0.14.0",
 ]
@@ -26,7 +28,19 @@ pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py313"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B"]
+select = ["ANN", "B", "E", "F", "I", "RUF", "UP"]
+
+[tool.pyright]
+include = ["app", "scripts", "tests"]
+exclude = [".venv"]
+pythonVersion = "3.13"
+stubPath = "typings"
+typeCheckingMode = "strict"
+reportImplicitOverride = "error"
+reportMatchNotExhaustive = "error"
+reportMissingTypeStubs = "error"
+reportUnnecessaryTypeIgnoreComment = "error"
+reportUnreachable = "error"

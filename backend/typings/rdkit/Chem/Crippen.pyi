@@ -1,0 +1,3 @@
+from . import Mol
+
+def MolLogP(mol: Mol) -> float: ...

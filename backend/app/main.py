@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.candidates import router as candidate_router
+from app.models.api import HealthResponse
 
 app = FastAPI(
     title="Molecule Atlas API",
@@ -21,5 +22,5 @@ app.include_router(candidate_router)
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "ok"}
+def health() -> HealthResponse:
+    return HealthResponse()

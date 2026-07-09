@@ -5,6 +5,7 @@ from app.chem.rendering import mol_to_sdf_block, mol_to_svg
 
 def test_mol_to_svg_returns_svg_markup() -> None:
     mol = Chem.MolFromSmiles("CC(=O)Oc1ccccc1C(=O)O")
+    assert mol is not None
 
     svg = mol_to_svg(mol)
 
@@ -14,6 +15,7 @@ def test_mol_to_svg_returns_svg_markup() -> None:
 
 def test_mol_to_sdf_block_returns_3d_structure_block() -> None:
     mol = Chem.MolFromSmiles("CC(=O)Oc1ccccc1C(=O)O")
+    assert mol is not None
 
     sdf = mol_to_sdf_block(mol)
 

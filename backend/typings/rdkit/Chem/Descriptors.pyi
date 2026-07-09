@@ -1,0 +1,3 @@
+from . import Mol
+
+def MolWt(mol: Mol) -> float: ...

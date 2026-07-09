@@ -1,0 +1,3 @@
+from .. import Mol
+
+def GetScaffoldForMol(mol: Mol) -> Mol | None: ...

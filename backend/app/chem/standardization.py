@@ -1,35 +1,37 @@
 from dataclasses import dataclass
+from typing import Literal
 
 from rdkit import Chem, rdBase
 
 from app.models.candidate import ValidationNote
 
 
-@dataclass(frozen=True)
-class ParsedMolecule:
-    mol: Chem.Mol | None
-    canonical_smiles: str | None
-    is_valid: bool
-    validation_notes: list[ValidationNote]
+@dataclass(frozen=True, slots=True)
+class ValidParsedMolecule:
+    mol: Chem.Mol
+    canonical_smiles: str
+    validation_notes: tuple[ValidationNote, ...] = ()
+    is_valid: Literal[True] = True
+
+
+@dataclass(frozen=True, slots=True)
+class InvalidParsedMolecule:
+    validation_notes: tuple[ValidationNote, ...]
+    mol: None = None
+    canonical_smiles: None = None
+    is_valid: Literal[False] = False
+
+
+ParsedMolecule = ValidParsedMolecule | InvalidParsedMolecule
 
 
 def parse_smiles(smiles: str) -> ParsedMolecule:
     with rdBase.BlockLogs():
         mol = Chem.MolFromSmiles(smiles)
     if mol is None:
-        return ParsedMolecule(
-            mol=None,
-            canonical_smiles=None,
-            is_valid=False,
-            validation_notes=[
-                ValidationNote(level="error", message=f"Invalid SMILES: {smiles}")
-            ],
+        return InvalidParsedMolecule(
+            validation_notes=(ValidationNote(level="error", message=f"Invalid SMILES: {smiles}"),)
         )
 
     canonical = Chem.MolToSmiles(mol, canonical=True)
-    return ParsedMolecule(
-        mol=mol,
-        canonical_smiles=canonical,
-        is_valid=True,
-        validation_notes=[],
-    )
+    return ValidParsedMolecule(mol=mol, canonical_smiles=canonical)

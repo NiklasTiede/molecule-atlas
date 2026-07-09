@@ -5,6 +5,7 @@ from app.chem.descriptors import calculate_descriptors
 
 def test_calculate_descriptors_for_aspirin() -> None:
     mol = Chem.MolFromSmiles("CC(=O)Oc1ccccc1C(=O)O")
+    assert mol is not None
 
     descriptors = calculate_descriptors(mol)
 

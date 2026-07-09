@@ -20,7 +20,7 @@ def calculate_triage_flags(descriptors: DescriptorSet) -> TriageFlags:
 
     return TriageFlags(
         lipinski_violations=len(lipinski_notes),
-        lipinski_notes=lipinski_notes,
+        lipinski_notes=tuple(lipinski_notes),
         veber_violations=len(veber_notes),
-        veber_notes=veber_notes,
+        veber_notes=tuple(veber_notes),
     )

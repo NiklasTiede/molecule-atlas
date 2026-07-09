@@ -1,3 +1,5 @@
+import pytest
+
 from app.chem.standardization import parse_smiles
 
 
@@ -7,7 +9,7 @@ def test_parse_smiles_returns_canonical_smiles_for_valid_input() -> None:
     assert result.is_valid is True
     assert result.canonical_smiles == "CC(=O)Oc1ccccc1C(=O)O"
     assert result.mol is not None
-    assert result.validation_notes == []
+    assert result.validation_notes == ()
 
 
 def test_parse_smiles_returns_error_note_for_invalid_input() -> None:
@@ -20,7 +22,9 @@ def test_parse_smiles_returns_error_note_for_invalid_input() -> None:
     assert "Invalid SMILES" in result.validation_notes[0].message
 
 
-def test_parse_smiles_does_not_write_rdkit_parse_errors_to_stderr(capfd) -> None:
+def test_parse_smiles_does_not_write_rdkit_parse_errors_to_stderr(
+    capfd: pytest.CaptureFixture[str],
+) -> None:
     parse_smiles("not_a_smiles")
 
     captured = capfd.readouterr()
