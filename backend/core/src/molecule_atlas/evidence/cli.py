@@ -7,7 +7,11 @@ from typing import cast
 
 from molecule_atlas.evidence.adapters import EvidenceInputError, audit_path, list_adapters
 from molecule_atlas.evidence.reports import render_markdown_report
-from molecule_atlas.evidence.serialization import write_manifest, write_manifest_schema
+from molecule_atlas.evidence.serialization import (
+    write_artifact_manifest_schema,
+    write_manifest,
+    write_manifest_schema,
+)
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -35,7 +39,12 @@ def _parser() -> argparse.ArgumentParser:
     report_parser.add_argument("--format", choices=("markdown",), required=True)
     report_parser.add_argument("--output", type=Path)
 
-    schema_parser = commands.add_parser("schema", help="Export the RunManifest JSON Schema")
+    schema_parser = commands.add_parser("schema", help="Export a portable evidence JSON Schema")
+    schema_parser.add_argument(
+        "--contract",
+        choices=("run-manifest", "artifact-manifest"),
+        default="run-manifest",
+    )
     schema_parser.add_argument("--output", required=True, type=Path)
     return parser
 
@@ -114,8 +123,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             _report(cast(Path, args.manifest), cast(Path | None, args.output))
         elif command == "schema":
             output = cast(Path, args.output)
-            write_manifest_schema(output)
-            print(f"Wrote RunManifest JSON Schema: {output}")
+            contract = cast(str, args.contract)
+            if contract == "run-manifest":
+                write_manifest_schema(output)
+                title = "RunManifest"
+            elif contract == "artifact-manifest":
+                write_artifact_manifest_schema(output)
+                title = "ArtifactManifest"
+            else:
+                raise AssertionError(f"Unhandled schema contract: {contract}")
+            print(f"Wrote {title} JSON Schema: {output}")
         else:
             raise AssertionError(f"Unhandled command: {command}")
     except (EvidenceInputError, OSError, ValueError) as error:

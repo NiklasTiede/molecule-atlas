@@ -21,5 +21,11 @@ synthetic. They were created for Molecule Atlas contract tests, do not come from
 model, checkpoint, or external dataset, and must not be interpreted as biological evidence. The
 fixture manifests inventory every included raw artifact by relative path, byte size, and SHA-256.
 
+The successful bundle also contains `molecule-atlas-artifacts.json`, a canonical synthetic
+`ArtifactManifest 0.1.0`. It assigns stable logical names and semantic artifact types to the same
+complete artifact inventory, uses algorithm-qualified content digests, and records explicit
+ligand-to-pose and pose-to-validation derivation relationships. Tests require its paths, media types,
+digests, and sizes to match `molecule-atlas-run.json` exactly.
+
 The evidence fixtures are provided under CC0-1.0 as recorded in each manifest. They require no model
 download, network access, database, GPU, or third-party service.

@@ -1,7 +1,12 @@
 import json
 from pathlib import Path
 
-from molecule_atlas.evidence import RunManifest, canonical_json_bytes, manifest_schema_json
+from molecule_atlas.evidence import (
+    RunManifest,
+    artifact_manifest_schema_json,
+    canonical_json_bytes,
+    manifest_schema_json,
+)
 
 
 def test_canonical_json_is_stable_and_sorted() -> None:
@@ -68,4 +73,15 @@ def test_manifest_schema_export_is_deterministic() -> None:
     assert first.endswith("\n")
     parsed = json.loads(first)
     assert parsed["title"] == "RunManifest"
+    assert parsed["properties"]["schema_version"]["const"] == "0.1.0"
+
+
+def test_artifact_manifest_schema_export_is_deterministic() -> None:
+    first = artifact_manifest_schema_json()
+    second = artifact_manifest_schema_json()
+
+    assert first == second
+    assert first.endswith("\n")
+    parsed = json.loads(first)
+    assert parsed["title"] == "ArtifactManifest"
     assert parsed["properties"]["schema_version"]["const"] == "0.1.0"

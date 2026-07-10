@@ -1,7 +1,7 @@
 # Milestone 2 Implementation Plan: Real-Output Import and Validation
 
 - Status: In progress
-- Current slice: Slice 1 implemented; Slice 2 next
+- Current slice: Slices 1–2 implemented; Slice 3 next
 - Roadmap milestone: 2 — Real-output import and validation
 - Planning date: 2026-07-10
 
@@ -112,8 +112,9 @@ AdapterImportResult 0.1.0
 The adapter protocol accepts a typed request and returns a typed result. Registry membership is
 explicit; no dynamic imports, entry-point discovery, or generic plugin framework are needed.
 
-When semantic artifact manifests land, add a new adapter result contract version rather than
-silently changing `AdapterImportResult 0.1.0`.
+`ArtifactManifest 0.1.0` is implemented separately. Add a new adapter result contract version when
+the first fixture-backed upstream adapter returns both manifests rather than silently changing
+`AdapterImportResult 0.1.0`.
 
 ### Semantic artifact manifest
 
@@ -148,6 +149,8 @@ Future persistence adds those relationships through an explicit newer schema.
 Initial artifact types needed in this milestone:
 
 ```text
+model-input
+ligand-structure
 protein-structure
 predicted-complex
 docking-pose-set
@@ -311,9 +314,12 @@ advertised until their fixture-backed implementations exist.
 
 ### Slice 2 — Semantic artifact manifest
 
+Status: implemented on 2026-07-10.
+
 - Add `ArtifactManifest 0.1.0`, semantic artifact types, logical names, and derivation validation.
 - Add canonical serialization and JSON Schema export under `schemas/artifact-manifest/0.1.0`.
-- Add a new adapter-result contract version carrying both run and artifact manifests.
+- Reserve a new adapter-result contract version for the first upstream adapter that returns both run
+  and artifact manifests.
 - Keep `RunManifest 0.1.0` byte-for-byte and schema-for-schema compatible.
 
 ### Slice 3 — Boltz import
@@ -355,8 +361,8 @@ UV_CACHE_DIR=../.uv-cache uv run ruff format --check .
 UV_CACHE_DIR=../.uv-cache uv run pyright
 ```
 
-Also run `make evidence-contract-check` for every checked-in schema and update that target when the
-artifact-manifest schema is added. Normal gates must remain offline and deterministic.
+Also run `make evidence-contract-check` for every checked-in schema. The target covers run-manifest
+and artifact-manifest `0.1.0`. Normal gates must remain offline and deterministic.
 
 ## Deferred work
 

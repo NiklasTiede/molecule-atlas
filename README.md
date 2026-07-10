@@ -20,7 +20,7 @@ Molecule Atlas is not a drug-discovery oracle. It does not claim that a candidat
 - React/TypeScript workbench backed by a typed FastAPI API
 - Generated TypeScript API contracts
 - FastAPI-independent portable evidence core
-- Versioned run manifests with typed prediction and validation semantics
+- Versioned run and semantic artifact manifests with typed prediction and validation semantics
 - SHA-256 artifact inventory and offline verification
 - Canonical JSON, JSON Schema, and deterministic Markdown reports
 - Successful, partial, and failed synthetic evidence fixtures
@@ -129,16 +129,19 @@ UV_CACHE_DIR=../.uv-cache uv run molecule-atlas audit ../data/evidence-fixtures/
 UV_CACHE_DIR=../.uv-cache uv run molecule-atlas report ../data/evidence-fixtures/failed/molecule-atlas-run.json --format markdown
 ```
 
-Export the checked-in JSON Schema with:
+Export the checked-in JSON Schemas with:
 
 ```bash
-UV_CACHE_DIR=../.uv-cache uv run molecule-atlas schema --output ../schemas/run-manifest/0.1.0.schema.json
+UV_CACHE_DIR=../.uv-cache uv run molecule-atlas schema --contract run-manifest --output ../schemas/run-manifest/0.1.0.schema.json
+UV_CACHE_DIR=../.uv-cache uv run molecule-atlas schema --contract artifact-manifest --output ../schemas/artifact-manifest/0.1.0.schema.json
 ```
 
 The current typed adapter catalog intentionally registers only `manifest`, which validates an
 existing `molecule-atlas-run.json` file or directory and verifies local artifact hashes. Milestone 2
-is adding fixture-backed Boltz and DiffDock imports plus PoseBusters validation incrementally; those
-adapters are not advertised until their supported layouts are implemented and tested.
+has added a companion `ArtifactManifest 0.1.0` for logical names, semantic artifact types, content
+digests, and derivation lineage. Fixture-backed Boltz and DiffDock imports plus PoseBusters validation
+remain incremental; those adapters are not advertised until their supported layouts are implemented
+and tested.
 
 ## Scientific caveats
 

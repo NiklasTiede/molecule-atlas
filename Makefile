@@ -14,7 +14,8 @@ backend-openapi:
 	cd backend && UV_CACHE_DIR=../.uv-cache uv run python -m scripts.export_openapi
 
 backend-evidence-schema:
-	cd backend && UV_CACHE_DIR=../.uv-cache uv run molecule-atlas schema --output ../schemas/run-manifest/0.1.0.schema.json
+	cd backend && UV_CACHE_DIR=../.uv-cache uv run molecule-atlas schema --contract run-manifest --output ../schemas/run-manifest/0.1.0.schema.json
+	cd backend && UV_CACHE_DIR=../.uv-cache uv run molecule-atlas schema --contract artifact-manifest --output ../schemas/artifact-manifest/0.1.0.schema.json
 
 backend-dev:
 	cd backend && UV_CACHE_DIR=../.uv-cache uv run uvicorn app.main:app --reload
@@ -55,6 +56,6 @@ api-contract-check: backend-openapi frontend-api-types
 	git diff --exit-code -- frontend/openapi.json frontend/src/types/openapi.d.ts
 
 evidence-contract-check: backend-evidence-schema
-	git diff --exit-code -- schemas/run-manifest/0.1.0.schema.json
+	git diff --exit-code -- schemas/run-manifest/0.1.0.schema.json schemas/artifact-manifest/0.1.0.schema.json
 
 e2e: frontend-e2e

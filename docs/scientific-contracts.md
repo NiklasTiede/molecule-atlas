@@ -149,23 +149,29 @@ Suggested roles include:
 
 The same bytes must produce the same content hash. Tests should use deterministic fixtures.
 
-Before persistence or managed execution, a versioned artifact-manifest contract should strengthen
-the portable record with:
+The implemented portable `ArtifactManifest 0.1.0` complements the immutable `RunManifest 0.1.0`
+artifact inventory with:
 
 ```text
 artifact_id
 artifact_type
 schema_version
+logical_name
 semantic_role
-storage_uri
+media_type
+path_or_uri
 content_digest
-project_id
-producing_run_id and attempt ID where applicable
+size_bytes
 derived_from_artifact_ids
-created_at
 domain_metadata
 preview_metadata
 ```
+
+Artifact IDs and logical names are unique. Derivation references must resolve within the complete
+manifest and cannot contain self-references, repeated sources, or cycles. When bound to a
+`RunManifest 0.1.0`, the artifact IDs, paths, media types, SHA-256 digests, and sizes must agree
+exactly. The portable contract does not invent project, producing-run, attempt, storage, or creation
+metadata before persistence owns those fields.
 
 Artifact types are stable semantic identifiers such as `compound-set`, `protein-structure`,
 `prepared-pocket`, `docking-pose-set`, `docking-score-table`, `interaction-fingerprint`,
@@ -376,9 +382,9 @@ warnings, and verifies local artifact bytes. `molecule-atlas adapters` exposes i
 metadata. Boltz and DiffDock are not registered until pinned real-output layouts have deterministic
 fixture coverage.
 
-The adapter result `0.1.0` remains tied to `RunManifest 0.1.0`. Semantic artifact lineage will use a
-new adapter-result contract version and a separately versioned artifact manifest; it will not
-silently change either existing `0.1.0` contract.
+The adapter result `0.1.0` remains tied to `RunManifest 0.1.0`. `ArtifactManifest 0.1.0` is available
+as a separate portable contract. The first upstream adapter that returns both contracts will add a
+new adapter-result version rather than silently changing `AdapterImportResult 0.1.0`.
 
 ## Reports
 
@@ -407,7 +413,7 @@ molecule-atlas adapters
 molecule-atlas inspect PATH
 molecule-atlas audit PATH --adapter manifest --output OUTPUT
 molecule-atlas report MANIFEST --format markdown [--output OUTPUT]
-molecule-atlas schema --output OUTPUT
+molecule-atlas schema --contract run-manifest|artifact-manifest --output OUTPUT
 ```
 
 Markdown reports include run state and failures, method identity, provenance warnings, typed

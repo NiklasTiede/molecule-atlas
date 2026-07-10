@@ -123,8 +123,10 @@ or thousands of raw records by default.
 ## Semantic artifacts and provenance
 
 Agents, users, and workflows discover artifacts by type and metadata, never by guessing filenames.
-The current portable artifact contract is the starting point. Before persistent storage or managed
-execution, evolve it through an explicit schema version to include:
+The portable `ArtifactManifest 0.1.0` now complements `RunManifest 0.1.0` with stable logical names,
+semantic types and roles, algorithm-qualified content digests, and explicit derivation relationships.
+It intentionally omits persistence-only identities. Before persistent storage or managed execution,
+evolve it through an explicit newer schema version to include:
 
 ```text
 artifact_id

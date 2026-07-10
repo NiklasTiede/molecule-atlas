@@ -373,3 +373,9 @@ own unit and optimization-direction constraints. The legacy candidate workbench'
 Inputs may declare representations such as conformer, predicted pose, docked pose, or experimental
 complex. This records the distinction without introducing target, protein, pocket, or pose-workspace
 entities before their roadmap milestone.
+
+Milestone 2 adds a companion portable `ArtifactManifest 0.1.0`. It gives every artifact a stable
+logical name, controlled semantic type and role, algorithm-qualified content digest, and explicit
+derived-from relationships. Its complete inventory must match the corresponding `RunManifest 0.1.0`
+artifact paths, media types, hashes, and sizes. Persistence-only project, producing-run, and storage
+relationships remain deferred rather than being invented in the portable contract.

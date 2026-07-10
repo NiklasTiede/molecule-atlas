@@ -1,0 +1,140 @@
+{
+  "$defs": {
+    "JsonValue": {},
+    "SemanticArtifact": {
+      "additionalProperties": false,
+      "description": "Portable semantic metadata for one content-addressed artifact.",
+      "properties": {
+        "artifact_id": {
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_type": {
+          "enum": [
+            "model-input",
+            "ligand-structure",
+            "protein-structure",
+            "predicted-complex",
+            "docking-pose-set",
+            "raw-prediction-output",
+            "validation-report",
+            "run-log",
+            "evidence-report"
+          ],
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "derived_from_artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Derived From Artifact Ids",
+          "type": "array"
+        },
+        "domain_metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Domain Metadata",
+          "type": "object"
+        },
+        "logical_name": {
+          "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$",
+          "title": "Logical Name",
+          "type": "string"
+        },
+        "media_type": {
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "path_or_uri": {
+          "minLength": 1,
+          "title": "Path Or Uri",
+          "type": "string"
+        },
+        "preview_metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Preview Metadata",
+          "type": "object"
+        },
+        "schema_version": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Schema Version"
+        },
+        "semantic_role": {
+          "enum": [
+            "input",
+            "primary_output",
+            "raw_output",
+            "normalized_output",
+            "validation_output",
+            "log",
+            "report"
+          ],
+          "title": "Semantic Role",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "logical_name",
+        "artifact_type",
+        "semantic_role",
+        "media_type",
+        "path_or_uri",
+        "content_digest",
+        "size_bytes",
+        "derived_from_artifact_ids",
+        "domain_metadata",
+        "preview_metadata"
+      ],
+      "title": "SemanticArtifact",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Versioned semantic inventory accompanying a portable RunManifest.",
+  "properties": {
+    "artifacts": {
+      "items": {
+        "$ref": "#/$defs/SemanticArtifact"
+      },
+      "title": "Artifacts",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "artifacts"
+  ],
+  "title": "ArtifactManifest",
+  "type": "object"
+}

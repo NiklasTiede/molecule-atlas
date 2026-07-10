@@ -145,7 +145,8 @@ UV_CACHE_DIR=../.uv-cache uv run pyright
 UV_CACHE_DIR=../.uv-cache uv run python -m scripts.export_openapi
 UV_CACHE_DIR=../.uv-cache uv run molecule-atlas adapters
 UV_CACHE_DIR=../.uv-cache uv run molecule-atlas inspect ../data/evidence-fixtures/succeeded
-UV_CACHE_DIR=../.uv-cache uv run molecule-atlas schema --output ../schemas/run-manifest/0.1.0.schema.json
+UV_CACHE_DIR=../.uv-cache uv run molecule-atlas schema --contract run-manifest --output ../schemas/run-manifest/0.1.0.schema.json
+UV_CACHE_DIR=../.uv-cache uv run molecule-atlas schema --contract artifact-manifest --output ../schemas/artifact-manifest/0.1.0.schema.json
 UV_CACHE_DIR=../.uv-cache uv run uvicorn app.main:app --reload
 ```
 

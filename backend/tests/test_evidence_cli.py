@@ -71,6 +71,18 @@ def test_schema_command_exports_run_manifest_schema(tmp_path: Path) -> None:
     assert schema["title"] == "RunManifest"
 
 
+def test_schema_command_exports_artifact_manifest_schema(tmp_path: Path) -> None:
+    output = tmp_path / "artifact-manifest.schema.json"
+
+    exit_code = main(["schema", "--contract", "artifact-manifest", "--output", str(output)])
+
+    assert exit_code == 0
+    parsed: object = json.loads(output.read_text(encoding="utf-8"))
+    assert isinstance(parsed, dict)
+    schema = cast(dict[str, object], parsed)
+    assert schema["title"] == "ArtifactManifest"
+
+
 def test_cli_rejects_unknown_adapter(capsys: pytest.CaptureFixture[str]) -> None:
     exit_code = main(
         [
