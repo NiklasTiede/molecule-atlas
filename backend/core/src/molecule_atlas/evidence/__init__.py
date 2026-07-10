@@ -1,8 +1,14 @@
 """Versioned, portable contracts for scientific evidence."""
 
 from molecule_atlas.evidence.adapters import (
+    AdapterImportRequest,
+    AdapterImportResult,
+    AdapterMetadata,
+    EvidenceAdapter,
     EvidenceInputError,
     audit_path,
+    get_adapter,
+    list_adapters,
     resolve_manifest_path,
 )
 from molecule_atlas.evidence.artifacts import (
@@ -47,6 +53,9 @@ from molecule_atlas.evidence.serialization import (
 )
 
 __all__ = [
+    "AdapterImportRequest",
+    "AdapterImportResult",
+    "AdapterMetadata",
     "Artifact",
     "ArtifactCheck",
     "ArtifactDigest",
@@ -54,6 +63,7 @@ __all__ = [
     "BinderProbabilityPrediction",
     "DockingEnergyPrediction",
     "EnvironmentMetadata",
+    "EvidenceAdapter",
     "EvidenceInputError",
     "InputReference",
     "LicenseMetadata",
@@ -74,8 +84,10 @@ __all__ = [
     "audit_manifest",
     "audit_path",
     "canonical_json_bytes",
+    "get_adapter",
     "hash_file",
     "inventory_artifact",
+    "list_adapters",
     "load_manifest",
     "manifest_schema",
     "manifest_schema_json",

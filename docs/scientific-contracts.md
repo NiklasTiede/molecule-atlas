@@ -349,9 +349,36 @@ Initial targets:
 
 An adapter should be tested against successful, partial, failed, and unknown-version fixtures where practical.
 
-Milestone 1 includes only a `manifest` adapter. It reads an existing `molecule-atlas-run.json` file or
-directory, validates the normalized contract, derives provenance warnings, and verifies local
-artifact bytes. It does not parse or execute Boltz, DiffDock, PoseBusters, Vina, or ProDock outputs.
+The implemented adapter boundary uses strict, frozen Pydantic contracts:
+
+```text
+AdapterMetadata
+  adapter ID/version
+  upstream tool when applicable
+  source format/version
+  verified upstream versions
+  supported normalized manifest versions
+
+AdapterImportRequest 0.1.0
+  contract version
+  source path
+
+AdapterImportResult 0.1.0
+  contract version
+  adapter ID/version
+  artifact root
+  RunManifest 0.1.0
+```
+
+The explicit built-in registry currently contains only `manifest`. It reads an existing
+`molecule-atlas-run.json` file or directory, validates the normalized contract, derives provenance
+warnings, and verifies local artifact bytes. `molecule-atlas adapters` exposes its compatibility
+metadata. Boltz and DiffDock are not registered until pinned real-output layouts have deterministic
+fixture coverage.
+
+The adapter result `0.1.0` remains tied to `RunManifest 0.1.0`. Semantic artifact lineage will use a
+new adapter-result contract version and a separately versioned artifact manifest; it will not
+silently change either existing `0.1.0` contract.
 
 ## Reports
 
@@ -376,6 +403,7 @@ Reports should not invent a universal ranking.
 The current CLI supports:
 
 ```text
+molecule-atlas adapters
 molecule-atlas inspect PATH
 molecule-atlas audit PATH --adapter manifest --output OUTPUT
 molecule-atlas report MANIFEST --format markdown [--output OUTPUT]

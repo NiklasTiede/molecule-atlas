@@ -91,6 +91,8 @@ milestones. They are assigned below and must land before the first feature that 
 
 ## Milestone 2 — Real-output import and validation
 
+Status: in progress.
+
 Goal: demonstrate value on outputs Molecule Atlas did not execute.
 
 Deliverables:

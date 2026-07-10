@@ -86,7 +86,7 @@ def test_cli_rejects_unknown_adapter(capsys: pytest.CaptureFixture[str]) -> None
     assert exit_code == 2
     captured = capsys.readouterr()
     assert "Unsupported adapter 'boltz'" in captured.err
-    assert "Milestone 1 supports: manifest" in captured.err
+    assert "Supported adapters: manifest" in captured.err
 
 
 def test_cli_rejects_missing_manifest(

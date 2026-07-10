@@ -24,7 +24,7 @@ Molecule Atlas is not a drug-discovery oracle. It does not claim that a candidat
 - SHA-256 artifact inventory and offline verification
 - Canonical JSON, JSON Schema, and deterministic Markdown reports
 - Successful, partial, and failed synthetic evidence fixtures
-- `molecule-atlas` CLI for manifest inspection, audit, and reporting
+- `molecule-atlas` CLI for adapter discovery, manifest inspection, audit, and reporting
 - Unit, component, Playwright, and container smoke tests
 
 ## Long-term direction
@@ -123,6 +123,7 @@ FastAPI, RDKit, a database, a GPU runtime, or any external model service. From `
 bundled deterministic fixtures with:
 
 ```bash
+UV_CACHE_DIR=../.uv-cache uv run molecule-atlas adapters
 UV_CACHE_DIR=../.uv-cache uv run molecule-atlas inspect ../data/evidence-fixtures/succeeded
 UV_CACHE_DIR=../.uv-cache uv run molecule-atlas audit ../data/evidence-fixtures/partial --adapter manifest --output /tmp/molecule-atlas-run.json
 UV_CACHE_DIR=../.uv-cache uv run molecule-atlas report ../data/evidence-fixtures/failed/molecule-atlas-run.json --format markdown
@@ -134,9 +135,10 @@ Export the checked-in JSON Schema with:
 UV_CACHE_DIR=../.uv-cache uv run molecule-atlas schema --output ../schemas/run-manifest/0.1.0.schema.json
 ```
 
-Milestone 1 intentionally supports only the `manifest` adapter, which validates an existing
-`molecule-atlas-run.json` file or directory and verifies local artifact hashes. Real Boltz, DiffDock,
-PoseBusters, Vina, or ProDock output adapters belong to Milestone 2.
+The current typed adapter catalog intentionally registers only `manifest`, which validates an
+existing `molecule-atlas-run.json` file or directory and verifies local artifact hashes. Milestone 2
+is adding fixture-backed Boltz and DiffDock imports plus PoseBusters validation incrementally; those
+adapters are not advertised until their supported layouts are implemented and tested.
 
 ## Scientific caveats
 

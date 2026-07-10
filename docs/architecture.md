@@ -184,9 +184,10 @@ The portable scientific evidence core should be usable without FastAPI. It owns:
 
 The CLI, HTTP API, and workers should call this same package rather than duplicate parsing rules.
 
-Milestone 1 implements this layer as the `molecule-atlas-core` distribution in `backend/core`. Its
-only import adapter is the local manifest adapter. Provider- and scientific-tool-specific adapters
-remain deferred until real-output import milestones.
+Milestone 1 implements this layer as the `molecule-atlas-core` distribution in `backend/core`.
+Milestone 2 introduces a typed, versioned adapter request/result boundary and explicit compatibility
+catalog around the local manifest adapter before registering provider- or scientific-tool-specific
+adapters. An adapter is advertised only after pinned upstream layouts have offline fixture coverage.
 
 ### Application capability layer
 

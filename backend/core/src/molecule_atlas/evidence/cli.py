@@ -5,7 +5,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import cast
 
-from molecule_atlas.evidence.adapters import EvidenceInputError, audit_path
+from molecule_atlas.evidence.adapters import EvidenceInputError, audit_path, list_adapters
 from molecule_atlas.evidence.reports import render_markdown_report
 from molecule_atlas.evidence.serialization import write_manifest, write_manifest_schema
 
@@ -16,6 +16,8 @@ def _parser() -> argparse.ArgumentParser:
         description="Inspect and report portable Molecule Atlas evidence manifests.",
     )
     commands = parser.add_subparsers(dest="command", required=True)
+
+    commands.add_parser("adapters", help="List installed evidence adapters and compatibility")
 
     inspect_parser = commands.add_parser("inspect", help="Validate and summarize a run manifest")
     inspect_parser.add_argument("path", type=Path)
@@ -36,6 +38,16 @@ def _parser() -> argparse.ArgumentParser:
     schema_parser = commands.add_parser("schema", help="Export the RunManifest JSON Schema")
     schema_parser.add_argument("--output", required=True, type=Path)
     return parser
+
+
+def _list_adapters() -> None:
+    for metadata in list_adapters():
+        print(f"{metadata.adapter_id} {metadata.adapter_version} — {metadata.title}")
+        print(f"  Source: {metadata.source_format} {metadata.source_format_version}")
+        upstream_versions = ", ".join(metadata.verified_upstream_versions) or "not applicable"
+        print(f"  Verified upstream versions: {upstream_versions}")
+        manifest_versions = ", ".join(metadata.supported_manifest_versions)
+        print(f"  Run manifests: {manifest_versions}")
 
 
 def _inspect(path: Path) -> None:
@@ -88,7 +100,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     command = cast(str, args.command)
     try:
-        if command == "inspect":
+        if command == "adapters":
+            _list_adapters()
+        elif command == "inspect":
             _inspect(cast(Path, args.path))
         elif command == "audit":
             _audit(
