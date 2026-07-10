@@ -22,7 +22,8 @@ Implement the earliest incomplete roadmap milestone unless the user explicitly s
 
 Do not implement future infrastructure merely because it appears in the long-term architecture. Each change should solve a current acceptance criterion and preserve the completed ligand-centric workbench.
 
-The immediate next milestone after the current MVP is the portable evidence core: versioned run manifests, artifacts, typed predictions, validation results, reports, fixtures, and a CLI that requires no GPU or database.
+The immediate next milestone is real-output import and validation: typed Boltz and DiffDock adapters,
+PoseBusters-backed checks, semantic artifact outputs, replay fixtures, and explicit interpretation.
 
 ## Non-negotiable scientific rules
 
@@ -110,6 +111,8 @@ UV_CACHE_DIR=../.uv-cache uv run ruff check .
 UV_CACHE_DIR=../.uv-cache uv run ruff format --check .
 UV_CACHE_DIR=../.uv-cache uv run pyright
 UV_CACHE_DIR=../.uv-cache uv run python -m scripts.export_openapi
+UV_CACHE_DIR=../.uv-cache uv run molecule-atlas inspect ../data/evidence-fixtures/succeeded
+UV_CACHE_DIR=../.uv-cache uv run molecule-atlas schema --output ../schemas/run-manifest/0.1.0.schema.json
 UV_CACHE_DIR=../.uv-cache uv run uvicorn app.main:app --reload
 ```
 
@@ -132,6 +135,7 @@ Root:
 make test
 make lint
 make api-contract-check
+make evidence-contract-check
 make e2e
 make container-build
 make container-smoke

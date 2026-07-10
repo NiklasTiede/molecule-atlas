@@ -19,6 +19,12 @@ Molecule Atlas is not a drug-discovery oracle. It does not claim that a candidat
 - PCA chemical-space projection
 - React/TypeScript workbench backed by a typed FastAPI API
 - Generated TypeScript API contracts
+- FastAPI-independent portable evidence core
+- Versioned run manifests with typed prediction and validation semantics
+- SHA-256 artifact inventory and offline verification
+- Canonical JSON, JSON Schema, and deterministic Markdown reports
+- Successful, partial, and failed synthetic evidence fixtures
+- `molecule-atlas` CLI for manifest inspection, audit, and reporting
 - Unit, component, Playwright, and container smoke tests
 
 ## Long-term direction
@@ -77,6 +83,7 @@ Run verification:
 make test
 make lint
 make api-contract-check
+make evidence-contract-check
 make e2e
 cd frontend && npm run build
 ```
@@ -100,6 +107,28 @@ Useful backend URLs:
 - `http://localhost:8000/api/candidate-sets/demo/projection`
 - `http://localhost:8000/api/candidate-sets/demo/candidates/demo-1/neighbors`
 - `http://localhost:8000/api/candidate-sets/demo/candidates/demo-1/conformer`
+
+## Portable evidence CLI
+
+The evidence core is a separate Python package under `backend/core`. It depends on Pydantic but not
+FastAPI, RDKit, a database, a GPU runtime, or any external model service. From `backend/`, inspect the
+bundled deterministic fixtures with:
+
+```bash
+UV_CACHE_DIR=../.uv-cache uv run molecule-atlas inspect ../data/evidence-fixtures/succeeded
+UV_CACHE_DIR=../.uv-cache uv run molecule-atlas audit ../data/evidence-fixtures/partial --adapter manifest --output /tmp/molecule-atlas-run.json
+UV_CACHE_DIR=../.uv-cache uv run molecule-atlas report ../data/evidence-fixtures/failed/molecule-atlas-run.json --format markdown
+```
+
+Export the checked-in JSON Schema with:
+
+```bash
+UV_CACHE_DIR=../.uv-cache uv run molecule-atlas schema --output ../schemas/run-manifest/0.1.0.schema.json
+```
+
+Milestone 1 intentionally supports only the `manifest` adapter, which validates an existing
+`molecule-atlas-run.json` file or directory and verifies local artifact hashes. Real Boltz, DiffDock,
+PoseBusters, Vina, or ProDock output adapters belong to Milestone 2.
 
 ## Scientific caveats
 

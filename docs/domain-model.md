@@ -256,3 +256,19 @@ Recommended migration:
 6. Add managed jobs and campaign execution.
 
 Avoid a single large database migration that attempts to model the complete long-term system before the corresponding workflows exist.
+
+### Current portable evidence implementation
+
+Milestone 1 implements `Run`, `Artifact`, typed `Prediction`, and `ValidationResult` as versioned,
+immutable Pydantic contracts in the portable core. These records are file-backed and have no
+database identity or persistence mapping. Stable manifest IDs and explicit artifact references
+provide local lineage.
+
+The evidence `Prediction` contract is a discriminated union. Docking energy, pose confidence,
+structure confidence, binder probability, and predicted affinity remain distinct types with their
+own unit and optimization-direction constraints. The legacy candidate workbench's optional mock
+`score` remains unchanged for backward compatibility and is not part of the evidence manifest.
+
+Inputs may declare representations such as conformer, predicted pose, docked pose, or experimental
+complex. This records the distinction without introducing target, protein, pocket, or pose-workspace
+entities before their roadmap milestone.

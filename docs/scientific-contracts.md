@@ -28,6 +28,17 @@ Minimum sections:
 
 The manifest complements raw output files; it does not replace or rewrite them.
 
+### Implemented schema version 0.1.0
+
+The checked-in validation schema is `schemas/run-manifest/0.1.0.schema.json`. The canonical Pydantic
+models live in the FastAPI-independent `molecule_atlas.evidence` package. Unknown fields and
+non-finite numbers are rejected. Artifact, input, prediction, and validation IDs are checked for
+uniqueness and all method/artifact references must resolve within the manifest.
+
+Canonical JSON is UTF-8 with lexicographically sorted object keys, compact separators, JSON-native
+Pydantic values, no non-finite numbers, and one trailing newline. This project representation is
+deterministic for the same validated manifest; it is not claimed to implement RFC 8785.
+
 ## Run state
 
 Imported and executed runs must support:
@@ -57,6 +68,12 @@ Capture as much as is available:
 - license state.
 
 Missing fields generate explicit warnings. They must not be silently invented.
+
+The Milestone 1 auditor derives stable warnings for missing upstream identity/version, command,
+random seed, environment, license metadata, checkpoint hash, and container digest when applicable.
+Auditing never fills an absent provenance field with a guessed value. Local artifacts are reported as
+verified, missing, mismatched, unsafe, or unreadable; external URIs are retained and explicitly marked
+as not verified by the offline auditor.
 
 ## Artifact contract
 
@@ -127,6 +144,18 @@ Boltz affinity probability:
 ```
 
 Adapters are responsible for preserving upstream field names and documented meanings.
+
+The implemented `Prediction` union contains:
+
+- `docking_energy`, with a required unit and `lower_is_better` direction;
+- `pose_confidence`, unitless and `higher_is_better`;
+- `structure_confidence`, unitless and `higher_is_better`;
+- `binder_probability`, constrained to `[0, 1]` with unit `probability`;
+- `predicted_affinity`, with a required unit and explicit lower- or higher-is-better direction.
+
+Every prediction includes a method reference, scope and scope ID, raw artifact and upstream field,
+interpretation, caveats, and optional typed uncertainty. There is no persistent unqualified `score`
+field in this contract.
 
 ## Validation contract
 
@@ -246,6 +275,10 @@ Initial targets:
 
 An adapter should be tested against successful, partial, failed, and unknown-version fixtures where practical.
 
+Milestone 1 includes only a `manifest` adapter. It reads an existing `molecule-atlas-run.json` file or
+directory, validates the normalized contract, derives provenance warnings, and verifies local
+artifact bytes. It does not parse or execute Boltz, DiffDock, PoseBusters, Vina, or ProDock outputs.
+
 ## Reports
 
 The evidence core should support:
@@ -265,6 +298,19 @@ Reports must show:
 - scientific caveats.
 
 Reports should not invent a universal ranking.
+
+The current CLI supports:
+
+```text
+molecule-atlas inspect PATH
+molecule-atlas audit PATH --adapter manifest --output OUTPUT
+molecule-atlas report MANIFEST --format markdown [--output OUTPUT]
+molecule-atlas schema --output OUTPUT
+```
+
+Markdown reports include run state and failures, method identity, provenance warnings, typed
+prediction meanings, the artifact inventory and audit state, all validation results, licenses, and
+scientific caveats.
 
 ## Versioning
 

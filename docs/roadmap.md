@@ -32,6 +32,8 @@ Exit criteria:
 
 ## Milestone 1 — Portable evidence core
 
+Status: implemented.
+
 Goal: represent model outputs rigorously without a database, GPU, or managed execution.
 
 Deliverables:
@@ -61,6 +63,23 @@ Exit criteria:
 - partial and failed runs can be represented;
 - core tests require no network or GPU;
 - FastAPI can call the core package without duplicate schemas.
+
+Implemented scope:
+
+- a separately packaged `molecule_atlas.evidence` core with Pydantic as its only runtime dependency;
+- strict schema version `0.1.0` with typed docking energy, pose confidence, structure confidence,
+  binder probability, and predicted-affinity records;
+- streaming SHA-256 inventory and offline verification of local artifacts;
+- canonical JSON, checked-in JSON Schema, and deterministic Markdown reports;
+- synthetic successful, partial, and failed fixtures with explicit data provenance;
+- `inspect`, `audit --adapter manifest`, `report --format markdown`, and schema-export CLI commands.
+
+Real scientific-tool output adapters, PoseBusters execution, HTML reports, persistence, managed
+execution, and protein/pose web visualization remain in their later milestones.
+
+The broader AI-readiness checklist is not retroactively part of Milestone 1. Hierarchical persisted
+runs, plans, authorization, idempotency, events, and durable workflow controls depend on later
+milestones. They are assigned below and must land before the first feature that depends on them.
 
 ## Milestone 2 — Real-output import and validation
 
