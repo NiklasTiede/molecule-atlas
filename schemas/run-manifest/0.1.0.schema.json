@@ -1,0 +1,1361 @@
+{
+  "$defs": {
+    "Artifact": {
+      "additionalProperties": false,
+      "properties": {
+        "created_by_stage": {
+          "minLength": 1,
+          "title": "Created By Stage",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "media_type": {
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Metadata",
+          "type": "object"
+        },
+        "original_name": {
+          "minLength": 1,
+          "title": "Original Name",
+          "type": "string"
+        },
+        "path_or_uri": {
+          "minLength": 1,
+          "title": "Path Or Uri",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "receptor_input",
+            "ligand_input",
+            "predicted_complex",
+            "pose_set",
+            "raw_score_output",
+            "validation_output",
+            "interaction_output",
+            "log",
+            "report",
+            "other"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "path_or_uri",
+        "media_type",
+        "sha256",
+        "size_bytes",
+        "created_by_stage",
+        "original_name",
+        "metadata"
+      ],
+      "title": "Artifact",
+      "type": "object"
+    },
+    "BinderProbabilityPrediction": {
+      "additionalProperties": false,
+      "properties": {
+        "caveats": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Caveats",
+          "type": "array"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "interpretation": {
+          "minLength": 1,
+          "title": "Interpretation",
+          "type": "string"
+        },
+        "method_id": {
+          "minLength": 1,
+          "title": "Method Id",
+          "type": "string"
+        },
+        "optimization_direction": {
+          "const": "higher_is_better",
+          "default": "higher_is_better",
+          "title": "Optimization Direction",
+          "type": "string"
+        },
+        "raw_source": {
+          "$ref": "#/$defs/PredictionRawSource"
+        },
+        "scope": {
+          "enum": [
+            "complex",
+            "pose",
+            "ligand",
+            "residue",
+            "atom"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "scope_id": {
+          "minLength": 1,
+          "title": "Scope Id",
+          "type": "string"
+        },
+        "type": {
+          "const": "binder_probability",
+          "default": "binder_probability",
+          "title": "Type",
+          "type": "string"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PredictionUncertainty"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "const": "probability",
+          "default": "probability",
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "value",
+        "scope",
+        "scope_id",
+        "method_id",
+        "raw_source",
+        "uncertainty",
+        "interpretation",
+        "caveats"
+      ],
+      "title": "BinderProbabilityPrediction",
+      "type": "object"
+    },
+    "DockingEnergyPrediction": {
+      "additionalProperties": false,
+      "properties": {
+        "caveats": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Caveats",
+          "type": "array"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "interpretation": {
+          "minLength": 1,
+          "title": "Interpretation",
+          "type": "string"
+        },
+        "method_id": {
+          "minLength": 1,
+          "title": "Method Id",
+          "type": "string"
+        },
+        "optimization_direction": {
+          "const": "lower_is_better",
+          "default": "lower_is_better",
+          "title": "Optimization Direction",
+          "type": "string"
+        },
+        "raw_source": {
+          "$ref": "#/$defs/PredictionRawSource"
+        },
+        "scope": {
+          "enum": [
+            "complex",
+            "pose",
+            "ligand",
+            "residue",
+            "atom"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "scope_id": {
+          "minLength": 1,
+          "title": "Scope Id",
+          "type": "string"
+        },
+        "type": {
+          "const": "docking_energy",
+          "default": "docking_energy",
+          "title": "Type",
+          "type": "string"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PredictionUncertainty"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "value",
+        "scope",
+        "scope_id",
+        "method_id",
+        "raw_source",
+        "uncertainty",
+        "interpretation",
+        "caveats",
+        "unit"
+      ],
+      "title": "DockingEnergyPrediction",
+      "type": "object"
+    },
+    "EnvironmentMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "accelerator": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Accelerator"
+        },
+        "architecture": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Architecture"
+        },
+        "dependencies": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Dependencies",
+          "type": "object"
+        },
+        "hardware": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Hardware"
+        },
+        "operating_system": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operating System"
+        },
+        "python_version": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Python Version"
+        }
+      },
+      "required": [
+        "dependencies"
+      ],
+      "title": "EnvironmentMetadata",
+      "type": "object"
+    },
+    "InputReference": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "receptor",
+            "ligand",
+            "complex",
+            "other"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "representation": {
+          "anyOf": [
+            {
+              "enum": [
+                "2d_depiction",
+                "conformer",
+                "predicted_pose",
+                "docked_pose",
+                "experimental_complex",
+                "sequence",
+                "other"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Representation"
+        },
+        "upstream_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Upstream Id"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "artifact_id",
+        "representation"
+      ],
+      "title": "InputReference",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "LicenseMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "acknowledgement_required": {
+          "title": "Acknowledgement Required",
+          "type": "boolean"
+        },
+        "component": {
+          "enum": [
+            "adapter_code",
+            "upstream_code",
+            "model_weights",
+            "dataset",
+            "other"
+          ],
+          "title": "Component",
+          "type": "string"
+        },
+        "identifier": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Identifier"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "redistribution_restrictions": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Redistribution Restrictions"
+        },
+        "source_uri": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Uri"
+        }
+      },
+      "required": [
+        "component",
+        "acknowledgement_required"
+      ],
+      "title": "LicenseMetadata",
+      "type": "object"
+    },
+    "ManifestWarning": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "path"
+      ],
+      "title": "ManifestWarning",
+      "type": "object"
+    },
+    "MethodMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter_id": {
+          "minLength": 1,
+          "title": "Adapter Id",
+          "type": "string"
+        },
+        "adapter_version": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+          "title": "Adapter Version",
+          "type": "string"
+        },
+        "checkpoint_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Checkpoint Id"
+        },
+        "checkpoint_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Checkpoint Sha256"
+        },
+        "command": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Command",
+          "type": "array"
+        },
+        "container_digest": {
+          "anyOf": [
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Container Digest"
+        },
+        "container_image": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Container Image"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Metadata",
+          "type": "object"
+        },
+        "random_seeds": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Random Seeds",
+          "type": "array"
+        },
+        "source_commit": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Commit"
+        },
+        "upstream_tool": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Upstream Tool"
+        },
+        "upstream_version": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Upstream Version"
+        }
+      },
+      "required": [
+        "id",
+        "adapter_id",
+        "adapter_version",
+        "command",
+        "random_seeds",
+        "metadata"
+      ],
+      "title": "MethodMetadata",
+      "type": "object"
+    },
+    "PoseConfidencePrediction": {
+      "additionalProperties": false,
+      "properties": {
+        "caveats": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Caveats",
+          "type": "array"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "interpretation": {
+          "minLength": 1,
+          "title": "Interpretation",
+          "type": "string"
+        },
+        "method_id": {
+          "minLength": 1,
+          "title": "Method Id",
+          "type": "string"
+        },
+        "optimization_direction": {
+          "const": "higher_is_better",
+          "default": "higher_is_better",
+          "title": "Optimization Direction",
+          "type": "string"
+        },
+        "raw_source": {
+          "$ref": "#/$defs/PredictionRawSource"
+        },
+        "scope": {
+          "enum": [
+            "complex",
+            "pose",
+            "ligand",
+            "residue",
+            "atom"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "scope_id": {
+          "minLength": 1,
+          "title": "Scope Id",
+          "type": "string"
+        },
+        "type": {
+          "const": "pose_confidence",
+          "default": "pose_confidence",
+          "title": "Type",
+          "type": "string"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PredictionUncertainty"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "default": null,
+          "title": "Unit",
+          "type": "null"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "value",
+        "scope",
+        "scope_id",
+        "method_id",
+        "raw_source",
+        "uncertainty",
+        "interpretation",
+        "caveats"
+      ],
+      "title": "PoseConfidencePrediction",
+      "type": "object"
+    },
+    "PredictedAffinityPrediction": {
+      "additionalProperties": false,
+      "properties": {
+        "caveats": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Caveats",
+          "type": "array"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "interpretation": {
+          "minLength": 1,
+          "title": "Interpretation",
+          "type": "string"
+        },
+        "method_id": {
+          "minLength": 1,
+          "title": "Method Id",
+          "type": "string"
+        },
+        "optimization_direction": {
+          "enum": [
+            "lower_is_better",
+            "higher_is_better"
+          ],
+          "title": "Optimization Direction",
+          "type": "string"
+        },
+        "raw_source": {
+          "$ref": "#/$defs/PredictionRawSource"
+        },
+        "scope": {
+          "enum": [
+            "complex",
+            "pose",
+            "ligand",
+            "residue",
+            "atom"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "scope_id": {
+          "minLength": 1,
+          "title": "Scope Id",
+          "type": "string"
+        },
+        "type": {
+          "const": "predicted_affinity",
+          "default": "predicted_affinity",
+          "title": "Type",
+          "type": "string"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PredictionUncertainty"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "value",
+        "scope",
+        "scope_id",
+        "method_id",
+        "raw_source",
+        "uncertainty",
+        "interpretation",
+        "caveats",
+        "unit",
+        "optimization_direction"
+      ],
+      "title": "PredictedAffinityPrediction",
+      "type": "object"
+    },
+    "PredictionRawSource": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "field": {
+          "minLength": 1,
+          "title": "Field",
+          "type": "string"
+        },
+        "upstream_record_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Upstream Record Id"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "field"
+      ],
+      "title": "PredictionRawSource",
+      "type": "object"
+    },
+    "PredictionUncertainty": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "value": {
+          "minimum": 0,
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "kind",
+        "value"
+      ],
+      "title": "PredictionUncertainty",
+      "type": "object"
+    },
+    "RunFailure": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "minLength": 1,
+          "title": "Category",
+          "type": "string"
+        },
+        "details": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Details",
+          "type": "object"
+        },
+        "exit_code": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Exit Code"
+        },
+        "message": {
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "stage": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stage"
+        }
+      },
+      "required": [
+        "category",
+        "message",
+        "details"
+      ],
+      "title": "RunFailure",
+      "type": "object"
+    },
+    "RunMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_outputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Expected Outputs",
+          "type": "array"
+        },
+        "failure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RunFailure"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Finished At"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "missing_outputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing Outputs",
+          "type": "array"
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Started At"
+        },
+        "state": {
+          "enum": [
+            "succeeded",
+            "failed",
+            "partial",
+            "cancelled",
+            "unknown"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "state",
+        "started_at",
+        "finished_at",
+        "expected_outputs",
+        "missing_outputs",
+        "failure"
+      ],
+      "title": "RunMetadata",
+      "type": "object"
+    },
+    "StructureConfidencePrediction": {
+      "additionalProperties": false,
+      "properties": {
+        "caveats": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Caveats",
+          "type": "array"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "interpretation": {
+          "minLength": 1,
+          "title": "Interpretation",
+          "type": "string"
+        },
+        "method_id": {
+          "minLength": 1,
+          "title": "Method Id",
+          "type": "string"
+        },
+        "optimization_direction": {
+          "const": "higher_is_better",
+          "default": "higher_is_better",
+          "title": "Optimization Direction",
+          "type": "string"
+        },
+        "raw_source": {
+          "$ref": "#/$defs/PredictionRawSource"
+        },
+        "scope": {
+          "enum": [
+            "complex",
+            "pose",
+            "ligand",
+            "residue",
+            "atom"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "scope_id": {
+          "minLength": 1,
+          "title": "Scope Id",
+          "type": "string"
+        },
+        "type": {
+          "const": "structure_confidence",
+          "default": "structure_confidence",
+          "title": "Type",
+          "type": "string"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PredictionUncertainty"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "default": null,
+          "title": "Unit",
+          "type": "null"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "value",
+        "scope",
+        "scope_id",
+        "method_id",
+        "raw_source",
+        "uncertainty",
+        "interpretation",
+        "caveats"
+      ],
+      "title": "StructureConfidencePrediction",
+      "type": "object"
+    },
+    "ValidationResult": {
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "minLength": 1,
+          "title": "Check Id",
+          "type": "string"
+        },
+        "explanation": {
+          "minLength": 1,
+          "title": "Explanation",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "input_artifact_id": {
+          "minLength": 1,
+          "title": "Input Artifact Id",
+          "type": "string"
+        },
+        "measured_value": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Measured Value"
+        },
+        "raw_output_artifact_id": {
+          "minLength": 1,
+          "title": "Raw Output Artifact Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "pass",
+            "fail",
+            "warning",
+            "unavailable",
+            "error"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "threshold_or_configuration": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Threshold Or Configuration",
+          "type": "object"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "validator": {
+          "minLength": 1,
+          "title": "Validator",
+          "type": "string"
+        },
+        "validator_version": {
+          "minLength": 1,
+          "title": "Validator Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "validator",
+        "validator_version",
+        "check_id",
+        "status",
+        "measured_value",
+        "threshold_or_configuration",
+        "explanation",
+        "input_artifact_id",
+        "raw_output_artifact_id"
+      ],
+      "title": "ValidationResult",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "artifacts": {
+      "items": {
+        "$ref": "#/$defs/Artifact"
+      },
+      "title": "Artifacts",
+      "type": "array"
+    },
+    "environment": {
+      "$ref": "#/$defs/EnvironmentMetadata"
+    },
+    "inputs": {
+      "items": {
+        "$ref": "#/$defs/InputReference"
+      },
+      "title": "Inputs",
+      "type": "array"
+    },
+    "licenses": {
+      "items": {
+        "$ref": "#/$defs/LicenseMetadata"
+      },
+      "title": "Licenses",
+      "type": "array"
+    },
+    "method": {
+      "$ref": "#/$defs/MethodMetadata"
+    },
+    "parameters": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Parameters",
+      "type": "object"
+    },
+    "predictions": {
+      "items": {
+        "discriminator": {
+          "mapping": {
+            "binder_probability": "#/$defs/BinderProbabilityPrediction",
+            "docking_energy": "#/$defs/DockingEnergyPrediction",
+            "pose_confidence": "#/$defs/PoseConfidencePrediction",
+            "predicted_affinity": "#/$defs/PredictedAffinityPrediction",
+            "structure_confidence": "#/$defs/StructureConfidencePrediction"
+          },
+          "propertyName": "type"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/$defs/DockingEnergyPrediction"
+          },
+          {
+            "$ref": "#/$defs/PoseConfidencePrediction"
+          },
+          {
+            "$ref": "#/$defs/StructureConfidencePrediction"
+          },
+          {
+            "$ref": "#/$defs/BinderProbabilityPrediction"
+          },
+          {
+            "$ref": "#/$defs/PredictedAffinityPrediction"
+          }
+        ]
+      },
+      "title": "Predictions",
+      "type": "array"
+    },
+    "run": {
+      "$ref": "#/$defs/RunMetadata"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "validation_results": {
+      "items": {
+        "$ref": "#/$defs/ValidationResult"
+      },
+      "title": "Validation Results",
+      "type": "array"
+    },
+    "warnings": {
+      "items": {
+        "$ref": "#/$defs/ManifestWarning"
+      },
+      "title": "Warnings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "run",
+    "method",
+    "inputs",
+    "parameters",
+    "environment",
+    "artifacts",
+    "predictions",
+    "validation_results",
+    "licenses",
+    "warnings"
+  ],
+  "title": "RunManifest",
+  "type": "object"
+}

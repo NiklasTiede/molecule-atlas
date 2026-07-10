@@ -55,6 +55,7 @@ def test_ci_runs_required_repository_gates() -> None:
         "uv run ruff check .",
         "uv run pyright",
         "uv run pytest",
+        "uv run molecule-atlas schema --output ../schemas/run-manifest/0.1.0.schema.json",
         "npm ci",
         "npm run generate:api",
         "npm run lint",
@@ -67,3 +68,18 @@ def test_ci_runs_required_repository_gates() -> None:
 
     missing_commands = tuple(command for command in required_commands if command not in workflow)
     assert missing_commands == ()
+
+
+def test_portable_core_is_separately_packaged_with_cli_entry_point() -> None:
+    backend = _toml(BACKEND_ROOT / "pyproject.toml")
+    backend_project = _table(backend, "project")
+    core = _toml(BACKEND_ROOT / "core" / "pyproject.toml")
+    core_project = _table(core, "project")
+    core_scripts = _table(core_project, "scripts")
+
+    backend_dependencies = backend_project["dependencies"]
+    core_dependencies = core_project["dependencies"]
+    assert isinstance(backend_dependencies, list)
+    assert "molecule-atlas-core" in backend_dependencies
+    assert core_dependencies == ["pydantic>=2.12.0"]
+    assert core_scripts["molecule-atlas"] == "molecule_atlas.evidence.cli:main"

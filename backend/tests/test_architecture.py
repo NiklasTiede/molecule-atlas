@@ -2,6 +2,7 @@ import ast
 from pathlib import Path
 
 APP_ROOT = Path(__file__).parents[1] / "app"
+CORE_ROOT = Path(__file__).parents[1] / "core" / "src" / "molecule_atlas"
 
 _ALLOWED_APP_IMPORTS: dict[str, frozenset[str]] = {
     "root": frozenset(),
@@ -61,5 +62,29 @@ def test_backend_imports_follow_module_boundaries() -> None:
                 violations.append(
                     f"{path.relative_to(APP_ROOT)}: only {sorted(owners)} may import {root}"
                 )
+
+    assert violations == []
+
+
+def test_portable_core_has_no_application_or_infrastructure_imports() -> None:
+    forbidden_roots = frozenset(
+        {
+            "app",
+            "fastapi",
+            "kubernetes",
+            "numpy",
+            "pandas",
+            "rdkit",
+            "sklearn",
+            "sqlalchemy",
+            "torch",
+        }
+    )
+    violations: list[str] = []
+    for path in sorted(CORE_ROOT.rglob("*.py")):
+        for imported_module in _imported_modules(path):
+            root = imported_module.split(".")[0]
+            if root in forbidden_roots:
+                violations.append(f"{path.relative_to(CORE_ROOT)} imports forbidden {root}")
 
     assert violations == []

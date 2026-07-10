@@ -1,0 +1,1 @@
+{"checks":[{"id":"file_readable","status":"pass","value":true},{"id":"minimum_distance","status":"fail","value":0.4}]}

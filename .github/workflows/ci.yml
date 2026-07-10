@@ -34,6 +34,9 @@ jobs:
       - name: Test
         working-directory: backend
         run: uv run pytest
+      - name: Verify generated evidence schema
+        working-directory: backend
+        run: uv run molecule-atlas schema --output ../schemas/run-manifest/0.1.0.schema.json && git diff --exit-code -- ../schemas/run-manifest/0.1.0.schema.json
 
   frontend:
     runs-on: ubuntu-latest

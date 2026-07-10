@@ -15,6 +15,7 @@ RUN apt-get update \
     && useradd --system --gid app --home /app app
 
 COPY backend/pyproject.toml backend/uv.lock ./
+COPY backend/core ./core
 RUN uv sync --frozen --no-dev --no-install-project
 
 COPY backend/app ./app

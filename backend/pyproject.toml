@@ -5,6 +5,7 @@ description = "FastAPI and RDKit backend for Molecule Atlas"
 requires-python = ">=3.13,<3.14"
 dependencies = [
   "fastapi>=0.130.0",
+  "molecule-atlas-core",
   "uvicorn[standard]>=0.38.0",
   "pydantic>=2.12.0",
   "pandas>=2.3.0",
@@ -12,6 +13,9 @@ dependencies = [
   "rdkit>=2025.3.0",
   "scikit-learn>=1.7.0",
 ]
+
+[tool.uv.sources]
+molecule-atlas-core = { path = "core", editable = true }
 
 [dependency-groups]
 dev = [
@@ -34,8 +38,9 @@ target-version = "py313"
 select = ["ANN", "B", "E", "F", "I", "RUF", "UP"]
 
 [tool.pyright]
-include = ["app", "scripts", "tests"]
+include = ["app", "core/src", "scripts", "tests"]
 exclude = [".venv"]
+extraPaths = ["core/src"]
 pythonVersion = "3.13"
 stubPath = "typings"
 typeCheckingMode = "strict"

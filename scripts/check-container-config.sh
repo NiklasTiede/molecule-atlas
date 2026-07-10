@@ -13,6 +13,7 @@ do
 done
 
 grep -q "app.main:app" backend/Dockerfile
+grep -q "COPY backend/core ./core" backend/Dockerfile
 grep -q "libexpat1" backend/Dockerfile
 grep -q "libxrender1" backend/Dockerfile
 grep -q "libxext6" backend/Dockerfile
