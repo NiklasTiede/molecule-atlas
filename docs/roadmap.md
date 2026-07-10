@@ -10,6 +10,10 @@ AI-first readiness is a cross-cutting architecture constraint, not permission to
 early. The React UI and a future AI module must use the same typed, authorized application
 capabilities. See `docs/ai-first-readiness.md` and ADR 0001.
 
+Application deployment and scientific execution are independent roadmap concerns. Personal and
+Team Server Compose packaging must remain useful without Kubernetes; Cluster Helm packaging and
+each executor arrive only in their owning milestones. See ADR 0002.
+
 ## Milestone 0 — Ligand-centric workbench baseline
 
 Status: substantially implemented.
@@ -177,7 +181,8 @@ Exit criteria:
 
 ## Milestone 5 — Persistent projects and shared review
 
-Goal: support a self-hosted laboratory deployment.
+Goal: support persistent, multi-user research projects and a production-capable shared deployment on
+one Linux server or VM.
 
 Deliverables:
 
@@ -200,7 +205,9 @@ Deliverables:
 - review status, annotations, and shortlists;
 - scientific claims and decision records with supporting/contradicting evidence and human ownership;
 - audit events and project decision history;
-- Docker Compose upgrade path.
+- a production-oriented Team Server Docker Compose profile using the normal release images;
+- documented reverse-proxy/HTTPS integration, persistent volumes, health checks, restart policies,
+  backup/restore, schema migration, and release upgrades for the Team Server profile.
 
 Implementation order within the milestone:
 
@@ -223,6 +230,11 @@ Exit criteria:
 - authorization is enforced inside capabilities, not only in the UI or route layer;
 - predefined/manual plans can be validated and inspected before any LLM integration;
 - claims and decisions remain inspectable independently of comments or future chat history.
+- a laboratory can deploy the shared application on one Linux server through the documented Compose
+  profile without installing Kubernetes;
+- metadata and artifacts can be backed up and restored through a documented, tested procedure;
+- Compose configuration and release images do not create contracts that prevent later Helm
+  packaging.
 
 ## Milestone 6 — First managed scientific campaign
 
@@ -272,18 +284,23 @@ Exit criteria:
 - SSE is a projection of durable state and is not the workflow source of truth;
 - a workflow can stop for approval or process failure and resume without losing lineage;
 - every managed operation is inspectable through the normal UI without AI.
+- the reference campaign can run through the Team Server Compose profile and local OCI executor
+  without Kubernetes.
 
-## Milestone 7 — k3s demo and Kubernetes execution
+## Milestone 7 — Cluster deployment and Kubernetes execution
 
-Goal: provide a public or laboratory demo while preserving safe execution boundaries.
+Goal: provide an advanced, production-capable k3s/Kubernetes deployment and optional Kubernetes Job
+execution while preserving the Team Server path and safe execution boundaries.
 
 Deliverables:
 
-- Helm chart or documented Kubernetes manifests;
-- k3s-compatible deployment;
-- Kubernetes Job executor;
-- RustFS/S3 integration;
+- a versioned Helm chart using the same release images, migrations, and application configuration
+  concepts as the Team Server Compose profile;
+- documented k3s and conformant Kubernetes deployment paths;
+- an optional Kubernetes Job executor behind the existing executor contract;
+- PostgreSQL and S3-compatible storage configuration, including a RustFS example;
 - resource requests/limits;
+- liveness, readiness, migration, backup/restore, and release-upgrade guidance;
 - ingress/TLS guidance;
 - authentication and quotas;
 - curated public projects and replayable jobs;
@@ -295,7 +312,11 @@ Exit criteria:
 - visitors can explore curated campaigns immediately;
 - anonymous users cannot run arbitrary images or consume unbounded compute;
 - runs, attempts, workflow state, and artifacts survive API pod restarts;
-- local Compose and k3s remain supported;
+- the Cluster profile can operate with fixture/replay or a non-Kubernetes remote executor when
+  Kubernetes Job execution is disabled;
+- Team Server Compose and Cluster Helm installations remain supported from the same release and
+  preserve the same application and scientific contracts;
+- Helm rendering/schema checks and a k3s smoke path protect the supported cluster configuration;
 - capability permissions, risk policies, idempotency, and budgets remain enforced when replicas or
   Kubernetes workers retry work.
 
@@ -343,6 +364,8 @@ Exit criteria:
 - cluster-specific configuration remains outside scientific contracts;
 - institutional execution uses the same capability, plan, run, attempt, event, and artifact contracts
   as local and Kubernetes execution.
+- the Slurm agent can serve an appropriately configured Team Server or Cluster control plane; it does
+  not require moving the web application onto Kubernetes.
 
 ## Milestone 10 — Governed AI assistance
 
@@ -408,6 +431,12 @@ Every milestone should maintain:
 - bounded context queries rather than unrestricted data access;
 - typed actor, correlation, causation, event, and decision records when their owning milestone exists;
 - normal UI inspection for every future agent-invocable operation.
+- personal, Team Server, and Cluster packaging preserve the same application and scientific
+  contracts;
+- control-plane deployment and scientific executor selection remain independent, with provider
+  details confined to deployment configuration and executor adapters;
+- official Compose and Helm packaging reuse release images and application configuration concepts
+  rather than becoming separate product implementations.
 
 ## Product validation gates
 

@@ -51,6 +51,24 @@ Later, the same model and artifact contracts should support launching workflows 
 
 A researcher should be able to run a useful version on a laptop. A laboratory should be able to deploy a shared version on its own infrastructure. The project should not require sending proprietary targets or compounds to a third-party service.
 
+Molecule Atlas should support three documented deployment profiles without changing the scientific
+or application contracts:
+
+- a personal profile for a laptop or workstation;
+- a production-capable Team Server profile using Docker Compose on one Linux server or VM, intended
+  as the default shared deployment for most laboratories and small teams;
+- an advanced Cluster profile using Helm on k3s or another conformant Kubernetes platform for
+  organizations that already need or operate cluster infrastructure.
+
+Kubernetes must not be a prerequisite for a useful personal or shared installation. Conversely, a
+single-server deployment must not prevent an organization from delegating scientific work to remote
+GPU services or an institutional scheduler.
+
+Application deployment and scientific execution are separate choices. A personal, Team Server, or
+Cluster installation may use the executor adapters allowed by its configuration and policy, such as
+fixture replay, local OCI containers, Kubernetes Jobs, remote GPU providers, or Slurm. The browser
+experience, application capabilities, run model, and scientific contracts remain the same.
+
 ### Human review remains central
 
 Predictions are evidence, not decisions. Molecule Atlas supports annotation, comparison, shortlisting, and export, but does not claim that a candidate is safe, active, synthesizable, selective, or clinically viable.
@@ -210,6 +228,10 @@ The product should remain a modular monolith until scale or independent contribu
 - An S3-compatible artifact abstraction supports local files and systems such as RustFS.
 - Scientific tools run in independently versioned OCI plugin containers.
 - Generic executor adapters support fixture, local, Kubernetes, remote GPU, and Slurm environments.
+- Docker Compose is the recommended personal and single-server Team Server packaging; Helm provides
+  the advanced k3s/Kubernetes packaging from the same release images and application contracts.
+- Control-plane deployment does not determine the scientific executor; executor availability is an
+  explicit configuration and policy decision.
 
 See `docs/architecture.md`, `docs/domain-model.md`, `docs/scientific-contracts.md`,
 `docs/ai-first-readiness.md`, and `docs/roadmap.md`.

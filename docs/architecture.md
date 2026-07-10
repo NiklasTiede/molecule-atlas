@@ -2,7 +2,9 @@
 
 ## Architectural goals
 
-Molecule Atlas must support a useful laptop experience, a public or laboratory web deployment, and optional heavy scientific execution without coupling the application to one model, scheduler, cloud, or storage product.
+Molecule Atlas must support a useful laptop experience, a shared single-server research deployment,
+an advanced cluster deployment, and optional heavy scientific execution without coupling the
+application to one model, scheduler, cloud, storage product, or control-plane packaging.
 
 The architecture prioritizes:
 
@@ -15,6 +17,7 @@ The architecture prioritizes:
 - one typed application capability boundary for the UI, workers, and future AI clients;
 - one plan/run/attempt and provenance model across imports, execution, reports, and automation;
 - capability-level authorization, policy, idempotency, and audit rather than prompt-based controls;
+- independently selectable application-deployment and scientific-execution topologies;
 - incremental delivery through a modular monolith.
 
 ## Current baseline
@@ -374,7 +377,17 @@ plan, run, artifact, validation, claim, and decision records without requiring c
 
 ## Deployment modes
 
-### Laptop mode
+Application deployment answers where the web control plane, durable state, and workers run.
+Scientific execution answers where a particular plugin attempt runs. These are independent
+decisions connected through the provider-neutral executor contract. See ADR 0002 for the durable
+deployment and execution decision.
+
+Installing the application on Kubernetes does not require every scientific operation to use a
+Kubernetes Job. Installing the application with Compose does not restrict it to local computation.
+Executor availability is selected explicitly through configuration, authorization, policy, and
+infrastructure credentials; it is not inferred from the control-plane deployment profile.
+
+### Personal profile
 
 Docker Compose or native development:
 
@@ -388,21 +401,65 @@ Docker Compose or native development:
 
 A useful local mode must not require Kubernetes or a GPU.
 
-### k3s demo/laboratory mode
+### Team Server profile
+
+The recommended shared deployment for most laboratories and small biotechnology teams is a
+production-oriented Docker Compose stack on one Linux server or VM:
+
+- reverse proxy with documented HTTPS integration;
+- frontend and API;
+- dispatcher/worker when managed execution exists;
+- PostgreSQL when shared persistence exists;
+- local filesystem or S3-compatible artifact storage;
+- authentication and capability-level authorization;
+- persistent volumes, health checks, restart policies, and resource guidance;
+- documented backup, restore, schema migration, and release-upgrade procedures.
+
+Scientists use the normal browser workbench; they do not need Docker or server access. The operator
+may be a technically capable researcher, research software engineer, or local IT administrator.
+
+This profile is production-capable for a single host, but it does not claim host-level high
+availability. Backups must be restorable outside the failed host. Heavy work can use local OCI
+execution within configured limits or be delegated to remote GPU, Kubernetes, or Slurm executors.
+
+### Cluster profile
+
+The advanced deployment for research IT groups and organizations that already operate k3s or
+another conformant Kubernetes platform uses Helm and the same application images and contracts as
+the Team Server profile:
 
 - ingress and TLS;
 - frontend and API;
 - dispatcher/worker;
-- PostgreSQL;
-- RustFS through the S3 interface;
+- PostgreSQL, deployed or externally managed according to operator policy;
+- S3-compatible artifact storage, including a documented RustFS option;
 - fixture and CPU workers;
+- optional Kubernetes Job execution;
 - optional remote GPU execution.
 
 Anonymous users must not be allowed to execute arbitrary containers or consume unlimited paid GPU resources. Apply authentication, quotas, allowlists, request limits, and retention policies before live execution is enabled.
 
-### Institutional mode
+Single-node k3s improves packaging and reconciliation but does not by itself provide host-level high
+availability. Highly available deployments require an appropriate multi-node control plane,
+database, storage, ingress, and backup design.
 
-Support local Kubernetes Jobs, remote GPU providers, and later a Slurm agent. The same run manifest and plugin contracts apply across environments.
+### Institutional execution
+
+Institutional compute is an executor topology rather than a separate web-application deployment.
+Support local or remote Kubernetes Jobs, remote GPU providers, and later a Slurm agent from an
+appropriately configured Team Server or Cluster installation. The same capability, run, manifest,
+plugin, artifact, and validation contracts apply across environments.
+
+### Release and configuration parity
+
+Official Compose and Helm packaging should consume the same immutable application images, schema
+migrations, health endpoints, and application configuration model. Environment-specific resources
+such as ingress, volumes, secrets, service accounts, and storage classes remain deployment adapters
+rather than domain concerns.
+
+Deployment verification should eventually cover a Team Server Compose smoke/upgrade path and Helm
+rendering plus a k3s smoke/upgrade path. Executor conformance tests remain separate so adding or
+changing an executor does not require a new scientific result model.
 
 ## Security boundaries
 
@@ -428,4 +485,4 @@ Treat uploaded structures and model outputs as untrusted data.
 Major decisions should be recorded under `docs/adr/`. New dependencies or infrastructure should solve a current milestone requirement. Long-term architecture is guidance, not permission to implement every future component immediately.
 
 See `docs/ai-first-readiness.md` and ADR 0001 for the capability, orchestration, and deferred-AI
-rules.
+rules. See ADR 0002 for the supported deployment profiles and executor independence.

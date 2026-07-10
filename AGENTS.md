@@ -61,8 +61,12 @@ Storage and deployment:
 - local files before persistence;
 - PostgreSQL for shared metadata and durable jobs when required;
 - an S3-compatible artifact abstraction, with RustFS supported as a deployment;
-- Docker Compose for local use;
-- k3s/Kubernetes only in the corresponding roadmap milestone.
+- Docker Compose as the primary personal and production-capable single-server Team Server
+  deployment when its roadmap milestone arrives;
+- Helm on k3s/Kubernetes as the advanced cluster deployment only in the corresponding roadmap
+  milestone;
+- shared release images and application contracts across Compose and Helm packaging;
+- application deployment and scientific executor selection remain independent.
 
 Scientific execution:
 
@@ -76,6 +80,12 @@ Scientific execution:
 Keep the project a modular monolith. Prefer small, responsibility-focused modules and enforced import directions.
 
 The portable evidence core must not depend on FastAPI, PostgreSQL, Kubernetes, or a GPU. The CLI, API, workers, and reports should reuse the same schemas and adapters.
+
+Do not make Kubernetes a prerequisite for personal or shared laboratory use. Do not assume that a
+Kubernetes control-plane deployment must execute scientific work through Kubernetes Jobs, or that a
+Compose deployment may use only local execution. Select fixture, local OCI, Kubernetes, remote GPU,
+or Slurm execution through provider-neutral adapters and explicit deployment policy when the owning
+milestone introduces each executor.
 
 The React UI and a future AI agent are clients of the same typed application capabilities. FastAPI
 handlers translate HTTP and authentication context; they do not own business workflows. Workers,
@@ -228,4 +238,6 @@ Before finalizing a change:
 - preserve or introduce the shared capability boundary when the feature exposes an important action;
 - state the capability ID, kind, side effects, and policy metadata for new public operations;
 - document new data, tools, models, licenses, and deployment requirements;
+- preserve the supported personal, Team Server, and Cluster profiles when changing deployment or
+  executor behavior;
 - explain any check that could not be run.
