@@ -1,27 +1,54 @@
 # Molecule Atlas
 
-Molecule Atlas is an open-source fullstack workbench for reviewing small-molecule candidate sets. It combines a React/TypeScript interface with a FastAPI/RDKit backend to help users inspect structures, compute descriptors, search by molecular similarity, group molecules by scaffold, and explore candidate properties through interactive views.
+Molecule Atlas is an open-source, self-hosted visual workbench for exploring small molecules, inspecting protein-ligand results, validating computational evidence, and building reproducible structure-based discovery workflows.
 
-The project is intentionally scoped as a public learning and portfolio project. It does not make medicinal chemistry decisions, predict clinical success, or run docking/model inference. It demonstrates building blocks behind scientist-facing molecular design tools: SMILES handling, descriptors, fingerprints, Tanimoto similarity, scaffold analysis, 2D/3D molecular visualization, and a data model that can later ingest docking or AI-model outputs.
+The current implementation is a ligand-centric candidate review workbench. It provides the foundation for a longer-term product that can import and compare docking or AI-model outputs, inspect protein pockets and poses, validate physical plausibility, preserve provenance, and eventually run workflows through local, Kubernetes, GPU-provider, or institutional-cluster executors.
 
-See [docs/product-vision.md](docs/product-vision.md) for the longer-term direction.
+Molecule Atlas is not a drug-discovery oracle. It does not claim that a candidate is active, safe, selective, synthesizable, or clinically viable.
 
-## MVP Features
+## Current capabilities
 
 - Bundled demo candidate set
 - RDKit SMILES validation and canonicalization
-- Descriptor calculation
+- Molecular descriptors
 - Morgan fingerprints and Tanimoto similarity
 - Murcko scaffolds
-- Lipinski and Veber-style triage flags
+- Lipinski- and Veber-style triage flags
 - Backend-generated 2D SVG depictions
 - Basic 3D conformer viewer
 - PCA chemical-space projection
+- React/TypeScript workbench backed by a typed FastAPI API
+- Generated TypeScript API contracts
+- Unit, component, Playwright, and container smoke tests
+
+## Long-term direction
+
+The intended product combines:
+
+- molecule and candidate-set exploration;
+- protein, pocket, complex, and pose visualization;
+- imported Boltz, DiffDock, Vina, ProDock, and other model outputs;
+- explicit score semantics and units;
+- PoseBusters-backed validation evidence;
+- interaction fingerprints;
+- reproducible run manifests and reports;
+- annotations, shortlists, and shared review;
+- optional local, Kubernetes, remote GPU, and Slurm execution.
+
+The visual workbench is the product. Trust, provenance, validation, and interoperability are its architectural foundation.
+
+Read the project documentation before implementing long-term features:
+
+- [Product vision](docs/product-vision.md)
+- [Roadmap](docs/roadmap.md)
+- [Architecture](docs/architecture.md)
+- [Domain model](docs/domain-model.md)
+- [Scientific contracts](docs/scientific-contracts.md)
+- [Coding-agent instructions](AGENTS.md)
 
 ## Development
 
-The backend is standardized on Python 3.13. `uv` reads the repository's
-`.python-version` file and creates a matching environment.
+The backend is standardized on Python 3.13. `uv` reads the repository's `.python-version` file and creates a matching environment.
 
 Install backend dependencies:
 
@@ -37,15 +64,10 @@ cd frontend
 npm install
 ```
 
-Run the backend:
+Run the backend and frontend:
 
 ```bash
 make backend-dev
-```
-
-Run the frontend:
-
-```bash
 make frontend-dev
 ```
 
@@ -59,33 +81,16 @@ make e2e
 cd frontend && npm run build
 ```
 
-Backend verification includes Ruff formatting and linting, strict Pyright
-checking, and pytest. The FastAPI OpenAPI schema is checked in at
-`frontend/openapi.json`; `openapi-typescript` generates the frontend API types
-from that schema. Backend tests also enforce module import boundaries and keep
-the Python version aligned across uv, project metadata, Ruff, Pyright, Docker,
-and CI.
+Backend verification includes Ruff, strict Pyright, pytest, architecture checks, and OpenAPI generation. Frontend verification includes ESLint, Vitest, generated API types, and Playwright.
 
-GitHub CI runs the complete verification stack: backend and frontend checks,
-Playwright browser tests, container configuration checks, and a Compose smoke
-test against the production images and frontend API proxy.
-
-Build production containers:
+Build and smoke-test production containers:
 
 ```bash
 make container-build
-```
-
-Run a local container smoke test:
-
-```bash
 make container-smoke
 ```
 
-The compose smoke test serves the frontend at `http://localhost:8080` and the
-backend at `http://localhost:8000`. The production frontend image proxies
-`/api/*` and `/health` to the backend service, so the browser does not need a
-cluster-internal backend URL baked into the Vite build.
+The Compose smoke test serves the frontend at `http://localhost:8080` and the backend at `http://localhost:8000`. The frontend proxies `/api/*` and `/health` to the backend.
 
 Useful backend URLs:
 
@@ -96,9 +101,16 @@ Useful backend URLs:
 - `http://localhost:8000/api/candidate-sets/demo/candidates/demo-1/neighbors`
 - `http://localhost:8000/api/candidate-sets/demo/candidates/demo-1/conformer`
 
-## Scientific Caveats
+## Scientific caveats
 
-- 3D conformers are not binding poses.
-- Demo scores are mock values, not measured affinities.
-- Rule-based flags are triage aids, not drug-discovery decisions.
-- The MVP does not run docking, protein-pocket modeling, or AI molecule generation.
+- 3D conformers are not protein-bound poses.
+- Predicted poses are not experimental structures.
+- Pose confidence is not binding affinity.
+- Predicted affinity is not measured affinity.
+- Demo scores are mock values unless explicitly documented otherwise.
+- Rule-based filters are triage aids, not medicinal-chemistry decisions.
+- The current implementation does not yet run docking, protein-pocket modeling, or AI-model inference.
+
+## Current implementation priority
+
+The next planned milestone is a portable evidence core that can represent, inspect, hash, validate, and report existing model outputs without requiring a GPU, database, or managed execution system. See [the roadmap](docs/roadmap.md) for acceptance criteria and later milestones.
