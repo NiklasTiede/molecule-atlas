@@ -253,6 +253,21 @@ A candidate may have mixed validation results. UI defaults may filter on selecte
 
 PoseBusters is the initial validator. Molecule Atlas should not duplicate its scientific algorithms.
 
+The implemented PoseBusters integration pins upstream `0.6.5` behind the optional
+`molecule-atlas-core[posebusters]` extra. The default portable core does not import pandas, RDKit, or
+PoseBusters. Existing `full_report=True` CSV files normalize through the standard library into a
+content-addressed `validation-report` artifact and explicit `ValidationResult` records.
+
+Boolean values map to `pass` or `fail`; missing values map to `unavailable`; malformed mapped values
+remain visible as `error`. Stable numeric details such as energy ratio, protein-ligand distance,
+volume overlap, and redocking RMSD retain units and the pinned configuration threshold. Unmapped
+columns remain byte-for-byte in the raw report and produce a compatibility warning. Every normalized
+check references both its input artifact and raw report artifact.
+
+Optional execution uses `max_workers=0`, always requests `full_report=True`, writes deterministic CSV,
+and rejects any installed PoseBusters version other than `0.6.5`. It is local CPU validation, not
+model inference or evidence of binding affinity or biological activity.
+
 ## Interaction contract
 
 Interaction records should retain:
@@ -374,17 +389,37 @@ AdapterImportResult 0.1.0
   adapter ID/version
   artifact root
   RunManifest 0.1.0
+
+AdapterImportResult 0.2.0
+  contract version
+  adapter ID/version
+  artifact root
+  RunManifest 0.1.0
+  ArtifactManifest 0.1.0, validated against the run artifact inventory
 ```
 
 The explicit built-in registry currently contains only `manifest`. It reads an existing
 `molecule-atlas-run.json` file or directory, validates the normalized contract, derives provenance
 warnings, and verifies local artifact bytes. `molecule-atlas adapters` exposes its compatibility
-metadata. Boltz and DiffDock are not registered until pinned real-output layouts have deterministic
-fixture coverage.
+metadata. A source-verified but unregistered `BoltzAdapter` parses the documented Boltz 2.2.1 output
+layout into `AdapterImportResult 0.2.0`. It maps `confidence_score` to structure confidence,
+`affinity_probability_binary` to binder probability, and `affinity_pred_value` to predicted
+`log10(IC50/µM)` with lower-is-better semantics. The last value is not measured affinity. Boltz and
+DiffDock are not registered until pinned real-output layouts have deterministic captured-fixture
+coverage. Documented pLDDT, PAE, and PDE NPZ files remain opaque, content-addressed
+`raw-prediction-output` artifacts; the portable core does not load NumPy or reinterpret their
+matrices during import.
+
+The source-verified, unregistered `DiffDockAdapter` parses the documented DiffDock 1.1.3 ranked-SDF
+convention into the same adapter-result `0.2.0` boundary. A filename confidence becomes only a
+`PoseConfidencePrediction` with `filename.confidence` raw lineage and higher-is-better semantics.
+It is never labeled affinity. The unqualified `rank1.sdf` copy is retained as a top-pose alias
+artifact and does not create a duplicate prediction. Rank gaps produce a partial run.
 
 The adapter result `0.1.0` remains tied to `RunManifest 0.1.0`. `ArtifactManifest 0.1.0` is available
-as a separate portable contract. The first upstream adapter that returns both contracts will add a
-new adapter-result version rather than silently changing `AdapterImportResult 0.1.0`.
+as a separate portable contract. Adapter result `0.2.0` binds both manifests and rejects any path,
+media type, digest, size, or inventory disagreement without silently changing
+`AdapterImportResult 0.1.0`.
 
 ## Reports
 

@@ -3,9 +3,13 @@
 from molecule_atlas.evidence.adapters.contracts import (
     AdapterImportRequest,
     AdapterImportResult,
+    AdapterImportResultContract,
+    AdapterImportResultV020,
+    AdapterLayoutError,
     AdapterMetadata,
     EvidenceAdapter,
     EvidenceInputError,
+    validate_adapter_import_result_json,
 )
 from molecule_atlas.evidence.adapters.manifest import (
     MANIFEST_FILENAME,
@@ -24,6 +28,9 @@ __all__ = [
     "SUPPORTED_ADAPTERS",
     "AdapterImportRequest",
     "AdapterImportResult",
+    "AdapterImportResultContract",
+    "AdapterImportResultV020",
+    "AdapterLayoutError",
     "AdapterMetadata",
     "EvidenceAdapter",
     "EvidenceInputError",
@@ -32,4 +39,5 @@ __all__ = [
     "get_adapter",
     "list_adapters",
     "resolve_manifest_path",
+    "validate_adapter_import_result_json",
 ]

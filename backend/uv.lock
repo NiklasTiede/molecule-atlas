@@ -168,6 +168,11 @@ dependencies = [
     { name = "uvicorn", extra = ["standard"] },
 ]
 
+[package.optional-dependencies]
+validation = [
+    { name = "molecule-atlas-core", extra = ["posebusters"] },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "httpx2" },
@@ -181,6 +186,7 @@ dev = [
 requires-dist = [
     { name = "fastapi", specifier = ">=0.130.0" },
     { name = "molecule-atlas-core", editable = "core" },
+    { name = "molecule-atlas-core", extras = ["posebusters"], marker = "extra == 'validation'", editable = "core" },
     { name = "numpy", specifier = ">=2.3.0" },
     { name = "pandas", specifier = ">=2.3.0" },
     { name = "pydantic", specifier = ">=2.12.0" },
@@ -188,6 +194,7 @@ requires-dist = [
     { name = "scikit-learn", specifier = ">=1.7.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.38.0" },
 ]
+provides-extras = ["validation"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -206,8 +213,17 @@ dependencies = [
     { name = "pydantic" },
 ]
 
+[package.optional-dependencies]
+posebusters = [
+    { name = "posebusters" },
+]
+
 [package.metadata]
-requires-dist = [{ name = "pydantic", specifier = ">=2.12.0" }]
+requires-dist = [
+    { name = "posebusters", marker = "extra == 'posebusters'", specifier = "==0.6.5" },
+    { name = "pydantic", specifier = ">=2.12.0" },
+]
+provides-extras = ["posebusters"]
 
 [[package]]
 name = "narwhals"
@@ -322,6 +338,21 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f9/e2/3e91f31a7d2b083fe6ef3fa267035b518369d9511ffab804f839851d2779/pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3", size = 69412, upload-time = "2025-05-15T12:30:07.975Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746", size = 20538, upload-time = "2025-05-15T12:30:06.134Z" },
+]
+
+[[package]]
+name = "posebusters"
+version = "0.6.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pyyaml" },
+    { name = "rdkit" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/5b/1a/257c45d93b895c51fc411f7a40a39d10c129f90b7d320a7dada8795a9632/posebusters-0.6.5.tar.gz", hash = "sha256:066d4e9589979bd72c5c1cfe49f3f7fd30246cacd63fa492c3b0d15bca5c4b12", size = 5022843, upload-time = "2026-03-07T23:25:46.253Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f5/76/62fbbfc0c6b1df40b3d424d33a8588f23d22a59b81498c07ca629c99b3fb/posebusters-0.6.5-py3-none-any.whl", hash = "sha256:3e0cbca6481079d5ab7d1989a8a8f184dbba27366613c4b515658ea52fb95ea3", size = 567794, upload-time = "2026-03-07T23:25:44.467Z" },
 ]
 
 [[package]]

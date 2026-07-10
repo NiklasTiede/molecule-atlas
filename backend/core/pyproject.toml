@@ -7,6 +7,11 @@ dependencies = [
   "pydantic>=2.12.0",
 ]
 
+[project.optional-dependencies]
+posebusters = [
+  "posebusters==0.6.5",
+]
+
 [project.scripts]
 molecule-atlas = "molecule_atlas.evidence.cli:main"
 

@@ -191,6 +191,25 @@ adapters. It also adds a separately versioned semantic artifact manifest with lo
 content-addressed identity, and derivation validation without mutating `RunManifest 0.1.0`. An
 adapter is advertised only after pinned upstream layouts have offline fixture coverage.
 
+The first upstream normalization implementation is an unregistered Boltz 2.2.1 adapter. It returns
+adapter-result contract `0.2.0`, which contains both manifests and validates their artifact
+inventories as one immutable boundary. Its current offline fixture proves the upstream-documented
+layout and field semantics but is explicitly not model output. Registry and CLI exposure wait for a
+genuine redistributable capture, so compatibility discovery never overstates what CI has verified.
+
+The same rule applies to the unregistered DiffDock 1.1.3 adapter. It converts existing ranked SDF
+files into typed pose-confidence evidence and semantic ligand-structure artifacts without loading
+DiffDock, PyTorch, a model checkpoint, or GPU support. Boltz and DiffDock now demonstrate two
+scientifically different normalization paths in core tests, but neither is a public capability or
+registered CLI adapter until genuine redistributable fixtures establish operational compatibility.
+
+PoseBusters follows a separate optional-validator boundary. Portable normalization reads a captured
+CSV report with only the standard library and core contracts. The optional runner lazily imports the
+exactly pinned upstream package, uses single-process execution, requests a full report, and
+serializes that report deterministically before returning through the same normalization path. The
+raw report is the traceable source of every check; the runner does not execute in FastAPI and does
+not introduce a GPU or default core dependency.
+
 ### Application capability layer
 
 The application layer owns meaningful operations used by transports, workers, predefined workflows,

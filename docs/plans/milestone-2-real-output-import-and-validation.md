@@ -324,23 +324,48 @@ Status: implemented on 2026-07-10.
 
 ### Slice 3 — Boltz import
 
-- Capture and document licensed Boltz 2.2.1 fixtures.
-- Implement layout validation, artifact inventory, typed field mappings, partial/failure behavior,
-  and compatibility errors.
-- Add report assertions for structure confidence, binder probability, and predicted affinity.
+Status: in progress since 2026-07-10.
+
+- Implemented `AdapterImportResult 0.2.0`, binding `RunManifest 0.1.0` and
+  `ArtifactManifest 0.1.0` while preserving result `0.1.0`.
+- Implemented the unregistered Boltz 2.2.1 documented-layout parser, structure/JSON and opaque
+  pLDDT/PAE/PDE artifact inventory, typed field mappings, partial behavior, stable layout errors,
+  and report assertions.
+- Added a provenance-labeled documentation-derived fixture and a separate genuine-output capture
+  procedure. This fixture is not scientific model output and does not satisfy the real-output exit
+  criterion.
+- Remaining before registration: capture and document licensed genuine succeeded, partial, and
+  failed Boltz 2.2.1 fixtures; use them to complete processed-input/log provenance and
+  structured-failure normalization; then expose the adapter through the catalog and CLI.
 
 ### Slice 4 — DiffDock import
 
-- Capture and document licensed DiffDock 1.1.3 fixtures.
-- Implement complex-directory validation, ranked pose inventory, pose-confidence mapping,
-  partial/failure behavior, and compatibility errors.
-- Run the shared adapter conformance suite against both model families.
+Status: in progress since 2026-07-11.
+
+- Audited the official DiffDock `v1.1.3` writer, runtime guidance, MIT license, and release tree; the
+  release contains inputs but no generated prediction fixture.
+- Implemented an unregistered, offline documented-layout parser with complex-directory validation,
+  ranked ligand-pose inventory, typed pose-confidence mapping, top-pose alias preservation,
+  missing-rank partial behavior, and stable compatibility errors.
+- Added provenance-labeled CC0 placeholders and cross-family adapter-result, digest-audit, report,
+  and scientific-semantics coverage without installing or running DiffDock.
+- Remaining before registration: genuine licensed succeeded, partial, and failure fixtures plus
+  captured input/log/checkpoint provenance and structured failure normalization.
 
 ### Slice 5 — PoseBusters validation
 
-- Add the optional upstream dependency boundary and pinned compatibility metadata.
-- Preserve deterministic raw full-report output.
-- Normalize explicit checks into validation evidence and cover mixed, unavailable, and error states.
+Status: implemented on 2026-07-11.
+
+- Added strict validation metadata, normalization request/result, and optional execution contracts.
+- Pinned PoseBusters `0.6.5` behind the `validation`/`posebusters` extras; the default core remains
+  Pydantic-only and imports no upstream scientific runtime.
+- Captured genuine CPU `mol` full-report output over a two-atom CC0 synthetic input with complete
+  environment, command, license, and provenance documentation.
+- Preserved deterministic raw CSV bytes as a content-addressed semantic validation report and mapped
+  explicit `mol`, `dock`, and `redock` checks with raw input/report lineage.
+- Covered pass, fail, unavailable, malformed/error, schema-drift warning, unverified-version,
+  deterministic serialization, and optional-runner behavior through offline tests.
+- Verified one end-to-end local CPU smoke run through PoseBusters; no GPU or model inference is used.
 
 ### Slice 6 — HTML reports and completion
 

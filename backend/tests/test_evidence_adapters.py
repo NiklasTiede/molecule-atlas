@@ -4,12 +4,15 @@ import pytest
 from molecule_atlas.evidence.adapters import (
     AdapterImportRequest,
     AdapterImportResult,
+    AdapterImportResultV020,
     AdapterMetadata,
     EvidenceInputError,
     get_adapter,
     list_adapters,
+    validate_adapter_import_result_json,
 )
 from molecule_atlas.evidence.cli import main
+from molecule_atlas.evidence.semantic_artifacts import ArtifactManifest
 from pydantic import ValidationError
 
 FIXTURE_ROOT = Path("../data/evidence-fixtures")
@@ -85,6 +88,25 @@ def test_manifest_adapter_returns_versioned_import_result() -> None:
     assert result.artifact_root == FIXTURE_ROOT / "succeeded"
     assert result.manifest.run.id == "fixture-succeeded"
     assert AdapterImportResult.model_validate_json(result.model_dump_json()) == result
+    assert validate_adapter_import_result_json(result.model_dump_json()) == result
+
+
+def test_adapter_result_v020_requires_bound_artifact_manifest() -> None:
+    imported = get_adapter("manifest").import_evidence(
+        AdapterImportRequest(source_path=FIXTURE_ROOT / "succeeded")
+    )
+
+    with pytest.raises(ValidationError, match="missing semantic artifacts"):
+        AdapterImportResultV020(
+            adapter_id="fixture",
+            adapter_version="0.1.0",
+            artifact_root=FIXTURE_ROOT / "succeeded",
+            manifest=imported.manifest,
+            artifact_manifest=ArtifactManifest(
+                schema_version="0.1.0",
+                artifacts=(),
+            ),
+        )
 
 
 def test_adapter_registry_rejects_unknown_adapter() -> None:

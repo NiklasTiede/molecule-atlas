@@ -138,10 +138,22 @@ UV_CACHE_DIR=../.uv-cache uv run molecule-atlas schema --contract artifact-manif
 
 The current typed adapter catalog intentionally registers only `manifest`, which validates an
 existing `molecule-atlas-run.json` file or directory and verifies local artifact hashes. Milestone 2
-has added a companion `ArtifactManifest 0.1.0` for logical names, semantic artifact types, content
-digests, and derivation lineage. Fixture-backed Boltz and DiffDock imports plus PoseBusters validation
-remain incremental; those adapters are not advertised until their supported layouts are implemented
-and tested.
+has added a companion `ArtifactManifest 0.1.0` and adapter-result `0.2.0`, which binds logical names,
+semantic artifact types, content digests, and derivation lineage to the run inventory. An
+unregistered Boltz 2.2.1 parser is tested against an explicitly non-scientific documented-layout
+fixture. It will not be advertised until genuine redistributable output proves the declared
+compatibility. An equally unregistered DiffDock 1.1.3 parser maps ranked SDF filenames only to pose
+confidence, never affinity. Both importers remain dependency-free and offline; genuine fixture
+capture and public registration are still pending. PoseBusters 0.6.5 validation is implemented as a
+portable full-report CSV normalizer with an optional local CPU runner. Normal CI replays a genuine
+captured report and does not install the optional validator.
+
+Install the optional CPU validator only when executing new checks locally:
+
+```bash
+cd backend
+UV_CACHE_DIR=../.uv-cache uv sync --extra validation
+```
 
 ## Scientific caveats
 
@@ -155,10 +167,8 @@ and tested.
 
 ## Current implementation priority
 
-Milestone 1, the portable evidence core, is implemented. The next planned milestone is real-output
-import and validation with at least two model families and PoseBusters-backed normalized checks. It
-must continue to preserve raw upstream evidence and explicit prediction semantics while adding typed
-adapter outputs, semantic artifact types, and explicit lineage. The shared application capability
-layer begins with web evidence import in Milestone 3; AI integration remains deferred until the
-governed-assistance milestone. See [the roadmap](docs/roadmap.md) for acceptance criteria and later
-milestones.
+Milestone 1, the portable evidence core, is implemented. Milestone 2 now has typed Boltz and DiffDock
+normalizers plus PoseBusters-backed normalized checks; deterministic HTML evidence reports and final
+milestone reconciliation remain. The shared application capability layer begins with web evidence
+import in Milestone 3; AI integration remains deferred until the governed-assistance milestone. See
+[the roadmap](docs/roadmap.md) for acceptance criteria and later milestones.
