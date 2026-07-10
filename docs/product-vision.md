@@ -27,6 +27,16 @@ Molecule Atlas addresses this engineering and usability gap.
 
 The primary experience is a browser-based scientific workbench, not a marketing site and not only a command-line tool. Researchers should be able to move between candidate tables, molecular structures, protein pockets, poses, interactions, validation evidence, provenance, and review decisions without assembling several unrelated applications.
 
+### Human and AI clients share application capabilities
+
+The React UI and a future AI assistant should invoke the same typed application capabilities. The AI
+may propose plans, select among authorized operations, and explain evidence. The normal backend
+validates, authorizes, limits, executes, persists, and audits those operations.
+
+AI assistance must not require direct database access, direct scientific-container execution, a
+separate workflow model, or hidden chat-only state. Every important AI-assisted action and result
+must remain inspectable through the normal workbench.
+
 ### Trust is the foundation
 
 Every result must retain its scientific meaning and provenance. Molecule Atlas must not flatten unrelated outputs into a generic score. It should make uncertainty, missing metadata, failed validation, and partial execution visible.
@@ -44,6 +54,10 @@ A researcher should be able to run a useful version on a laptop. A laboratory sh
 ### Human review remains central
 
 Predictions are evidence, not decisions. Molecule Atlas supports annotation, comparison, shortlisting, and export, but does not claim that a candidate is safe, active, synthesizable, selective, or clinically viable.
+
+Future AI suggestions are proposals, not scientific truth. Accepted claims and project decisions
+remain structured records with supporting and contradicting evidence, actor identity, and human
+review where policy requires it.
 
 ### Reuse scientific tools instead of reimplementing them
 
@@ -70,13 +84,14 @@ A mature Molecule Atlas workflow should support:
 3. define or import a binding pocket.
 4. Import a candidate molecule set.
 5. Explore descriptors, scaffolds, similarities, and chemical space.
-6. Import existing model outputs or configure a workflow.
-7. Run lightweight local steps or submit heavy jobs to external compute.
-8. Inspect poses in the protein context.
-9. Review interactions and physical-validity checks.
-10. Compare outputs from multiple methods with explicit score semantics.
-11. Annotate, reject, or shortlist candidates.
-12. Export a reproducible manifest and human-readable report.
+6. Import existing model outputs or configure a typed workflow plan.
+7. Review parameters, dependencies, risk, expected runtime/cost, and required approvals.
+8. Run lightweight local steps or submit heavy jobs to external compute.
+9. Inspect poses in the protein context.
+10. Review interactions and physical-validity checks.
+11. Compare outputs from multiple methods with explicit score semantics.
+12. Record evidence-backed claims, decisions, rejections, or shortlists.
+13. Export a reproducible manifest and human-readable report.
 
 ## Product scope
 
@@ -136,6 +151,15 @@ Execution is a long-term product capability, not the first implementation depend
 - reproducible exports;
 - optional authentication and permissions for shared deployments.
 
+### Governed assistance and orchestration
+
+AI-assisted planning is a later capability built on the same application layer used by the UI. The
+target experience includes contextual explanations, bounded project summaries, typed plan proposals,
+risk and cost disclosure, human approval, and result cards linked to normal project views.
+
+The first AI integration should consume existing stable capabilities, plans, runs, artifacts,
+validation, claims, and decisions. It should not introduce a separate scientific execution path.
+
 ## Scientific language and claims
 
 Use terms such as:
@@ -178,12 +202,17 @@ The product should remain a modular monolith until scale or independent contribu
 - React and TypeScript provide the browser workbench.
 - FastAPI provides the control plane and OpenAPI contract.
 - Python domain packages provide chemistry, schemas, adapters, validation, and reports.
-- PostgreSQL stores shared metadata and durable job state when persistence is introduced.
+- A typed application capability layer separates HTTP and future AI clients from domain operations.
+- One hierarchical plan/run/attempt model covers imports, reports, plugins, workflows, and future AI
+  actions.
+- PostgreSQL stores shared metadata, plans, runs/attempts, events, and durable workflow state when
+  persistence is introduced.
 - An S3-compatible artifact abstraction supports local files and systems such as RustFS.
 - Scientific tools run in independently versioned OCI plugin containers.
 - Generic executor adapters support fixture, local, Kubernetes, remote GPU, and Slurm environments.
 
-See `docs/architecture.md`, `docs/domain-model.md`, `docs/scientific-contracts.md`, and `docs/roadmap.md`.
+See `docs/architecture.md`, `docs/domain-model.md`, `docs/scientific-contracts.md`,
+`docs/ai-first-readiness.md`, and `docs/roadmap.md`.
 
 ## What is intentionally not promised
 
@@ -196,7 +225,10 @@ Molecule Atlas does not promise:
 - replacement of expert protein or ligand preparation;
 - one model or ranking method that works across all targets;
 - an unrestricted public GPU service;
-- immediate support for every docking or structure model.
+- immediate support for every docking or structure model;
+- autonomous scientific decision-making;
+- AI-only workflows or chat as the sole project record;
+- an AI agent with direct database, storage, cluster, or provider credentials.
 
 ## Success criteria
 
@@ -209,6 +241,8 @@ The project is succeeding when external users can:
 - compare methods in one interface;
 - communicate a shortlist and its evidence to collaborators;
 - contribute an adapter without modifying the core application;
-- run the application locally or on their own infrastructure.
+- run the application locally or on their own infrastructure;
+- inspect the objective, plan, capabilities, actors, approvals, evidence, and decisions behind any
+  AI-assisted workflow without relying on chat history.
 
 GitHub stars are secondary. Repeat usage, contributed adapters, research citations, and real project reviews are stronger indicators.

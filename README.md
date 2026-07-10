@@ -43,6 +43,12 @@ The intended product combines:
 
 The visual workbench is the product. Trust, provenance, validation, and interoperability are its architectural foundation.
 
+Molecule Atlas is also designed for future governed AI assistance without making AI a prerequisite.
+The React UI and a future AI module will use the same typed application capabilities; the backend
+will remain responsible for validation, authorization, execution, limits, persistence, and audit.
+Scientific plugins will not contain agent logic, and an agent will not receive direct infrastructure
+access.
+
 Read the project documentation before implementing long-term features:
 
 - [Product vision](docs/product-vision.md)
@@ -50,6 +56,8 @@ Read the project documentation before implementing long-term features:
 - [Architecture](docs/architecture.md)
 - [Domain model](docs/domain-model.md)
 - [Scientific contracts](docs/scientific-contracts.md)
+- [AI-first readiness](docs/ai-first-readiness.md)
+- [ADR 0001: shared application capability boundary](docs/adr/0001-shared-application-capability-boundary.md)
 - [Coding-agent instructions](AGENTS.md)
 
 ## Development
@@ -142,4 +150,10 @@ PoseBusters, Vina, or ProDock output adapters belong to Milestone 2.
 
 ## Current implementation priority
 
-The next planned milestone is a portable evidence core that can represent, inspect, hash, validate, and report existing model outputs without requiring a GPU, database, or managed execution system. See [the roadmap](docs/roadmap.md) for acceptance criteria and later milestones.
+Milestone 1, the portable evidence core, is implemented. The next planned milestone is real-output
+import and validation with at least two model families and PoseBusters-backed normalized checks. It
+must continue to preserve raw upstream evidence and explicit prediction semantics while adding typed
+adapter outputs, semantic artifact types, and explicit lineage. The shared application capability
+layer begins with web evidence import in Milestone 3; AI integration remains deferred until the
+governed-assistance milestone. See [the roadmap](docs/roadmap.md) for acceptance criteria and later
+milestones.

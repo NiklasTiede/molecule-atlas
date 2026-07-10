@@ -12,11 +12,18 @@ The architecture prioritizes:
 - durable job and artifact provenance;
 - S3-compatible storage rather than vendor-specific APIs;
 - browser-native scientific review;
+- one typed application capability boundary for the UI, workers, and future AI clients;
+- one plan/run/attempt and provenance model across imports, execution, reports, and automation;
+- capability-level authorization, policy, idempotency, and audit rather than prompt-based controls;
 - incremental delivery through a modular monolith.
 
 ## Current baseline
 
-The current implementation is a ligand-centric React/FastAPI workbench. It loads a bundled candidate set, uses RDKit to validate and enrich molecules, and exposes typed API responses to the frontend. This completed baseline should remain working while the project grows.
+The current implementation combines the ligand-centric React/FastAPI workbench with a portable
+evidence core. The workbench loads a bundled candidate set, uses RDKit to validate and enrich
+molecules, and exposes typed API responses to the frontend. The separately packaged evidence core
+validates versioned local run manifests, hashes artifacts, audits provenance, and produces canonical
+JSON, JSON Schema, and Markdown reports without importing FastAPI.
 
 Current boundaries are enforced by tests:
 
@@ -24,49 +31,66 @@ Current boundaries are enforced by tests:
 main -> api -> services -> chem/adapters -> models
 ```
 
+The current service layer is a useful precursor but is not yet a formal capability catalog. When
+Milestone 3 introduces evidence import over HTTP, add the application capability boundary around new
+operations and migrate existing services only when a feature requires it.
+
 Generated OpenAPI types, strict Python typing, frontend tests, Playwright tests, and container smoke tests remain required.
+
+The implemented package boundary is:
+
+```text
+FastAPI application (app) ───────┐
+                                 ├──> molecule_atlas.evidence (Pydantic + standard library)
+molecule-atlas CLI ──────────────┘
+```
+
+`molecule_atlas.evidence` has no dependency on `app`, FastAPI, RDKit, persistence, schedulers, GPU
+runtimes, or model providers. The current FastAPI API does not yet expose evidence endpoints; web
+import belongs to Milestone 3.
 
 ## Target system
 
 ```text
+┌───────────────────────┐
+│ React workbench       │──HTTP──> FastAPI adapters ─────┐
+│ generated API client  │          authn + HTTP mapping  │
+└───────────────────────┘                                │
+                                                         │
+┌───────────────────────┐                                ▼
+│ Future AI module      │──scoped in-process/API call────┤
+└───────────────────────┘                                │
+                                                         │
+┌───────────────────────┐                                │
+│ Workers / workflows   │──typed invocation──────────────┘
+└───────────────────────┘
+                                    ▼
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│                            Molecule Atlas Web UI                             │
-│                            React + TypeScript                                │
-│                                                                              │
-│  Molecule explorer   Protein/pocket viewer   Campaign and job views          │
-│  Similarity/scaffold Mol* poses/interactions Validation/provenance           │
-│  Chemical space      Candidate comparison   Review/annotations/shortlists    │
-│                                                                              │
-│          TanStack Query · TanStack Table · Plotly · 3Dmol.js · Mol*          │
+│ Application capabilities                                                     │
+│ typed input/output · authorization · risk/approval · idempotency · budgets   │
+│ bounded queries · commands/jobs/proposals · actor and correlation context    │
 └──────────────────────────────────┬───────────────────────────────────────────┘
-                                   │ HTTPS / REST / SSE
-                                   │ Generated OpenAPI types
-┌──────────────────────────────────▼───────────────────────────────────────────┐
-│                        FastAPI Control Plane                                 │
-│                                                                              │
-│  Projects       Compounds and sets      Targets and pockets                  │
-│  Runs           Poses and predictions   Validation evidence                  │
-│  Reviews        Plugin registry         Job lifecycle                        │
-│  Provenance     Artifact references     Reports                              │
+                                   ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Domain and workflow model                                                    │
+│ Project · Plan/PlanStep · Run/RunAttempt · Artifact · Validation             │
+│ Evidence · Claim · Decision · typed domain events                            │
 └───────────────┬─────────────────────┬───────────────────────┬────────────────┘
                 │                     │                       │
         ┌───────▼────────┐   ┌────────▼─────────┐   ┌────────▼────────────┐
         │ PostgreSQL     │   │ Artifact store   │   │ Dispatcher/worker   │
-        │ metadata/jobs  │   │ filesystem/S3    │   │ durable job state   │
-        └────────────────┘   │ RustFS supported │   └────────┬────────────┘
-                             └──────────────────┘            │
-                                                   Executor interface
-                                                             │
-                    ┌────────────────────────────────────────▼───────────────┐
-                    │ Fixture · Local OCI · Kubernetes · Remote GPU · Slurm │
-                    └────────────────────────┬───────────────────────────────┘
-                                             │
-                    Immutable plugin input/output contracts
-                                             │
-┌────────────────────────────────────────────▼─────────────────────────────────┐
-│ Scientific plugin containers                                                 │
-│ RDKit/Meeko · Vina · PoseBusters · ProLIF · Boltz · DiffDock · future tools  │
-└──────────────────────────────────────────────────────────────────────────────┘
+        │ state/events   │   │ filesystem/S3    │   │ durable progression │
+        └────────────────┘   └──────────────────┘   └────────┬────────────┘
+                                                             ▼
+                    ┌──────────────────────────────────────────────────────┐
+                    │ Executor adapters                                   │
+                    │ Fixture · Local OCI · Kubernetes · Remote GPU · Slurm│
+                    └────────────────────────┬─────────────────────────────┘
+                                             ▼
+                    ┌──────────────────────────────────────────────────────┐
+                    │ Versioned scientific plugins                        │
+                    │ semantic artifacts · raw outputs · no AI logic      │
+                    └──────────────────────────────────────────────────────┘
 ```
 
 ## Modular-monolith structure
@@ -75,8 +99,17 @@ Do not introduce microservices by default. The initial persistent application sh
 
 ```text
 backend/
+  core/
+    pyproject.toml
+    src/molecule_atlas/evidence/
   app/
     api/
+    application/
+      capabilities/
+      plans/
+      runs/
+      policies/
+      events/
     domains/
       projects/
       chemistry/
@@ -85,6 +118,7 @@ backend/
       campaigns/
       execution/
       review/
+      scientific_memory/
     infrastructure/
       database/
       artifacts/
@@ -147,25 +181,54 @@ The portable scientific evidence core should be usable without FastAPI. It owns:
 
 The CLI, HTTP API, and workers should call this same package rather than duplicate parsing rules.
 
+Milestone 1 implements this layer as the `molecule-atlas-core` distribution in `backend/core`. Its
+only import adapter is the local manifest adapter. Provider- and scientific-tool-specific adapters
+remain deferred until real-output import milestones.
+
+### Application capability layer
+
+The application layer owns meaningful operations used by transports, workers, predefined workflows,
+and a future AI module. It depends on domain/core contracts and infrastructure ports, not on FastAPI.
+
+A capability definition includes a stable ID/version, semantic kind, typed input/output, required
+permissions, side effects, risk, cost/runtime class, and support for idempotency, cancellation, and
+dry run. Capability handlers receive an explicit actor and correlation context. They perform domain
+validation and authorization before state changes or execution requests.
+
+Queries are bounded reads. Commands are explicit state changes. Jobs are asynchronous commands
+represented through the shared run model. Proposals require validation or approval. Internal CRUD
+and repository methods are not automatically capabilities and are not automatically exposed to a
+future agent.
+
+The capability layer is introduced with the first evidence-import HTTP workflow in Milestone 3.
+Avoid creating a speculative global framework in Milestone 2; real adapters should first return
+typed, semantic outputs that capability handlers can compose.
+
 ### FastAPI control plane
 
 FastAPI owns:
 
-- HTTP validation and authorization;
-- project and review workflows;
-- persistence transactions;
-- job submission and state queries;
-- pre-signed artifact upload/download flows;
+- HTTP parsing and response mapping;
+- authentication and actor-context extraction;
+- mapping capability errors to documented HTTP failures;
+- HTTP delivery for capability-issued pre-signed artifact upload/download flows;
 - SSE progress streams;
 - OpenAPI generation.
 
-It must not run heavy model inference inside request handlers or FastAPI background tasks.
+FastAPI handlers call application capabilities. They do not contain domain workflows, authorize only
+in route decorators, mutate repositories directly, invoke plugins, or run heavy inference in request
+handlers or FastAPI background tasks. Important endpoints set explicit stable OpenAPI `operation_id`
+values based on capability IDs.
 
 ### Frontend
 
 The frontend is an information-dense scientific workbench. Major views should synchronize selection across tables, molecular depictions, protein/pose visualization, predictions, interactions, and validation evidence.
 
 Keep 3Dmol.js for existing simple conformer viewing. Introduce Mol* for proteins, pockets, complexes, and binding poses. Do not replace the working viewer until Mol* covers the corresponding path.
+
+Viewer state is not scientific state. Plans, parameters, selections that affect execution, claims,
+decisions, validation issues, and AI proposals must be represented by typed backend records and
+normal views. The product remains fully usable when any future AI module is disabled.
 
 ## Persistence
 
@@ -178,6 +241,10 @@ The evidence core and report generation must work on local files with no databas
 Use PostgreSQL when projects, annotations, authentication, run history, or durable jobs are introduced.
 
 Store metadata and references in PostgreSQL. Store large scientific artifacts outside the relational database.
+
+Persistence introduces actors, capability authorization, idempotency, plans/steps, hierarchical
+runs/attempts, typed events, semantic artifact relationships, scientific claims, and decisions before
+an AI module is allowed to orchestrate work. Chat history is not a substitute for these records.
 
 ### Artifact storage
 
@@ -192,9 +259,16 @@ Remote workers should use short-lived, job-scoped pre-signed URLs rather than pe
 
 ## Execution architecture
 
-### Jobs
+### Runs, attempts, and provider jobs
 
-The application owns a durable internal job record. Provider-specific job IDs and states are mapped into the Molecule Atlas lifecycle.
+The application owns one logical `Run` for a capability invocation. A `RunAttempt` represents one
+concrete import or execution attempt, including retries. A provider job ID and provider-specific
+state are operational fields attached to an attempt; they are not a separate scientific result model.
+
+The same run hierarchy covers imports, local capabilities, reports, scientific plugins, model
+inference, and future agent actions. Runs carry capability and plan references, actor, parent/root,
+idempotency, correlation, and causation IDs. Attempts carry executor/plugin identity, runtime,
+attempt-specific artifacts, logs, and failure details.
 
 Recommended states:
 
@@ -212,11 +286,17 @@ cancelling
 cancelled
 ```
 
-A job is not successful until required output artifacts have been uploaded, checksummed, and validated against the plugin output schema.
+A run attempt is not successful until required output artifacts have been uploaded, checksummed, and
+validated against the plugin output schema. The logical run derives its state from attempts and
+workflow policy rather than hiding retry history.
 
 ### Initial queue
 
-Use PostgreSQL as the first durable queue when persistence exists. A dispatcher can claim queued work with `FOR UPDATE SKIP LOCKED`. Do not introduce Celery, Redis, RabbitMQ, and Kubernetes operators simultaneously without a demonstrated need.
+Use PostgreSQL as the first durable queue when persistence exists. A dispatcher can claim queued
+attempts with `FOR UPDATE SKIP LOCKED`. Plan and step state must survive process failure, approval
+waits, and retries. SSE is a projection of durable typed events, not the source of truth. Do not
+introduce Celery, Redis, RabbitMQ, a workflow engine, and Kubernetes operators simultaneously without
+a demonstrated need.
 
 ### Executor contract
 
@@ -232,6 +312,9 @@ SlurmAgentExecutor
 
 Campaign and evidence domains must not depend on provider APIs.
 
+Executors receive validated attempt requests from the dispatcher. A future AI module never calls an
+executor or provider adapter directly.
+
 ### Slurm
 
 A hosted Molecule Atlas instance must not connect directly to an internet-exposed Slurm controller. Use a small agent deployed inside the institution that initiates outbound authenticated communication, submits jobs, and uploads results.
@@ -246,10 +329,11 @@ Each scientific plugin is independently versioned and containerized. It declares
 - input and output schemas;
 - command;
 - resource requirements;
-- capabilities;
+- plugin feature declarations, distinct from application capability IDs;
 - score semantics;
 - licenses;
-- golden fixtures.
+- golden fixtures;
+- typed semantic result and artifact contracts.
 
 Filesystem convention:
 
@@ -267,6 +351,26 @@ Filesystem convention:
 ```
 
 The plugin adapter normalizes upstream results but never discards or rewrites the original evidence without retaining traceability.
+
+Plugin results identify logical artifact names, semantic artifact types, media types, schema
+versions, and paths. They do not return an untyped list of filenames. Plugins remain computational
+tools and never contain AI planning, approval, authorization, or project-decision logic.
+
+## Future AI module
+
+Do not create an AI microservice now. After the capability, plan, run, authorization, approval,
+budget, event, and bounded-query foundations exist, an initial AI module may live inside the modular
+monolith and call the same application capabilities as other clients.
+
+The module can be extracted later for demonstrated independent scaling, stronger isolation, multiple
+agent workers, or provider-specific runtime needs. Whether in-process or remote, it receives a
+delegating actor and narrowly scoped capabilities. It does not receive database, object-store,
+executor, cluster, or provider credentials.
+
+An LLM proposes typed plans and explanations. The backend validates plan dependencies, permissions,
+risk, approvals, idempotency, budgets, and execution. Agent identity, version, model/provider,
+delegating user, tool calls, cost, and approval records remain auditable. The UI must expose the same
+plan, run, artifact, validation, claim, and decision records without requiring chat history.
 
 ## Deployment modes
 
@@ -312,7 +416,16 @@ Treat uploaded structures and model outputs as untrusted data.
 - avoid exposing storage credentials;
 - redact secrets from logs and manifests;
 - preserve audit events for privileged actions.
+- enforce permissions, idempotency, risk, approvals, and budgets inside application capabilities;
+- distinguish human, service, plugin, and agent actors;
+- never expose direct database, storage, executor, cluster, or provider credentials to an AI module;
+- do not rely on prompts to enforce security or scientific policy;
+- avoid placing sensitive scientific inputs in LLM requests, traces, or logs without explicit scope
+  and policy.
 
 ## Architecture decision process
 
 Major decisions should be recorded under `docs/adr/`. New dependencies or infrastructure should solve a current milestone requirement. Long-term architecture is guidance, not permission to implement every future component immediately.
+
+See `docs/ai-first-readiness.md` and ADR 0001 for the capability, orchestration, and deferred-AI
+rules.

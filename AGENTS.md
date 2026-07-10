@@ -15,6 +15,7 @@ Before product or architecture work, read:
 3. `docs/architecture.md`
 4. `docs/domain-model.md`
 5. `docs/scientific-contracts.md`
+6. `docs/ai-first-readiness.md`
 
 ## Milestone discipline
 
@@ -76,7 +77,28 @@ Keep the project a modular monolith. Prefer small, responsibility-focused module
 
 The portable evidence core must not depend on FastAPI, PostgreSQL, Kubernetes, or a GPU. The CLI, API, workers, and reports should reuse the same schemas and adapters.
 
+The React UI and a future AI agent are clients of the same typed application capabilities. FastAPI
+handlers translate HTTP and authentication context; they do not own business workflows. Workers,
+predefined workflows, and a future AI module reuse the same capability layer.
+
+- Keep AI outside scientific plugins.
+- Never give an AI direct database, object-storage, executor, cluster, or provider access.
+- Do not automatically expose CRUD methods as agent tools.
+- Give important capabilities stable IDs, versions, typed inputs/outputs, permission requirements,
+  side-effect semantics, and risk metadata.
+- Use the same plan, run, attempt, artifact, validation, claim, and decision concepts for human,
+  service, plugin, and future agent activity.
+- Record agent actors separately from delegating humans.
+- Keep important plans, claims, decisions, approvals, and results in structured application state,
+  not only chat history.
+- Keep the full product usable without AI.
+
 Do not move working code merely to resemble the target directory tree. Refactor when a feature needs a clear boundary and add architecture tests for that boundary.
+
+Before implementing an important operation, ask whether it can be represented as a typed,
+authorized, observable, reproducible application capability that both the UI and a future AI agent
+can invoke. If the current milestone does not own the required persistence or execution substrate,
+document the future contract and implement only the current acceptance criterion.
 
 ## Development workflow
 
@@ -167,9 +189,15 @@ As new milestones are implemented, add tests for:
 - successful, partial, and failed imports;
 - validator normalization and raw-output traceability;
 - plugin input/output contracts;
-- durable job state transitions;
+- durable run/attempt state transitions;
 - executor conformance;
-- storage implementation conformance.
+- storage implementation conformance;
+- stable capability IDs and explicit OpenAPI operation IDs;
+- typed capability inputs and outputs;
+- capability-level authorization and idempotency;
+- hierarchical run/attempt lineage and actor identity;
+- plan validation, approval policy, budgets, and resume behavior;
+- typed domain-event envelopes and correlation/causation IDs.
 
 Use tiny golden fixtures. Do not make normal CI download models or call external services.
 
@@ -183,6 +211,7 @@ Keep current:
 - `docs/architecture.md`: current and target architecture;
 - `docs/domain-model.md`: scientific concepts and relationships;
 - `docs/scientific-contracts.md`: manifests, predictions, validation, plugins;
+- `docs/ai-first-readiness.md`: shared capabilities, plans/runs, actors, events, and deferred AI scope;
 - `data/README.md`: source, license, and provenance for fixtures;
 - `AGENTS.md`: coding-agent rules and commands.
 
@@ -196,5 +225,7 @@ Before finalizing a change:
 - run the most relevant tests and static checks;
 - update generated API types when contracts change;
 - preserve scientific caveats and raw provenance;
+- preserve or introduce the shared capability boundary when the feature exposes an important action;
+- state the capability ID, kind, side effects, and policy metadata for new public operations;
 - document new data, tools, models, licenses, and deployment requirements;
 - explain any check that could not be run.

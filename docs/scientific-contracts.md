@@ -4,6 +4,36 @@
 
 Molecule Atlas integrates tools that were not designed around one common schema. This document defines the minimum contracts required to import, validate, compare, review, and eventually execute those tools without losing scientific meaning.
 
+Application orchestration must preserve these scientific contracts. The UI, workers, predefined
+workflows, and a future AI module invoke the same typed application capabilities rather than creating
+transport- or agent-specific scientific schemas. See `docs/ai-first-readiness.md`.
+
+## Application capability contract
+
+An important application operation declares:
+
+```text
+capability_id
+capability_version
+kind: query | command | job | proposal
+typed input schema
+typed output schema
+required permissions
+risk and approval policy
+side effects
+cost and runtime class
+idempotency, cancellation, and dry-run support
+```
+
+Capability IDs remain stable across URL or implementation changes. FastAPI operations use explicit
+stable `operation_id` values. Internal CRUD and repository methods do not automatically become
+capabilities or agent tools.
+
+Capability payloads identify domain records and semantic artifacts explicitly. Do not use generic
+`options`, `files`, or filename lists when fields and meanings can be modeled. A future agent receives
+only authorized capabilities and never direct database, storage, executor, cluster, or provider
+access.
+
 ## Run manifest
 
 Every imported or managed run should normalize into a versioned manifest such as `molecule-atlas-run.json`.
@@ -50,6 +80,20 @@ Imported and executed runs must support:
 - `unknown` when evidence is insufficient.
 
 A partial run is valid data. Adapters should report which expected outputs are missing rather than rejecting the entire directory.
+
+## Application run and attempt contract
+
+The implemented manifest `run` section is a portable evidence snapshot. The target application model
+uses one logical `Run` with one or more `RunAttempt` records for imports, reports, capabilities,
+plugins, model inference, retries, and future agent actions.
+
+The logical run carries project, capability ID/version, run type, actor, parent/root run, plan/step,
+input/output manifest, idempotency, correlation, causation, status, timestamps, and structured error
+fields. An attempt carries attempt number, retry relationship, executor/provider job identity, exact
+plugin/container/checkpoint details, runtime, logs, artifacts, and attempt-specific failure.
+
+Do not add these as silently required fields to schema 0.1.0. Introduce a versioned schema and
+migration strategy when the persistence or execution milestone implements the shared model.
 
 ## Method identity
 
@@ -104,6 +148,29 @@ Suggested roles include:
 - report.
 
 The same bytes must produce the same content hash. Tests should use deterministic fixtures.
+
+Before persistence or managed execution, a versioned artifact-manifest contract should strengthen
+the portable record with:
+
+```text
+artifact_id
+artifact_type
+schema_version
+semantic_role
+storage_uri
+content_digest
+project_id
+producing_run_id and attempt ID where applicable
+derived_from_artifact_ids
+created_at
+domain_metadata
+preview_metadata
+```
+
+Artifact types are stable semantic identifiers such as `compound-set`, `protein-structure`,
+`prepared-pocket`, `docking-pose-set`, `docking-score-table`, `interaction-fingerprint`,
+`validation-report`, `candidate-shortlist`, or `campaign-report`. Filenames and media types alone do
+not define scientific meaning.
 
 ## Prediction contract
 
@@ -261,6 +328,13 @@ Required behavior:
 - use documented exit codes;
 - never report success when required artifacts are absent.
 
+Normalized plugin results declare a versioned result type and semantic artifacts. For example, a
+docking plugin identifies logical `poses` and `scores` outputs as `docking-pose-set` and
+`docking-score-table` artifacts with explicit media types and paths. Returning only `files: [...]` is
+not a sufficient plugin result contract.
+
+Plugins contain no AI planning, project authorization, approval, or scientific-decision logic.
+
 ## Import adapters
 
 Import adapters inspect existing output directories and produce the same normalized contracts as managed execution.
@@ -317,6 +391,27 @@ scientific caveats.
 Schemas use explicit semantic versions. Breaking changes require a new major schema version and migration strategy. Adapters declare the versions they can read and produce.
 
 Golden fixtures should protect normalization behavior across releases.
+
+## Plans, actors, events, claims, and decisions
+
+Plans and plan steps are typed, versioned application records before any LLM integration. A step
+references a capability ID/version, typed input bindings, dependencies, status, and approval policy.
+The backend validates and executes plans regardless of whether they came from the UI, a predefined
+workflow, or a future AI proposal.
+
+Actors are typed as human, service, plugin, or agent. An agent record includes its delegating human,
+permission scope, agent/model identity, tool calls, and approvals. It is never indistinguishable from
+the user.
+
+Domain events use versioned names such as `run.created.v1`, `artifact.created.v1`,
+`validation.issue_detected.v1`, `plan.approval_required.v1`, and `decision.recorded.v1`. The envelope
+includes event ID/type, occurrence time, project, actor, correlation ID, causation ID, and a typed
+payload. Persisted state and events drive workflow progression; SSE is only a delivery projection.
+
+Scientific claims retain supporting and contradicting evidence, status, proposer, reviewer, and
+supersession. Scientific decisions retain owner, rationale, rejected alternatives, evidence, AI
+contribution, and human approval. Neither chat history nor a model response is the authoritative
+record.
 
 ## License metadata
 

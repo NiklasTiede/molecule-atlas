@@ -16,6 +16,13 @@ A workspace containing targets, compound collections, imported or executed runs,
 
 A user and role within a project. Authentication and membership are introduced only when shared projects become a milestone.
 
+### Actor
+
+The identity responsible for an application action. Actor types are `human`, `service`, `plugin`, and
+`agent`. An agent actor records its delegating human and granted scope; it is never stored as if it
+were the human. Actors become persistent with shared projects, but capability invocations should
+carry explicit actor context as soon as authorization exists.
+
 ### Annotation
 
 A human-authored note linked to a candidate, pose, run, target, or shortlist decision.
@@ -23,6 +30,10 @@ A human-authored note linked to a candidate, pose, run, target, or shortlist dec
 ### ReviewDecision
 
 A transparent human decision such as `unreviewed`, `review`, `shortlisted`, or `rejected`. It must not be presented as measured biological truth.
+
+`ReviewDecision` is a workflow status for a reviewed object. It is distinct from a
+`ScientificDecision`, which records a project-level choice, rationale, alternatives, evidence, owner,
+and approval history.
 
 ## Chemistry
 
@@ -92,18 +103,58 @@ A ligand used to define or compare a pocket. It may be experimentally observed o
 
 ## Runs and campaigns
 
+### Capability
+
+A stable, versioned, meaningful application operation with typed input/output contracts, permissions,
+side effects, risk, cost/runtime class, and execution features. Capabilities are used by HTTP
+handlers, workers, predefined workflows, and a future AI module. Repository CRUD methods are not
+automatically capabilities.
+
+Capabilities are classified as query, command, job, or proposal. Important capability IDs remain
+stable even when transports or implementations change.
+
 ### Campaign
 
 A scientific workflow definition connecting inputs, target context, stages, and execution policy.
 
 A campaign may consume a candidate set and produce one or more result candidate sets. The first implementation can remain simpler than a general DAG.
 
+### Plan
+
+A versioned objective and constrained set of steps. Plans can be created manually or from predefined
+workflow templates before any LLM exists. A future AI module proposes the same plan structure.
+
+A plan records project, objective, status, version, creator, constraints, budget, and timestamps.
+
+### PlanStep
+
+A configured invocation of a capability. It records capability ID/version, typed input bindings,
+dependencies, status, and approval policy. Plans and steps are validated before execution and can
+wait for human approval.
+
 ### Run
 
-One concrete attempt to execute or import a method for a specific set of inputs. Runs may be successful, failed, cancelled, or partial.
+A logical invocation of a capability for a specific set of inputs. The same model covers imports,
+reports, application operations, scientific plugins, model inference, and future agent actions. A run
+may have multiple attempts because of retry or provider failure.
 
 A run records:
 
+- capability ID/version and run type;
+- project, plan, and plan-step relationships;
+- initiating actor;
+- parent and root run relationships;
+- idempotency, correlation, and causation IDs;
+- input and output manifest references;
+- aggregate status and structured error details;
+- timestamps;
+- child attempts and runs.
+
+### RunAttempt
+
+One concrete import or execution attempt beneath a logical run. An attempt records:
+
+- attempt number and retry relationship;
 - method and adapter;
 - upstream version/commit/checkpoint;
 - inputs and hashes;
@@ -117,9 +168,15 @@ A run records:
 - warnings and failure details;
 - license metadata.
 
+The implemented portable `RunManifest` 0.1.0 currently describes one evidence-producing/import
+attempt. Later schemas must relate that evidence snapshot to the shared logical run without silently
+changing the existing contract.
+
 ### Job
 
-Operational state for executing a run. Jobs are not the scientific result. A run may exist from imported output without an internally managed job.
+An external or internal provider execution handle attached to a run attempt. Provider job IDs and
+states are operational data, not the scientific result and not a second execution model. Imported
+runs may have attempts without provider jobs.
 
 ### Stage
 
@@ -129,17 +186,22 @@ A named operation within a campaign, such as preparation, docking, co-folding, v
 
 ### Artifact
 
-A file or object produced or consumed by a run.
+A file or object produced or consumed by a run or run attempt.
 
 Required metadata should include:
 
 - stable identifier;
-- role;
+- semantic artifact type and schema version;
+- semantic role;
 - media type;
-- URI or local path;
-- SHA-256;
+- storage URI or portable local path;
+- content digest, initially SHA-256;
 - size;
-- producing stage;
+- project and producing run/attempt where applicable;
+- derived-from artifact relationships;
+- creation timestamp;
+- domain and preview metadata;
+- producing stage and logical plugin output name;
 - source name where applicable.
 
 Original upstream artifacts must remain traceable after normalization.
@@ -207,6 +269,33 @@ A residue-level or atom-level representation of protein-ligand interactions, pro
 
 A user-facing grouping of poses, predictions, validation results, interactions, artifacts, and provenance for one candidate or run. This is a presentation concept and should not erase the underlying typed records.
 
+### Evidence
+
+A structured reference to information that supports or contradicts a claim or informs a decision.
+Evidence points to typed predictions, validation results, artifacts, observations, runs, or other
+reviewable records. It does not copy or flatten their semantics.
+
+### ScientificClaim
+
+A reviewable scientific interpretation with statement, claim type, status, confidence semantics,
+supporting evidence, contradicting evidence, proposer, reviewer, and supersession relationship.
+Statuses include `proposed`, `accepted`, `rejected`, `uncertain`, and `superseded`.
+
+Model output alone cannot create an accepted claim. An agent may propose a claim but is not its human
+reviewer.
+
+### ScientificDecision
+
+A human-owned project choice with selected candidates or actions, rationale, rejected alternatives,
+supporting evidence, owner, AI contribution if any, approvals, and timestamp. Important decisions do
+not live only in annotations or chat history.
+
+### DomainEvent
+
+A typed, versioned fact about a domain transition. Its envelope carries event ID/type, occurrence
+time, project, actor, correlation ID, causation ID, and typed payload. Events support durable workflow
+progression, audit, SSE projections, and later agent notifications; SSE itself is not durable state.
+
 ## Identity and lineage
 
 Every normalized record should answer:
@@ -216,6 +305,10 @@ Every normalized record should answer:
 - Which adapter transformed it?
 - Which version of the schema was used?
 - Which upstream object does it refer to?
+- Which actor and capability initiated the operation?
+- Which plan, parent/root run, attempt, correlation, and causation relationships apply?
+- Which artifacts were used, generated, or derived?
+- Which evidence supports or contradicts a claim or informed a decision?
 
 Use stable internal IDs and retain upstream IDs separately. Do not use filenames as the sole identity.
 
@@ -223,6 +316,7 @@ Use stable internal IDs and retain upstream IDs separately. Do not use filenames
 
 ```text
 Project
+├── Actor / ProjectMember
 ├── Target
 │   └── ProteinStructure
 │       └── ReceptorPreparation
@@ -232,14 +326,18 @@ Project
 │       └── Conformer
 ├── CandidateSet
 │   └── Candidate ───────────────┐
-├── Campaign                     │
-│   └── Run                      │
-│       ├── Artifact             │
-│       ├── Pose ────────────────┘
-│       ├── Prediction
-│       ├── ValidationResult
-│       └── InteractionFingerprint
-└── Annotation / ReviewDecision / Shortlist
+├── Campaign / Plan              │
+│   └── PlanStep → Capability    │
+│       └── Run                  │
+│           ├── child Run        │
+│           └── RunAttempt       │
+│               ├── Artifact     │
+│               ├── Pose ────────┘
+│               ├── Prediction
+│               ├── ValidationResult
+│               └── InteractionFingerprint
+├── Evidence ──> ScientificClaim ──> ScientificDecision
+└── Annotation / ReviewDecision / Shortlist / DomainEvent
 ```
 
 ## Migration from the current MVP
@@ -251,9 +349,12 @@ Recommended migration:
 1. Add typed `Prediction` objects while temporarily reading legacy demo scores as explicitly marked mock predictions.
 2. Introduce importable candidate sets and stable IDs.
 3. Add `RunManifest`, artifacts, and evidence import.
-4. Add targets, structures, pockets, and poses.
-5. Add persistence and project relationships.
-6. Add managed jobs and campaign execution.
+4. Add typed application capabilities and bounded evidence queries when HTTP import begins.
+5. Add targets, structures, pockets, and poses through the same capability and artifact contracts.
+6. Add persistence, actors, authorization, hierarchical runs/attempts, plans/steps, idempotency,
+   events, claims, decisions, and project relationships.
+7. Add managed campaign execution, durable progression, approvals, risk policies, and budgets.
+8. Add optional AI plan proposal and explanation only after the normal execution path is trusted.
 
 Avoid a single large database migration that attempts to model the complete long-term system before the corresponding workflows exist.
 
