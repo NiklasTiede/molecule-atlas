@@ -72,6 +72,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/evidence/imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import Evidence Bundle */
+        post: operations["import_evidence_bundle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/evidence/runs/{run_id}": {
         parameters: {
             query?: never;
@@ -110,6 +127,14 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Body_import_evidence_bundle */
+        Body_import_evidence_bundle: {
+            /**
+             * Bundle
+             * @description Portable Molecule Atlas evidence bundle ZIP
+             */
+            bundle: string;
+        };
         /** CandidateSet */
         CandidateSet: {
             /** Candidates */
@@ -191,6 +216,32 @@ export interface components {
              * @constant
              */
             status: "ok";
+        };
+        /** ImportEvidenceBundleOutput */
+        ImportEvidenceBundleOutput: {
+            /**
+             * Capability Id
+             * @default import_evidence_bundle
+             * @constant
+             */
+            capability_id: "import_evidence_bundle";
+            /**
+             * Capability Version
+             * @default 0.1.0
+             * @constant
+             */
+            capability_version: "0.1.0";
+            /**
+             * Contract Version
+             * @default 0.1.0
+             * @constant
+             */
+            contract_version: "0.1.0";
+            /** Correlation Id */
+            correlation_id: string;
+            /** Idempotency Replayed */
+            idempotency_replayed: boolean;
+            run: components["schemas"]["RunSummary"];
         };
         /** InvalidCandidate */
         InvalidCandidate: {
@@ -562,6 +613,69 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProjectionPoint"][];
+                };
+            };
+        };
+    };
+    import_evidence_bundle: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+                "X-Correlation-ID"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_import_evidence_bundle"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportEvidenceBundleOutput"];
+                };
+            };
+            /** @description Unsafe or invalid evidence bundle */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Import conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Evidence bundle limit exceeded */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

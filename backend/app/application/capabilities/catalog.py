@@ -2,6 +2,24 @@ from collections.abc import Iterable
 
 from app.application.capabilities.models import CapabilityDefinition
 
+IMPORT_EVIDENCE_BUNDLE = CapabilityDefinition(
+    capability_id="import_evidence_bundle",
+    capability_version="0.1.0",
+    title="Import portable evidence bundle",
+    description="Validate and retain one bounded portable evidence ZIP for local review.",
+    kind="command",
+    input_schema="ImportEvidenceBundleInput.0.1.0",
+    output_schema="ImportEvidenceBundleOutput.0.1.0",
+    required_permissions=("evidence:import",),
+    risk_level="medium",
+    side_effects=("local_artifact_write", "local_run_create"),
+    cost_class="small_cpu",
+    runtime_class="interactive",
+    supports_idempotency=True,
+    supports_cancellation=False,
+    supports_dry_run=False,
+)
+
 GET_RUN_SUMMARY = CapabilityDefinition(
     capability_id="get_run_summary",
     capability_version="0.1.0",
@@ -44,4 +62,4 @@ class CapabilityCatalog:
         return self._by_identity[(capability_id, capability_version)]
 
 
-CAPABILITY_CATALOG = CapabilityCatalog((GET_RUN_SUMMARY,))
+CAPABILITY_CATALOG = CapabilityCatalog((IMPORT_EVIDENCE_BUNDLE, GET_RUN_SUMMARY))

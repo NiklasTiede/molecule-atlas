@@ -6,6 +6,19 @@ from pydantic import Field
 
 from app.models.base import ApiModel
 
+MAX_EVIDENCE_BUNDLE_BYTES = 10 * 1024 * 1024
+
+
+class ImportEvidenceBundleInput(ApiModel):
+    contract_version: Literal["0.1.0"] = "0.1.0"
+    archive_bytes: bytes = Field(min_length=1, max_length=MAX_EVIDENCE_BUNDLE_BYTES)
+    original_filename: str = Field(min_length=1, max_length=255, pattern=r"^.+\.[zZ][iI][pP]$")
+    idempotency_key: str = Field(
+        min_length=1,
+        max_length=128,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+    )
+
 
 class GetRunSummaryInput(ApiModel):
     contract_version: Literal["0.1.0"] = "0.1.0"
@@ -56,4 +69,13 @@ class GetRunSummaryOutput(ApiModel):
     capability_id: Literal["get_run_summary"] = "get_run_summary"
     capability_version: Literal["0.1.0"] = "0.1.0"
     correlation_id: str
+    run: RunSummary
+
+
+class ImportEvidenceBundleOutput(ApiModel):
+    contract_version: Literal["0.1.0"] = "0.1.0"
+    capability_id: Literal["import_evidence_bundle"] = "import_evidence_bundle"
+    capability_version: Literal["0.1.0"] = "0.1.0"
+    correlation_id: str
+    idempotency_replayed: bool
     run: RunSummary

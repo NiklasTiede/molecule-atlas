@@ -139,9 +139,10 @@ import in Milestone 3 and is not represented as verified operational compatibili
 
 ## Milestone 3 — Evidence import in the web workbench
 
-Status: in progress. Slice 1 implements the capability catalog, permission-aware invocation context,
-bounded local `get_run_summary` query, explicit correlation ID, and thin HTTP operation. Safe local
-bundle import and the remaining review/query UI follow in the next slices.
+Status: in progress. Slices 1–2 implement the capability catalog, permission-aware invocation
+context, bounded local `get_run_summary` query, explicit correlation IDs, and safe idempotent ZIP
+bundle import into temporary local storage. Artifact/validation inspection and the remaining
+review/query UI follow in the next slices.
 
 Goal: make the visual application useful for reviewing imported model evidence.
 

@@ -41,6 +41,15 @@ correlation ID. The FastAPI operation uses the same `get_run_summary` identifier
 application projection over `RunManifest 0.1.0`, not a replacement or mutation of the portable
 manifest.
 
+`import_evidence_bundle` version `0.1.0` is the first side-effecting capability. It requires
+`evidence:import`, declares local artifact-write and run-create side effects, and requires an
+idempotency key. The ZIP file is a bounded HTTP transport envelope, not a scientific schema and not
+an executable plugin. Import succeeds only after `RunManifest 0.1.0`, any included
+`ArtifactManifest 0.1.0`, and all declared local artifact sizes and SHA-256 digests agree. Failed and
+partial run states remain importable evidence; malformed or tampered bundles do not become visible
+records. Milestone 3 idempotency and storage are process-local and do not claim Milestone 5
+durability.
+
 ## Run manifest
 
 Every imported or managed run should normalize into a versioned manifest such as `molecule-atlas-run.json`.

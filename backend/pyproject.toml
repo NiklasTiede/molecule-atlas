@@ -8,6 +8,7 @@ dependencies = [
   "molecule-atlas-core",
   "uvicorn[standard]>=0.38.0",
   "pydantic>=2.12.0",
+  "python-multipart>=0.0.20",
   "pandas>=2.3.0",
   "numpy>=2.3.0",
   "rdkit>=2025.3.0",

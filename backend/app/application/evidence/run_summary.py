@@ -10,7 +10,7 @@ from app.application.evidence.contracts import (
     RunSummary,
     ValidationCounts,
 )
-from app.application.evidence.ports import EvidenceRunRepository
+from app.application.evidence.ports import EvidenceRunRepository, StoredEvidenceRun
 
 
 class EvidenceRunNotFoundError(LookupError):
@@ -60,6 +60,13 @@ def _summary(manifest: RunManifest) -> RunSummary:
     )
 
 
+def build_run_summary(stored_run: StoredEvidenceRun) -> RunSummary:
+    """Audit and project a stored portable run without mutating its source manifest."""
+
+    audit = audit_manifest(stored_run.manifest, root=stored_run.root)
+    return _summary(audit.manifest)
+
+
 class GetRunSummaryCapability:
     definition = GET_RUN_SUMMARY
 
@@ -76,8 +83,7 @@ class GetRunSummaryCapability:
         stored_run = self._repository.find(request.run_id)
         if stored_run is None:
             raise EvidenceRunNotFoundError(f"Evidence run not found: {request.run_id}")
-        audit = audit_manifest(stored_run.manifest, root=stored_run.root)
         return GetRunSummaryOutput(
             correlation_id=context.correlation_id,
-            run=_summary(audit.manifest),
+            run=build_run_summary(stored_run),
         )

@@ -27,9 +27,10 @@ evidence core. The workbench loads a bundled candidate set, uses RDKit to valida
 molecules, and exposes typed API responses to the frontend. The separately packaged evidence core
 validates versioned local run manifests, hashes artifacts, audits provenance, and produces canonical
 JSON, JSON Schema, and deterministic Markdown or self-contained HTML reports without importing
-FastAPI. Milestone 3 has introduced the first application capability: a permission-aware, bounded
-`get_run_summary` query over local evidence, exposed through a thin HTTP handler with an explicit
-operation and correlation ID.
+FastAPI. Milestone 3 has introduced permission-aware `get_run_summary` and
+`import_evidence_bundle` capabilities. Thin HTTP handlers expose explicit operation and correlation
+IDs; uploaded ZIP transport envelopes are validated and published through a bounded temporary local
+storage adapter rather than interpreted in the route.
 
 Current boundaries are enforced by tests:
 
@@ -56,9 +57,11 @@ molecule-atlas CLI ──────────────┘
 ```
 
 `molecule_atlas.evidence` has no dependency on `app`, FastAPI, RDKit, persistence, schedulers, GPU
-runtimes, or model providers. FastAPI now exposes the read-only `get_run_summary` capability for
-checked-in local evidence. Browser upload remains the next Milestone 3 slice; PostgreSQL and durable
-run history remain deferred.
+runtimes, or model providers. FastAPI exposes the read-only `get_run_summary` capability and the
+idempotent `import_evidence_bundle` command. Imports validate archive paths and limits, the portable
+run manifest, optional semantic artifact manifest, and declared artifact bytes before atomic local
+publication. The repository, idempotency records, and actor grants are deliberately process-local;
+PostgreSQL and durable run history remain deferred.
 
 ## Target system
 

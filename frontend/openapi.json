@@ -1,6 +1,21 @@
 {
   "components": {
     "schemas": {
+      "Body_import_evidence_bundle": {
+        "properties": {
+          "bundle": {
+            "contentMediaType": "application/octet-stream",
+            "description": "Portable Molecule Atlas evidence bundle ZIP",
+            "title": "Bundle",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bundle"
+        ],
+        "title": "Body_import_evidence_bundle",
+        "type": "object"
+      },
       "CandidateSet": {
         "additionalProperties": false,
         "properties": {
@@ -215,6 +230,47 @@
           }
         },
         "title": "HealthResponse",
+        "type": "object"
+      },
+      "ImportEvidenceBundleOutput": {
+        "additionalProperties": false,
+        "properties": {
+          "capability_id": {
+            "const": "import_evidence_bundle",
+            "default": "import_evidence_bundle",
+            "title": "Capability Id",
+            "type": "string"
+          },
+          "capability_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Capability Version",
+            "type": "string"
+          },
+          "contract_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "correlation_id": {
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "idempotency_replayed": {
+            "title": "Idempotency Replayed",
+            "type": "boolean"
+          },
+          "run": {
+            "$ref": "#/components/schemas/RunSummary"
+          }
+        },
+        "required": [
+          "correlation_id",
+          "idempotency_replayed",
+          "run"
+        ],
+        "title": "ImportEvidenceBundleOutput",
         "type": "object"
       },
       "InvalidCandidate": {
@@ -1159,6 +1215,110 @@
         "summary": "Get Demo Projection",
         "tags": [
           "candidate-sets"
+        ]
+      }
+    },
+    "/api/evidence/imports": {
+      "post": {
+        "operationId": "import_evidence_bundle",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+              "title": "Idempotency-Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_import_evidence_bundle"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportEvidenceBundleOutput"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsafe or invalid evidence bundle"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Import conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Evidence bundle limit exceeded"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import Evidence Bundle",
+        "tags": [
+          "evidence"
         ]
       }
     },

@@ -1,7 +1,11 @@
 import pytest
 from pydantic import ValidationError
 
-from app.application.capabilities.catalog import GET_RUN_SUMMARY, CapabilityCatalog
+from app.application.capabilities.catalog import (
+    GET_RUN_SUMMARY,
+    IMPORT_EVIDENCE_BUNDLE,
+    CapabilityCatalog,
+)
 from app.application.capabilities.models import (
     ActorContext,
     CapabilityContext,
@@ -25,6 +29,26 @@ def test_get_run_summary_has_stable_complete_metadata() -> None:
         "cost_class": "small_cpu",
         "runtime_class": "interactive",
         "supports_idempotency": False,
+        "supports_cancellation": False,
+        "supports_dry_run": False,
+    }
+
+
+def test_import_evidence_bundle_has_stable_complete_metadata() -> None:
+    assert IMPORT_EVIDENCE_BUNDLE.model_dump(mode="json") == {
+        "capability_id": "import_evidence_bundle",
+        "capability_version": "0.1.0",
+        "title": "Import portable evidence bundle",
+        "description": "Validate and retain one bounded portable evidence ZIP for local review.",
+        "kind": "command",
+        "input_schema": "ImportEvidenceBundleInput.0.1.0",
+        "output_schema": "ImportEvidenceBundleOutput.0.1.0",
+        "required_permissions": ["evidence:import"],
+        "risk_level": "medium",
+        "side_effects": ["local_artifact_write", "local_run_create"],
+        "cost_class": "small_cpu",
+        "runtime_class": "interactive",
+        "supports_idempotency": True,
         "supports_cancellation": False,
         "supports_dry_run": False,
     }

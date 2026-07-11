@@ -9,6 +9,12 @@ ActorType = Literal["human", "service", "plugin", "agent"]
 RiskLevel = Literal["low", "medium", "high", "critical"]
 CostClass = Literal["negligible", "small_cpu", "large_cpu", "gpu", "external_paid"]
 RuntimeClass = Literal["instant", "interactive", "batch", "long_running"]
+SideEffect = Literal[
+    "local_artifact_write",
+    "local_run_create",
+    "persistent_record_write",
+    "external_call",
+]
 
 _IDENTIFIER_PATTERN = r"^[a-z][a-z0-9]*(?:[_:-][a-z0-9]+)*$"
 _SEMVER_PATTERN = (
@@ -30,7 +36,7 @@ class CapabilityDefinition(ApiModel):
     output_schema: str = Field(min_length=1)
     required_permissions: tuple[str, ...]
     risk_level: RiskLevel
-    side_effects: tuple[str, ...]
+    side_effects: tuple[SideEffect, ...]
     cost_class: CostClass
     runtime_class: RuntimeClass
     supports_idempotency: bool

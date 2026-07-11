@@ -1,6 +1,19 @@
+from pathlib import Path
+
 from fastapi.testclient import TestClient
 
+from app.api.evidence import (
+    MAX_EVIDENCE_BUNDLE_BYTES,
+    get_import_evidence_capability,
+    get_run_summary_capability,
+)
+from app.application.evidence.import_bundle import ImportEvidenceBundleCapability
+from app.application.evidence.run_summary import GetRunSummaryCapability
+from app.infrastructure.evidence.local_repository import LocalEvidenceRunRepository
 from app.main import app
+from tests.evidence_bundle_factory import evidence_bundle_bytes
+
+FIXTURE_ROOT = Path(__file__).parents[2] / "data" / "evidence-fixtures"
 
 
 def test_get_run_summary_endpoint_uses_capability_contract() -> None:
@@ -29,3 +42,71 @@ def test_get_run_summary_has_stable_openapi_operation_id() -> None:
     operation = app.openapi()["paths"]["/api/evidence/runs/{run_id}"]["get"]
 
     assert operation["operationId"] == "get_run_summary"
+
+
+def test_import_evidence_bundle_endpoint_publishes_run_for_summary_query(tmp_path: Path) -> None:
+    repository = LocalEvidenceRunRepository((), upload_root=tmp_path)
+    import_capability = ImportEvidenceBundleCapability(repository)
+    summary_capability = GetRunSummaryCapability(repository)
+    app.dependency_overrides[get_import_evidence_capability] = lambda: import_capability
+    app.dependency_overrides[get_run_summary_capability] = lambda: summary_capability
+    try:
+        response = TestClient(app).post(
+            "/api/evidence/imports",
+            files={
+                "bundle": (
+                    "evidence.zip",
+                    evidence_bundle_bytes(FIXTURE_ROOT / "succeeded"),
+                    "application/zip",
+                )
+            },
+            headers={
+                "Idempotency-Key": "web-import-1",
+                "X-Correlation-ID": "corr-web-import",
+            },
+        )
+        summary_response = TestClient(app).get(
+            "/api/evidence/runs/fixture-succeeded",
+            headers={"X-Correlation-ID": "corr-web-summary"},
+        )
+    finally:
+        app.dependency_overrides.pop(get_import_evidence_capability)
+        app.dependency_overrides.pop(get_run_summary_capability)
+
+    assert response.status_code == 201
+    assert response.headers["X-Correlation-ID"] == "corr-web-import"
+    assert response.json()["run"]["run_id"] == "fixture-succeeded"
+    assert summary_response.status_code == 200
+    assert summary_response.json()["run"]["run_id"] == "fixture-succeeded"
+
+
+def test_import_evidence_bundle_endpoint_rejects_oversized_transport() -> None:
+    response = TestClient(app).post(
+        "/api/evidence/imports",
+        files={"bundle": ("large.zip", b"x" * (MAX_EVIDENCE_BUNDLE_BYTES + 1), "application/zip")},
+        headers={"Idempotency-Key": "web-import-large"},
+    )
+
+    assert response.status_code == 413
+    assert response.json() == {"detail": "Evidence bundle exceeds the 10485760-byte limit"}
+
+
+def test_import_evidence_bundle_endpoint_maps_invalid_zip_with_correlation() -> None:
+    response = TestClient(app).post(
+        "/api/evidence/imports",
+        files={"bundle": ("invalid.zip", b"not-a-zip", "application/zip")},
+        headers={
+            "Idempotency-Key": "web-import-invalid",
+            "X-Correlation-ID": "corr-web-invalid",
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.headers["X-Correlation-ID"] == "corr-web-invalid"
+    assert "not a readable ZIP" in response.json()["detail"]
+
+
+def test_import_evidence_bundle_has_stable_openapi_operation_id() -> None:
+    operation = app.openapi()["paths"]["/api/evidence/imports"]["post"]
+
+    assert operation["operationId"] == "import_evidence_bundle"
