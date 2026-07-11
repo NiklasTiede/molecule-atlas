@@ -110,3 +110,47 @@ def test_import_evidence_bundle_has_stable_openapi_operation_id() -> None:
     operation = app.openapi()["paths"]["/api/evidence/imports"]["post"]
 
     assert operation["operationId"] == "import_evidence_bundle"
+
+
+def test_list_available_artifacts_endpoint_is_bounded_and_correlated() -> None:
+    response = TestClient(app).get(
+        "/api/evidence/runs/fixture-succeeded/artifacts?offset=1&limit=2",
+        headers={"X-Correlation-ID": "corr-http-artifacts"},
+    )
+
+    assert response.status_code == 200
+    assert response.headers["X-Correlation-ID"] == "corr-http-artifacts"
+    body = response.json()
+    assert body["total"] == 4
+    assert body["offset"] == 1
+    assert body["limit"] == 2
+    assert [artifact["artifact_id"] for artifact in body["artifacts"]] == [
+        "predicted-pose",
+        "raw-predictions",
+    ]
+
+
+def test_validate_evidence_artifacts_endpoint_returns_structured_checks() -> None:
+    response = TestClient(app).get(
+        "/api/evidence/runs/fixture-succeeded/artifact-validation",
+        headers={"X-Correlation-ID": "corr-http-validation"},
+    )
+
+    assert response.status_code == 200
+    assert response.headers["X-Correlation-ID"] == "corr-http-validation"
+    body = response.json()
+    assert body["counts"]["verified_count"] == 4
+    assert {check["status"] for check in body["artifact_checks"]} == {"verified"}
+
+
+def test_artifact_endpoints_have_stable_openapi_operation_ids() -> None:
+    paths = app.openapi()["paths"]
+
+    assert (
+        paths["/api/evidence/runs/{run_id}/artifacts"]["get"]["operationId"]
+        == "list_available_artifacts"
+    )
+    assert (
+        paths["/api/evidence/runs/{run_id}/artifact-validation"]["get"]["operationId"]
+        == "validate_evidence_artifacts"
+    )

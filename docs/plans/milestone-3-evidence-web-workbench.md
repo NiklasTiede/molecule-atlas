@@ -1,7 +1,7 @@
 # Milestone 3 Implementation Plan: Evidence Web Workbench
 
 - Status: In progress
-- Current slice: Slices 1–2 implemented; Slice 3 — artifact and validation inspection — is next
+- Current slice: Slices 1–3 implemented; Slice 4 — candidate evidence query — is next
 - Roadmap milestone: 3 — Evidence import in the web workbench
 - Planning date: 2026-07-11
 

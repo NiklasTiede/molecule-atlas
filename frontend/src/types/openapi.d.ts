@@ -106,6 +106,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/evidence/runs/{run_id}/artifact-validation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Validate Evidence Artifacts */
+        get: operations["validate_evidence_artifacts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/evidence/runs/{run_id}/artifacts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Available Artifacts */
+        get: operations["list_available_artifacts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -127,6 +161,65 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ArtifactCheck */
+        ArtifactCheck: {
+            /** Actual Sha256 */
+            actual_sha256?: string | null;
+            /** Actual Size Bytes */
+            actual_size_bytes?: number | null;
+            /** Artifact Id */
+            artifact_id: string;
+            /** Message */
+            message: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "verified" | "missing" | "mismatch" | "external" | "unsafe_path" | "unreadable";
+        };
+        /** ArtifactCheckCounts */
+        ArtifactCheckCounts: {
+            /** External Count */
+            external_count: number;
+            /** Mismatch Count */
+            mismatch_count: number;
+            /** Missing Count */
+            missing_count: number;
+            /** Unreadable Count */
+            unreadable_count: number;
+            /** Unsafe Path Count */
+            unsafe_path_count: number;
+            /** Verified Count */
+            verified_count: number;
+        };
+        /** AvailableArtifact */
+        AvailableArtifact: {
+            /** Artifact Id */
+            artifact_id: string;
+            /** Content Digest */
+            content_digest: string;
+            /** Created By Stage */
+            created_by_stage: string;
+            /** Media Type */
+            media_type: string;
+            /** Original Name */
+            original_name: string;
+            /** Path Or Uri */
+            path_or_uri: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "receptor_input" | "ligand_input" | "predicted_complex" | "pose_set" | "raw_score_output" | "validation_output" | "interaction_output" | "log" | "report" | "other";
+            semantic: components["schemas"]["SemanticArtifactSummary"] | null;
+            /** Size Bytes */
+            size_bytes: number;
+            /** Source Metadata */
+            source_metadata: {
+                [key: string]: components["schemas"]["JsonValue"];
+            };
+            verification: components["schemas"]["ArtifactCheck"];
+        };
         /** Body_import_evidence_bundle */
         Body_import_evidence_bundle: {
             /**
@@ -289,6 +382,39 @@ export interface components {
             validation_notes: components["schemas"]["ValidationNote"][];
         };
         JsonValue: unknown;
+        /** ListAvailableArtifactsOutput */
+        ListAvailableArtifactsOutput: {
+            /** Artifacts */
+            artifacts: components["schemas"]["AvailableArtifact"][];
+            /**
+             * Capability Id
+             * @default list_available_artifacts
+             * @constant
+             */
+            capability_id: "list_available_artifacts";
+            /**
+             * Capability Version
+             * @default 0.1.0
+             * @constant
+             */
+            capability_version: "0.1.0";
+            /**
+             * Contract Version
+             * @default 0.1.0
+             * @constant
+             */
+            contract_version: "0.1.0";
+            /** Correlation Id */
+            correlation_id: string;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Run Id */
+            run_id: string;
+            /** Total */
+            total: number;
+        };
         /** ManifestWarning */
         ManifestWarning: {
             /** Code */
@@ -380,6 +506,33 @@ export interface components {
             /** Warnings */
             warnings: components["schemas"]["ManifestWarning"][];
         };
+        /** SemanticArtifactSummary */
+        SemanticArtifactSummary: {
+            /**
+             * Artifact Type
+             * @enum {string}
+             */
+            artifact_type: "model-input" | "ligand-structure" | "protein-structure" | "predicted-complex" | "docking-pose-set" | "raw-prediction-output" | "validation-report" | "run-log" | "evidence-report";
+            /** Derived From Artifact Ids */
+            derived_from_artifact_ids: string[];
+            /** Domain Metadata */
+            domain_metadata: {
+                [key: string]: components["schemas"]["JsonValue"];
+            };
+            /** Logical Name */
+            logical_name: string;
+            /** Preview Metadata */
+            preview_metadata: {
+                [key: string]: components["schemas"]["JsonValue"];
+            };
+            /** Schema Version */
+            schema_version: string | null;
+            /**
+             * Semantic Role
+             * @enum {string}
+             */
+            semantic_role: "input" | "primary_output" | "raw_output" | "normalized_output" | "validation_output" | "log" | "report";
+        };
         /** SimilarityNeighbor */
         SimilarityNeighbor: {
             /** Candidate Id */
@@ -442,6 +595,36 @@ export interface components {
             triage_flags: components["schemas"]["TriageFlags"];
             /** Validation Notes */
             validation_notes: components["schemas"]["ValidationNote"][];
+        };
+        /** ValidateEvidenceArtifactsOutput */
+        ValidateEvidenceArtifactsOutput: {
+            /** Artifact Checks */
+            artifact_checks: components["schemas"]["ArtifactCheck"][];
+            /**
+             * Capability Id
+             * @default validate_evidence_artifacts
+             * @constant
+             */
+            capability_id: "validate_evidence_artifacts";
+            /**
+             * Capability Version
+             * @default 0.1.0
+             * @constant
+             */
+            capability_version: "0.1.0";
+            /**
+             * Contract Version
+             * @default 0.1.0
+             * @constant
+             */
+            contract_version: "0.1.0";
+            /** Correlation Id */
+            correlation_id: string;
+            counts: components["schemas"]["ArtifactCheckCounts"];
+            /** Run Id */
+            run_id: string;
+            /** Warnings */
+            warnings: components["schemas"]["ManifestWarning"][];
         };
         /** ValidationCounts */
         ValidationCounts: {
@@ -700,6 +883,93 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GetRunSummaryOutput"];
+                };
+            };
+            /** @description Evidence run not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    validate_evidence_artifacts: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Correlation-ID"?: string | null;
+            };
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidateEvidenceArtifactsOutput"];
+                };
+            };
+            /** @description Evidence run not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_available_artifacts: {
+        parameters: {
+            query?: {
+                offset?: number;
+                limit?: number;
+            };
+            header?: {
+                "X-Correlation-ID"?: string | null;
+            };
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListAvailableArtifactsOutput"];
                 };
             };
             /** @description Evidence run not found */

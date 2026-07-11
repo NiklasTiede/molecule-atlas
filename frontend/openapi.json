@@ -1,6 +1,195 @@
 {
   "components": {
     "schemas": {
+      "ArtifactCheck": {
+        "additionalProperties": false,
+        "properties": {
+          "actual_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Sha256"
+          },
+          "actual_size_bytes": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Size Bytes"
+          },
+          "artifact_id": {
+            "minLength": 1,
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "message": {
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "verified",
+              "missing",
+              "mismatch",
+              "external",
+              "unsafe_path",
+              "unreadable"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "status",
+          "message"
+        ],
+        "title": "ArtifactCheck",
+        "type": "object"
+      },
+      "ArtifactCheckCounts": {
+        "additionalProperties": false,
+        "properties": {
+          "external_count": {
+            "minimum": 0.0,
+            "title": "External Count",
+            "type": "integer"
+          },
+          "mismatch_count": {
+            "minimum": 0.0,
+            "title": "Mismatch Count",
+            "type": "integer"
+          },
+          "missing_count": {
+            "minimum": 0.0,
+            "title": "Missing Count",
+            "type": "integer"
+          },
+          "unreadable_count": {
+            "minimum": 0.0,
+            "title": "Unreadable Count",
+            "type": "integer"
+          },
+          "unsafe_path_count": {
+            "minimum": 0.0,
+            "title": "Unsafe Path Count",
+            "type": "integer"
+          },
+          "verified_count": {
+            "minimum": 0.0,
+            "title": "Verified Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "verified_count",
+          "missing_count",
+          "mismatch_count",
+          "external_count",
+          "unsafe_path_count",
+          "unreadable_count"
+        ],
+        "title": "ArtifactCheckCounts",
+        "type": "object"
+      },
+      "AvailableArtifact": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "content_digest": {
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "created_by_stage": {
+            "title": "Created By Stage",
+            "type": "string"
+          },
+          "media_type": {
+            "title": "Media Type",
+            "type": "string"
+          },
+          "original_name": {
+            "title": "Original Name",
+            "type": "string"
+          },
+          "path_or_uri": {
+            "title": "Path Or Uri",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "receptor_input",
+              "ligand_input",
+              "predicted_complex",
+              "pose_set",
+              "raw_score_output",
+              "validation_output",
+              "interaction_output",
+              "log",
+              "report",
+              "other"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "semantic": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SemanticArtifactSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "size_bytes": {
+            "minimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "source_metadata": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "title": "Source Metadata",
+            "type": "object"
+          },
+          "verification": {
+            "$ref": "#/components/schemas/ArtifactCheck"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "role",
+          "path_or_uri",
+          "original_name",
+          "media_type",
+          "content_digest",
+          "size_bytes",
+          "created_by_stage",
+          "source_metadata",
+          "verification",
+          "semantic"
+        ],
+        "title": "AvailableArtifact",
+        "type": "object"
+      },
       "Body_import_evidence_bundle": {
         "properties": {
           "bundle": {
@@ -400,6 +589,70 @@
         "type": "object"
       },
       "JsonValue": {},
+      "ListAvailableArtifactsOutput": {
+        "additionalProperties": false,
+        "properties": {
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/AvailableArtifact"
+            },
+            "title": "Artifacts",
+            "type": "array"
+          },
+          "capability_id": {
+            "const": "list_available_artifacts",
+            "default": "list_available_artifacts",
+            "title": "Capability Id",
+            "type": "string"
+          },
+          "capability_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Capability Version",
+            "type": "string"
+          },
+          "contract_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "correlation_id": {
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "limit": {
+            "maximum": 200.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "minimum": 0.0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "correlation_id",
+          "run_id",
+          "total",
+          "offset",
+          "limit",
+          "artifacts"
+        ],
+        "title": "ListAvailableArtifactsOutput",
+        "type": "object"
+      },
       "ManifestWarning": {
         "additionalProperties": false,
         "properties": {
@@ -746,6 +999,86 @@
         "title": "RunSummary",
         "type": "object"
       },
+      "SemanticArtifactSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_type": {
+            "enum": [
+              "model-input",
+              "ligand-structure",
+              "protein-structure",
+              "predicted-complex",
+              "docking-pose-set",
+              "raw-prediction-output",
+              "validation-report",
+              "run-log",
+              "evidence-report"
+            ],
+            "title": "Artifact Type",
+            "type": "string"
+          },
+          "derived_from_artifact_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Derived From Artifact Ids",
+            "type": "array"
+          },
+          "domain_metadata": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "title": "Domain Metadata",
+            "type": "object"
+          },
+          "logical_name": {
+            "title": "Logical Name",
+            "type": "string"
+          },
+          "preview_metadata": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "title": "Preview Metadata",
+            "type": "object"
+          },
+          "schema_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Version"
+          },
+          "semantic_role": {
+            "enum": [
+              "input",
+              "primary_output",
+              "raw_output",
+              "normalized_output",
+              "validation_output",
+              "log",
+              "report"
+            ],
+            "title": "Semantic Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "logical_name",
+          "artifact_type",
+          "schema_version",
+          "semantic_role",
+          "derived_from_artifact_ids",
+          "domain_metadata",
+          "preview_metadata"
+        ],
+        "title": "SemanticArtifactSummary",
+        "type": "object"
+      },
       "SimilarityNeighbor": {
         "additionalProperties": false,
         "properties": {
@@ -939,6 +1272,63 @@
           "structure_svg"
         ],
         "title": "ValidCandidate",
+        "type": "object"
+      },
+      "ValidateEvidenceArtifactsOutput": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_checks": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactCheck"
+            },
+            "title": "Artifact Checks",
+            "type": "array"
+          },
+          "capability_id": {
+            "const": "validate_evidence_artifacts",
+            "default": "validate_evidence_artifacts",
+            "title": "Capability Id",
+            "type": "string"
+          },
+          "capability_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Capability Version",
+            "type": "string"
+          },
+          "contract_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "correlation_id": {
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/ArtifactCheckCounts"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/ManifestWarning"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "correlation_id",
+          "run_id",
+          "counts",
+          "artifact_checks",
+          "warnings"
+        ],
+        "title": "ValidateEvidenceArtifactsOutput",
         "type": "object"
       },
       "ValidationCounts": {
@@ -1388,6 +1778,171 @@
           }
         },
         "summary": "Get Run Summary",
+        "tags": [
+          "evidence"
+        ]
+      }
+    },
+    "/api/evidence/runs/{run_id}/artifact-validation": {
+      "get": {
+        "operationId": "validate_evidence_artifacts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidateEvidenceArtifactsOutput"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Evidence run not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Validate Evidence Artifacts",
+        "tags": [
+          "evidence"
+        ]
+      }
+    },
+    "/api/evidence/runs/{run_id}/artifacts": {
+      "get": {
+        "operationId": "list_available_artifacts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListAvailableArtifactsOutput"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Evidence run not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Available Artifacts",
         "tags": [
           "evidence"
         ]

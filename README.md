@@ -22,6 +22,7 @@ Molecule Atlas is not a drug-discovery oracle. It does not claim that a candidat
 - Initial typed application capability catalog with permission and execution-policy metadata
 - Bounded local evidence run-summary API with explicit correlation IDs
 - Safe, idempotent portable evidence ZIP import into temporary local storage
+- Bounded semantic artifact inventory and structured integrity/provenance validation APIs
 - FastAPI-independent portable evidence core
 - Versioned run and semantic artifact manifests with typed prediction and validation semantics
 - SHA-256 artifact inventory and offline verification
@@ -120,6 +121,8 @@ Useful backend URLs:
 - `http://localhost:8000/api/candidate-sets/demo/candidates/demo-1/conformer`
 - `http://localhost:8000/api/evidence/runs/fixture-succeeded`
 - `POST http://localhost:8000/api/evidence/imports`
+- `http://localhost:8000/api/evidence/runs/fixture-succeeded/artifacts`
+- `http://localhost:8000/api/evidence/runs/fixture-succeeded/artifact-validation`
 
 The import operation accepts one `multipart/form-data` field named `bundle`, with media type
 `application/zip`, plus a required `Idempotency-Key` header. A bundle root contains
@@ -186,9 +189,10 @@ UV_CACHE_DIR=../.uv-cache uv sync --extra validation
 
 Milestones 1 and 2 are implemented: the portable core includes typed external-output normalization,
 PoseBusters-backed checks, semantic artifact lineage, and deterministic Markdown/HTML evidence
-reports. Milestone 3 is in progress. Its first two slices introduce the shared capability boundary,
-a bounded local run-summary API, and safe temporary evidence-bundle upload. Artifact and validation
-inspection is next, followed by the evidence review UI. Genuine Boltz/DiffDock execution fixtures
-and adapter registration remain with Milestone 8. AI integration remains deferred until the
-governed-assistance milestone. See
+reports. Milestone 3 is in progress. Its first three slices introduce the shared capability
+boundary, bounded run and semantic-artifact queries, safe temporary evidence-bundle upload, and
+structured integrity/provenance validation. Candidate evidence is next, followed by comparison,
+reports, and the evidence review UI. Genuine Boltz/DiffDock execution fixtures and adapter
+registration remain with Milestone 8. AI integration remains deferred until the governed-assistance
+milestone. See
 [the roadmap](docs/roadmap.md) for later acceptance criteria.

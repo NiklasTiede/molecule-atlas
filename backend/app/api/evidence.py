@@ -3,15 +3,35 @@ from tempfile import TemporaryDirectory
 from typing import Annotated
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, File, Header, HTTPException, Response, UploadFile, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Header,
+    HTTPException,
+    Query,
+    Response,
+    UploadFile,
+    status,
+)
 
 from app.application.capabilities.models import ActorContext, CapabilityContext
+from app.application.evidence.artifact_inspection import (
+    ListAvailableArtifactsCapability,
+    ValidateEvidenceArtifactsCapability,
+)
 from app.application.evidence.contracts import (
+    DEFAULT_ARTIFACT_PAGE_SIZE,
+    MAX_ARTIFACT_PAGE_SIZE,
     MAX_EVIDENCE_BUNDLE_BYTES,
     GetRunSummaryInput,
     GetRunSummaryOutput,
     ImportEvidenceBundleInput,
     ImportEvidenceBundleOutput,
+    ListAvailableArtifactsInput,
+    ListAvailableArtifactsOutput,
+    ValidateEvidenceArtifactsInput,
+    ValidateEvidenceArtifactsOutput,
 )
 from app.application.evidence.import_bundle import ImportEvidenceBundleCapability
 from app.application.evidence.ports import (
@@ -36,6 +56,8 @@ _EVIDENCE_REPOSITORY = LocalEvidenceRunRepository(
 )
 _RUN_SUMMARY_CAPABILITY = GetRunSummaryCapability(_EVIDENCE_REPOSITORY)
 _IMPORT_EVIDENCE_CAPABILITY = ImportEvidenceBundleCapability(_EVIDENCE_REPOSITORY)
+_LIST_ARTIFACTS_CAPABILITY = ListAvailableArtifactsCapability(_EVIDENCE_REPOSITORY)
+_VALIDATE_ARTIFACTS_CAPABILITY = ValidateEvidenceArtifactsCapability(_EVIDENCE_REPOSITORY)
 
 CorrelationHeader = Annotated[
     str | None,
@@ -70,6 +92,14 @@ def get_import_evidence_capability() -> ImportEvidenceBundleCapability:
     return _IMPORT_EVIDENCE_CAPABILITY
 
 
+def get_list_available_artifacts_capability() -> ListAvailableArtifactsCapability:
+    return _LIST_ARTIFACTS_CAPABILITY
+
+
+def get_validate_evidence_artifacts_capability() -> ValidateEvidenceArtifactsCapability:
+    return _VALIDATE_ARTIFACTS_CAPABILITY
+
+
 def _local_context(correlation_id: str | None) -> CapabilityContext:
     return CapabilityContext(
         actor=ActorContext(
@@ -97,6 +127,66 @@ def get_run_summary(
     context = _local_context(x_correlation_id)
     try:
         result = capability.execute(GetRunSummaryInput(run_id=run_id), context=context)
+    except EvidenceRunNotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
+    response.headers["X-Correlation-ID"] = result.correlation_id
+    return result
+
+
+@router.get(
+    "/runs/{run_id}/artifacts",
+    operation_id="list_available_artifacts",
+    response_model=ListAvailableArtifactsOutput,
+    responses={404: {"model": ErrorResponse, "description": "Evidence run not found"}},
+)
+def list_available_artifacts(
+    run_id: str,
+    response: Response,
+    capability: Annotated[
+        ListAvailableArtifactsCapability,
+        Depends(get_list_available_artifacts_capability),
+    ],
+    offset: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=MAX_ARTIFACT_PAGE_SIZE)] = DEFAULT_ARTIFACT_PAGE_SIZE,
+    x_correlation_id: CorrelationHeader = None,
+) -> ListAvailableArtifactsOutput:
+    context = _local_context(x_correlation_id)
+    try:
+        result = capability.execute(
+            ListAvailableArtifactsInput(
+                run_id=run_id,
+                offset=offset,
+                limit=limit,
+            ),
+            context=context,
+        )
+    except EvidenceRunNotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
+    response.headers["X-Correlation-ID"] = result.correlation_id
+    return result
+
+
+@router.get(
+    "/runs/{run_id}/artifact-validation",
+    operation_id="validate_evidence_artifacts",
+    response_model=ValidateEvidenceArtifactsOutput,
+    responses={404: {"model": ErrorResponse, "description": "Evidence run not found"}},
+)
+def validate_evidence_artifacts(
+    run_id: str,
+    response: Response,
+    capability: Annotated[
+        ValidateEvidenceArtifactsCapability,
+        Depends(get_validate_evidence_artifacts_capability),
+    ],
+    x_correlation_id: CorrelationHeader = None,
+) -> ValidateEvidenceArtifactsOutput:
+    context = _local_context(x_correlation_id)
+    try:
+        result = capability.execute(
+            ValidateEvidenceArtifactsInput(run_id=run_id),
+            context=context,
+        )
     except EvidenceRunNotFoundError as error:
         raise HTTPException(status_code=404, detail=str(error)) from error
     response.headers["X-Correlation-ID"] = result.correlation_id

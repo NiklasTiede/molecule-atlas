@@ -3,12 +3,14 @@ from pathlib import Path
 from typing import Protocol
 
 from molecule_atlas.evidence.models import RunManifest
+from molecule_atlas.evidence.semantic_artifacts import ArtifactManifest
 
 
 @dataclass(frozen=True, slots=True)
 class StoredEvidenceRun:
     root: Path
     manifest: RunManifest
+    artifact_manifest: ArtifactManifest | None = None
 
 
 class EvidenceBundleInputError(ValueError):

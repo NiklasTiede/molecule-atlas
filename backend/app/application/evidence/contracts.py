@@ -1,12 +1,19 @@
 from datetime import datetime
 from typing import Literal
 
-from molecule_atlas.evidence.models import ManifestWarning, RunFailure, RunState
-from pydantic import Field
+from molecule_atlas.evidence.artifacts import ArtifactCheck
+from molecule_atlas.evidence.models import ArtifactRole, ManifestWarning, RunFailure, RunState
+from molecule_atlas.evidence.semantic_artifacts import (
+    ArtifactSemanticRole,
+    ArtifactType,
+)
+from pydantic import Field, JsonValue
 
 from app.models.base import ApiModel
 
 MAX_EVIDENCE_BUNDLE_BYTES = 10 * 1024 * 1024
+DEFAULT_ARTIFACT_PAGE_SIZE = 50
+MAX_ARTIFACT_PAGE_SIZE = 200
 
 
 class ImportEvidenceBundleInput(ApiModel):
@@ -21,6 +28,18 @@ class ImportEvidenceBundleInput(ApiModel):
 
 
 class GetRunSummaryInput(ApiModel):
+    contract_version: Literal["0.1.0"] = "0.1.0"
+    run_id: str = Field(min_length=1, max_length=200)
+
+
+class ListAvailableArtifactsInput(ApiModel):
+    contract_version: Literal["0.1.0"] = "0.1.0"
+    run_id: str = Field(min_length=1, max_length=200)
+    offset: int = Field(default=0, ge=0)
+    limit: int = Field(default=DEFAULT_ARTIFACT_PAGE_SIZE, ge=1, le=MAX_ARTIFACT_PAGE_SIZE)
+
+
+class ValidateEvidenceArtifactsInput(ApiModel):
     contract_version: Literal["0.1.0"] = "0.1.0"
     run_id: str = Field(min_length=1, max_length=200)
 
@@ -79,3 +98,59 @@ class ImportEvidenceBundleOutput(ApiModel):
     correlation_id: str
     idempotency_replayed: bool
     run: RunSummary
+
+
+class SemanticArtifactSummary(ApiModel):
+    logical_name: str
+    artifact_type: ArtifactType
+    schema_version: str | None
+    semantic_role: ArtifactSemanticRole
+    derived_from_artifact_ids: tuple[str, ...]
+    domain_metadata: dict[str, JsonValue]
+    preview_metadata: dict[str, JsonValue]
+
+
+class AvailableArtifact(ApiModel):
+    artifact_id: str
+    role: ArtifactRole
+    path_or_uri: str
+    original_name: str
+    media_type: str
+    content_digest: str = Field(pattern=r"^sha256:[0-9a-f]{64}$")
+    size_bytes: int = Field(ge=0)
+    created_by_stage: str
+    source_metadata: dict[str, JsonValue]
+    verification: ArtifactCheck
+    semantic: SemanticArtifactSummary | None
+
+
+class ListAvailableArtifactsOutput(ApiModel):
+    contract_version: Literal["0.1.0"] = "0.1.0"
+    capability_id: Literal["list_available_artifacts"] = "list_available_artifacts"
+    capability_version: Literal["0.1.0"] = "0.1.0"
+    correlation_id: str
+    run_id: str
+    total: int = Field(ge=0)
+    offset: int = Field(ge=0)
+    limit: int = Field(ge=1, le=MAX_ARTIFACT_PAGE_SIZE)
+    artifacts: tuple[AvailableArtifact, ...]
+
+
+class ArtifactCheckCounts(ApiModel):
+    verified_count: int = Field(ge=0)
+    missing_count: int = Field(ge=0)
+    mismatch_count: int = Field(ge=0)
+    external_count: int = Field(ge=0)
+    unsafe_path_count: int = Field(ge=0)
+    unreadable_count: int = Field(ge=0)
+
+
+class ValidateEvidenceArtifactsOutput(ApiModel):
+    contract_version: Literal["0.1.0"] = "0.1.0"
+    capability_id: Literal["validate_evidence_artifacts"] = "validate_evidence_artifacts"
+    capability_version: Literal["0.1.0"] = "0.1.0"
+    correlation_id: str
+    run_id: str
+    counts: ArtifactCheckCounts
+    artifact_checks: tuple[ArtifactCheck, ...]
+    warnings: tuple[ManifestWarning, ...]

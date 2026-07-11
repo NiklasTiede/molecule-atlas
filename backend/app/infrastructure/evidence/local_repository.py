@@ -9,7 +9,11 @@ from zipfile import ZIP_DEFLATED, ZIP_STORED, BadZipFile, ZipFile, ZipInfo
 
 from molecule_atlas.evidence.adapters.manifest import MANIFEST_FILENAME
 from molecule_atlas.evidence.audit import audit_manifest
-from molecule_atlas.evidence.semantic_artifacts import validate_artifact_manifest_against_run
+from molecule_atlas.evidence.models import RunManifest
+from molecule_atlas.evidence.semantic_artifacts import (
+    ArtifactManifest,
+    validate_artifact_manifest_against_run,
+)
 from molecule_atlas.evidence.serialization import (
     load_artifact_manifest,
     load_manifest,
@@ -122,18 +126,7 @@ def _load_and_validate_bundle(root: Path) -> StoredEvidenceRun:
     except (OSError, ValueError) as error:
         raise EvidenceBundleInputError(f"Run manifest validation failed: {error}") from error
 
-    artifact_manifest_path = root / ARTIFACT_MANIFEST_FILENAME
-    if artifact_manifest_path.exists():
-        try:
-            artifact_manifest = load_artifact_manifest(artifact_manifest_path)
-            validate_artifact_manifest_against_run(
-                artifact_manifest,
-                run_manifest=manifest,
-            )
-        except (OSError, ValueError) as error:
-            raise EvidenceBundleInputError(
-                f"Semantic artifact manifest validation failed: {error}"
-            ) from error
+    artifact_manifest = _load_artifact_manifest(root, run_manifest=manifest)
 
     audit = audit_manifest(manifest, root=root)
     invalid_checks = tuple(
@@ -142,7 +135,32 @@ def _load_and_validate_bundle(root: Path) -> StoredEvidenceRun:
     if invalid_checks:
         details = ", ".join(f"{check.artifact_id}={check.status}" for check in invalid_checks)
         raise EvidenceBundleInputError(f"Declared artifact validation failed: {details}")
-    return StoredEvidenceRun(root=root, manifest=manifest)
+    return StoredEvidenceRun(
+        root=root,
+        manifest=manifest,
+        artifact_manifest=artifact_manifest,
+    )
+
+
+def _load_artifact_manifest(
+    root: Path,
+    *,
+    run_manifest: RunManifest,
+) -> ArtifactManifest | None:
+    artifact_manifest_path = root / ARTIFACT_MANIFEST_FILENAME
+    if not artifact_manifest_path.exists():
+        return None
+    try:
+        artifact_manifest = load_artifact_manifest(artifact_manifest_path)
+        validate_artifact_manifest_against_run(
+            artifact_manifest,
+            run_manifest=run_manifest,
+        )
+    except (OSError, ValueError) as error:
+        raise EvidenceBundleInputError(
+            f"Semantic artifact manifest validation failed: {error}"
+        ) from error
+    return artifact_manifest
 
 
 class LocalEvidenceRunRepository:
@@ -161,6 +179,10 @@ class LocalEvidenceRunRepository:
                 by_run_id[run_id] = StoredEvidenceRun(
                     root=manifest_path.parent,
                     manifest=manifest,
+                    artifact_manifest=_load_artifact_manifest(
+                        manifest_path.parent,
+                        run_manifest=manifest,
+                    ),
                 )
         if upload_root is not None:
             upload_root.mkdir(parents=True, exist_ok=True)
@@ -192,6 +214,7 @@ class LocalEvidenceRunRepository:
                 stored_run = StoredEvidenceRun(
                     root=published_root,
                     manifest=staged_run.manifest,
+                    artifact_manifest=staged_run.artifact_manifest,
                 )
                 self._by_run_id[stored_run.manifest.run.id] = stored_run
                 return stored_run

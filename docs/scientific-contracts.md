@@ -50,6 +50,15 @@ partial run states remain importable evidence; malformed or tampered bundles do 
 records. Milestone 3 idempotency and storage are process-local and do not claim Milestone 5
 durability.
 
+`list_available_artifacts` and `validate_evidence_artifacts` version `0.1.0` are bounded read-only
+queries requiring `evidence:read`. Artifact listing combines the `RunManifest` inventory with an
+optional validated `ArtifactManifest`: portable role, path/URI, media type, content digest, size,
+creation stage, verification result, logical name, semantic type/role, derivation, and domain or
+preview metadata remain distinct fields. Artifact validation returns every `verified`, `missing`,
+`mismatch`, `external`, `unsafe_path`, or `unreadable` check with provenance warnings and typed
+counts. An external artifact is reported but never fetched implicitly. These integrity checks do not
+replace scientific validation results such as PoseBusters checks and do not define a generic score.
+
 ## Run manifest
 
 Every imported or managed run should normalize into a versioned manifest such as `molecule-atlas-run.json`.

@@ -28,9 +28,11 @@ molecules, and exposes typed API responses to the frontend. The separately packa
 validates versioned local run manifests, hashes artifacts, audits provenance, and produces canonical
 JSON, JSON Schema, and deterministic Markdown or self-contained HTML reports without importing
 FastAPI. Milestone 3 has introduced permission-aware `get_run_summary` and
-`import_evidence_bundle` capabilities. Thin HTTP handlers expose explicit operation and correlation
-IDs; uploaded ZIP transport envelopes are validated and published through a bounded temporary local
-storage adapter rather than interpreted in the route.
+`import_evidence_bundle`, `list_available_artifacts`, and `validate_evidence_artifacts`
+capabilities. Thin HTTP handlers expose explicit operation and correlation IDs; uploaded ZIP
+transport envelopes are validated and published through a bounded temporary local storage adapter
+rather than interpreted in the route. Stored runs retain an optional validated semantic artifact
+manifest so bounded clients can discover types and lineage without reading filenames or raw JSON.
 
 Current boundaries are enforced by tests:
 
@@ -62,6 +64,12 @@ idempotent `import_evidence_bundle` command. Imports validate archive paths and 
 run manifest, optional semantic artifact manifest, and declared artifact bytes before atomic local
 publication. The repository, idempotency records, and actor grants are deliberately process-local;
 PostgreSQL and durable run history remain deferred.
+
+Artifact inspection is read-only. `list_available_artifacts` returns a bounded page combining the
+portable inventory, optional semantic metadata, and current verification result.
+`validate_evidence_artifacts` rechecks local bytes and provenance and returns each typed status plus
+counts and warnings. It does not fetch external URIs, execute PoseBusters, invoke a scientific
+plugin, or collapse validation evidence into a universal verdict.
 
 ## Target system
 
