@@ -22,7 +22,7 @@ Molecule Atlas is not a drug-discovery oracle. It does not claim that a candidat
 - FastAPI-independent portable evidence core
 - Versioned run and semantic artifact manifests with typed prediction and validation semantics
 - SHA-256 artifact inventory and offline verification
-- Canonical JSON, JSON Schema, and deterministic Markdown reports
+- Canonical JSON, JSON Schema, and deterministic Markdown or self-contained HTML reports
 - Successful, partial, and failed synthetic evidence fixtures
 - `molecule-atlas` CLI for adapter discovery, manifest inspection, audit, and reporting
 - Unit, component, Playwright, and container smoke tests
@@ -127,6 +127,7 @@ UV_CACHE_DIR=../.uv-cache uv run molecule-atlas adapters
 UV_CACHE_DIR=../.uv-cache uv run molecule-atlas inspect ../data/evidence-fixtures/succeeded
 UV_CACHE_DIR=../.uv-cache uv run molecule-atlas audit ../data/evidence-fixtures/partial --adapter manifest --output /tmp/molecule-atlas-run.json
 UV_CACHE_DIR=../.uv-cache uv run molecule-atlas report ../data/evidence-fixtures/failed/molecule-atlas-run.json --format markdown
+UV_CACHE_DIR=../.uv-cache uv run molecule-atlas report ../data/evidence-fixtures/succeeded/molecule-atlas-run.json --format html --output /tmp/molecule-atlas-report.html
 ```
 
 Export the checked-in JSON Schemas with:
@@ -167,8 +168,9 @@ UV_CACHE_DIR=../.uv-cache uv sync --extra validation
 
 ## Current implementation priority
 
-Milestone 1, the portable evidence core, is implemented. Milestone 2 now has typed Boltz and DiffDock
-normalizers plus PoseBusters-backed normalized checks; deterministic HTML evidence reports and final
-milestone reconciliation remain. The shared application capability layer begins with web evidence
-import in Milestone 3; AI integration remains deferred until the governed-assistance milestone. See
-[the roadmap](docs/roadmap.md) for acceptance criteria and later milestones.
+Milestones 1 and 2 are implemented: the portable core includes typed external-output normalization,
+PoseBusters-backed checks, semantic artifact lineage, and deterministic Markdown/HTML evidence
+reports. Milestone 3 is next and introduces manifest-based evidence import through the shared
+application capability layer and web workbench. Genuine Boltz/DiffDock execution fixtures and
+adapter registration remain with Milestone 8. AI integration remains deferred until the
+governed-assistance milestone. See [the roadmap](docs/roadmap.md) for later acceptance criteria.

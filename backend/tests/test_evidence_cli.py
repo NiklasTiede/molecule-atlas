@@ -59,6 +59,30 @@ def test_report_prints_markdown_to_stdout(capsys: pytest.CaptureFixture[str]) ->
     assert "missing_predicted_complex" in captured.out
 
 
+def test_report_writes_self_contained_html(tmp_path: Path) -> None:
+    manifest_path = FIXTURE_ROOT / "succeeded" / "molecule-atlas-run.json"
+    output = tmp_path / "report.html"
+
+    exit_code = main(
+        [
+            "report",
+            str(manifest_path),
+            "--format",
+            "html",
+            "--output",
+            str(output),
+        ]
+    )
+
+    assert exit_code == 0
+    report = output.read_text(encoding="utf-8")
+    assert report.startswith("<!doctype html>\n")
+    assert "Molecule Atlas Evidence Report" in report
+    assert "Docking energy" in report
+    assert "Binder probability" in report
+    assert "<script" not in report.lower()
+
+
 def test_schema_command_exports_run_manifest_schema(tmp_path: Path) -> None:
     output = tmp_path / "run-manifest.schema.json"
 

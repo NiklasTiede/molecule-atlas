@@ -91,7 +91,7 @@ milestones. They are assigned below and must land before the first feature that 
 
 ## Milestone 2 — Real-output import and validation
 
-Status: in progress.
+Status: implemented.
 
 Goal: demonstrate value on outputs Molecule Atlas did not execute.
 
@@ -118,7 +118,28 @@ Exit criteria:
 - adapter failures identify unsupported layouts or versions precisely;
 - normalized artifacts can be discovered by semantic type and traced to raw upstream artifacts.
 
+Implemented scope:
+
+- adapter-result contract `0.2.0` binds run and semantic artifact manifests without changing
+  manifest-only result `0.1.0`;
+- source-verified Boltz 2.2.1 and DiffDock 1.1.3 normalizers prove distinct structure-confidence,
+  binder-probability, predicted-affinity, and pose-confidence semantics through offline fixtures;
+- PoseBusters 0.6.5 has a genuine CPU full-report fixture, portable normalization, and an optional
+  exactly pinned local runner;
+- deterministic Markdown and self-contained escaped HTML reports expose run state, typed
+  predictions, artifact audits, validation evidence, provenance warnings, licenses, and caveats;
+- normal CI remains offline and requires no database, GPU, model download, or FastAPI import.
+
+The pinned Boltz and DiffDock releases contain no redistributable generated-output fixtures, and
+creating those model outputs would pull live inference forward. Their current fixtures are explicitly
+documentation-derived and the adapters remain outside the public registry. Genuine successful,
+partial, and failed model captures, final conformance, and registration move to Milestone 8 alongside
+the owning remote-GPU execution work. This limitation does not block manifest-based web evidence
+import in Milestone 3 and is not represented as verified operational compatibility.
+
 ## Milestone 3 — Evidence import in the web workbench
+
+Status: next.
 
 Goal: make the visual application useful for reviewing imported model evidence.
 
@@ -332,6 +353,9 @@ Deliverables:
 - one implemented provider adapter;
 - Boltz plugin image and golden fixture;
 - optional DiffDock plugin;
+- genuine successful, partial, and failed Boltz output captures plus import-adapter conformance and
+  registration;
+- genuine DiffDock captures, conformance, and registration when the optional plugin is included;
 - short-lived artifact URLs;
 - GPU resource and timeout metadata;
 - provider state mapping, retries, and cancellation;

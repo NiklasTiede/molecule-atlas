@@ -423,11 +423,11 @@ media type, digest, size, or inventory disagreement without silently changing
 
 ## Reports
 
-The evidence core should support:
+The evidence core supports:
 
 - canonical JSON;
 - Markdown summary;
-- self-contained or portable HTML report.
+- self-contained HTML report.
 
 Reports must show:
 
@@ -447,13 +447,13 @@ The current CLI supports:
 molecule-atlas adapters
 molecule-atlas inspect PATH
 molecule-atlas audit PATH --adapter manifest --output OUTPUT
-molecule-atlas report MANIFEST --format markdown [--output OUTPUT]
+molecule-atlas report MANIFEST --format markdown|html [--output OUTPUT]
 molecule-atlas schema --contract run-manifest|artifact-manifest --output OUTPUT
 ```
 
-Markdown reports include run state and failures, method identity, provenance warnings, typed
-prediction meanings, the artifact inventory and audit state, all validation results, licenses, and
-scientific caveats.
+Markdown and HTML reports include run state and failures, method identity, provenance warnings,
+typed prediction meanings, the artifact inventory and audit state, all validation results, licenses,
+and scientific caveats.
 
 ## Versioning
 

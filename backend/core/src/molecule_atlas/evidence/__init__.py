@@ -47,6 +47,7 @@ from molecule_atlas.evidence.models import (
     ValidationResult,
 )
 from molecule_atlas.evidence.reports import render_markdown_report
+from molecule_atlas.evidence.reports_html import render_html_report
 from molecule_atlas.evidence.semantic_artifacts import (
     ArtifactManifest,
     ArtifactManifestMismatchError,
@@ -149,6 +150,7 @@ __all__ = [
     "normalize_posebusters_report",
     "posebusters_metadata",
     "provenance_warnings",
+    "render_html_report",
     "render_markdown_report",
     "resolve_manifest_path",
     "run_posebusters",

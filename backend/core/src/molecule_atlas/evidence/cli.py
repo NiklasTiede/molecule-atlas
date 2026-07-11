@@ -7,6 +7,7 @@ from typing import cast
 
 from molecule_atlas.evidence.adapters import EvidenceInputError, audit_path, list_adapters
 from molecule_atlas.evidence.reports import render_markdown_report
+from molecule_atlas.evidence.reports_html import render_html_report
 from molecule_atlas.evidence.serialization import (
     write_artifact_manifest_schema,
     write_manifest,
@@ -36,7 +37,7 @@ def _parser() -> argparse.ArgumentParser:
 
     report_parser = commands.add_parser("report", help="Render a run report")
     report_parser.add_argument("manifest", type=Path)
-    report_parser.add_argument("--format", choices=("markdown",), required=True)
+    report_parser.add_argument("--format", choices=("markdown", "html"), required=True)
     report_parser.add_argument("--output", type=Path)
 
     schema_parser = commands.add_parser("schema", help="Export a portable evidence JSON Schema")
@@ -92,17 +93,25 @@ def _audit(path: Path, adapter: str, output: Path) -> None:
     print(f"Wrote canonical audited manifest: {output}")
 
 
-def _report(manifest_path: Path, output: Path | None) -> None:
+def _report(manifest_path: Path, report_format: str, output: Path | None) -> None:
     audit = audit_path(manifest_path)
-    report = render_markdown_report(
-        audit.manifest,
-        artifact_checks=audit.artifact_checks,
-    )
+    if report_format == "markdown":
+        report = render_markdown_report(
+            audit.manifest,
+            artifact_checks=audit.artifact_checks,
+        )
+    elif report_format == "html":
+        report = render_html_report(
+            audit.manifest,
+            artifact_checks=audit.artifact_checks,
+        )
+    else:
+        raise AssertionError(f"Unhandled report format: {report_format}")
     if output is None:
         print(report, end="")
         return
     output.write_text(report, encoding="utf-8")
-    print(f"Wrote markdown report: {output}")
+    print(f"Wrote {report_format} report: {output}")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -120,7 +129,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 cast(Path, args.output),
             )
         elif command == "report":
-            _report(cast(Path, args.manifest), cast(Path | None, args.output))
+            _report(
+                cast(Path, args.manifest),
+                cast(str, args.format),
+                cast(Path | None, args.output),
+            )
         elif command == "schema":
             output = cast(Path, args.output)
             contract = cast(str, args.contract)

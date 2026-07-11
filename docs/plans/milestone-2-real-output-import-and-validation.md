@@ -324,7 +324,8 @@ Status: implemented on 2026-07-10.
 
 ### Slice 3 — Boltz import
 
-Status: in progress since 2026-07-10.
+Status: implemented for source-verified normalization on 2026-07-11; operational capture and
+registration deferred to Milestone 8.
 
 - Implemented `AdapterImportResult 0.2.0`, binding `RunManifest 0.1.0` and
   `ArtifactManifest 0.1.0` while preserving result `0.1.0`.
@@ -334,13 +335,13 @@ Status: in progress since 2026-07-10.
 - Added a provenance-labeled documentation-derived fixture and a separate genuine-output capture
   procedure. This fixture is not scientific model output and does not satisfy the real-output exit
   criterion.
-- Remaining before registration: capture and document licensed genuine succeeded, partial, and
-  failed Boltz 2.2.1 fixtures; use them to complete processed-input/log provenance and
-  structured-failure normalization; then expose the adapter through the catalog and CLI.
+- Milestone 8 owns genuine succeeded, partial, and failed captures, processed-input/log provenance,
+  structured-failure conformance, and registry/CLI exposure alongside live GPU execution.
 
 ### Slice 4 — DiffDock import
 
-Status: in progress since 2026-07-11.
+Status: implemented for source-verified normalization on 2026-07-11; operational capture and
+registration deferred to Milestone 8.
 
 - Audited the official DiffDock `v1.1.3` writer, runtime guidance, MIT license, and release tree; the
   release contains inputs but no generated prediction fixture.
@@ -349,8 +350,8 @@ Status: in progress since 2026-07-11.
   missing-rank partial behavior, and stable compatibility errors.
 - Added provenance-labeled CC0 placeholders and cross-family adapter-result, digest-audit, report,
   and scientific-semantics coverage without installing or running DiffDock.
-- Remaining before registration: genuine licensed succeeded, partial, and failure fixtures plus
-  captured input/log/checkpoint provenance and structured failure normalization.
+- Milestone 8 owns genuine succeeded, partial, and failure fixtures, input/log/checkpoint provenance,
+  structured-failure conformance, and registry/CLI exposure if the optional plugin is delivered.
 
 ### Slice 5 — PoseBusters validation
 
@@ -369,10 +370,17 @@ Status: implemented on 2026-07-11.
 
 ### Slice 6 — HTML reports and completion
 
-- Add deterministic self-contained HTML output with escaped content and no remote assets.
-- Update README, data provenance, scientific contracts, roadmap implemented scope, and CLI help.
-- Run all core/backend tests, Ruff, formatting, strict Pyright, schema checks, frontend regression
-  gates where shared contracts are unaffected, and container smoke tests if packaging changed.
+Status: implemented on 2026-07-11.
+
+- Added deterministic self-contained HTML output with strict escaping, inline CSS, no scripts or
+  remote assets, and the same scientific evidence sections as Markdown.
+- Added `report --format html` while preserving Markdown output and exit behavior.
+- Covered successful, partial, failed, unsafe-text, cross-model prediction semantics, validation,
+  artifact-audit, and CLI output behavior.
+- Updated README, architecture, scientific contracts, roadmap scope/deferment, and coding-agent
+  milestone guidance.
+- Ran full backend, Ruff, formatting, strict Pyright, schema, OpenAPI, frontend regression, image
+  build, and alternate-port container smoke gates.
 
 ## Verification gates
 

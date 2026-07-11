@@ -23,8 +23,9 @@ Implement the earliest incomplete roadmap milestone unless the user explicitly s
 
 Do not implement future infrastructure merely because it appears in the long-term architecture. Each change should solve a current acceptance criterion and preserve the completed ligand-centric workbench.
 
-The immediate next milestone is real-output import and validation: typed Boltz and DiffDock adapters,
-PoseBusters-backed checks, semantic artifact outputs, replay fixtures, and explicit interpretation.
+The immediate next milestone is evidence import in the web workbench. Introduce thin FastAPI
+transport handlers over an explicit application capability for manifest upload, validation,
+artifact inspection, report delivery, and UI review; keep the completed portable core independent.
 
 ## Non-negotiable scientific rules
 

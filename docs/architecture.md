@@ -26,7 +26,8 @@ The current implementation combines the ligand-centric React/FastAPI workbench w
 evidence core. The workbench loads a bundled candidate set, uses RDKit to validate and enrich
 molecules, and exposes typed API responses to the frontend. The separately packaged evidence core
 validates versioned local run manifests, hashes artifacts, audits provenance, and produces canonical
-JSON, JSON Schema, and Markdown reports without importing FastAPI.
+JSON, JSON Schema, and deterministic Markdown or self-contained HTML reports without importing
+FastAPI.
 
 Current boundaries are enforced by tests:
 
