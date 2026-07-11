@@ -19,6 +19,8 @@ Molecule Atlas is not a drug-discovery oracle. It does not claim that a candidat
 - PCA chemical-space projection
 - React/TypeScript workbench backed by a typed FastAPI API
 - Generated TypeScript API contracts
+- Initial typed application capability catalog with permission and execution-policy metadata
+- Bounded local evidence run-summary API with explicit correlation IDs
 - FastAPI-independent portable evidence core
 - Versioned run and semantic artifact manifests with typed prediction and validation semantics
 - SHA-256 artifact inventory and offline verification
@@ -115,6 +117,7 @@ Useful backend URLs:
 - `http://localhost:8000/api/candidate-sets/demo/projection`
 - `http://localhost:8000/api/candidate-sets/demo/candidates/demo-1/neighbors`
 - `http://localhost:8000/api/candidate-sets/demo/candidates/demo-1/conformer`
+- `http://localhost:8000/api/evidence/runs/fixture-succeeded`
 
 ## Portable evidence CLI
 
@@ -170,7 +173,8 @@ UV_CACHE_DIR=../.uv-cache uv sync --extra validation
 
 Milestones 1 and 2 are implemented: the portable core includes typed external-output normalization,
 PoseBusters-backed checks, semantic artifact lineage, and deterministic Markdown/HTML evidence
-reports. Milestone 3 is next and introduces manifest-based evidence import through the shared
-application capability layer and web workbench. Genuine Boltz/DiffDock execution fixtures and
-adapter registration remain with Milestone 8. AI integration remains deferred until the
-governed-assistance milestone. See [the roadmap](docs/roadmap.md) for later acceptance criteria.
+reports. Milestone 3 is in progress. Its first slice introduces the shared capability boundary and a
+bounded local run-summary API; safe manifest-bundle upload and the evidence review UI are next.
+Genuine Boltz/DiffDock execution fixtures and adapter registration remain with Milestone 8. AI
+integration remains deferred until the governed-assistance milestone. See
+[the roadmap](docs/roadmap.md) for later acceptance criteria.

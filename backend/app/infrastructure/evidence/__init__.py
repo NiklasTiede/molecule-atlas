@@ -1,0 +1,1 @@
+"""Local evidence storage adapters."""

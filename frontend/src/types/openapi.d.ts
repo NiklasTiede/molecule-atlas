@@ -72,6 +72,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/evidence/runs/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Run Summary */
+        get: operations["get_run_summary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -137,6 +154,30 @@ export interface components {
             /** Detail */
             detail: string;
         };
+        /** GetRunSummaryOutput */
+        GetRunSummaryOutput: {
+            /**
+             * Capability Id
+             * @default get_run_summary
+             * @constant
+             */
+            capability_id: "get_run_summary";
+            /**
+             * Capability Version
+             * @default 0.1.0
+             * @constant
+             */
+            capability_version: "0.1.0";
+            /**
+             * Contract Version
+             * @default 0.1.0
+             * @constant
+             */
+            contract_version: "0.1.0";
+            /** Correlation Id */
+            correlation_id: string;
+            run: components["schemas"]["RunSummary"];
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -196,6 +237,43 @@ export interface components {
             /** Validation Notes */
             validation_notes: components["schemas"]["ValidationNote"][];
         };
+        JsonValue: unknown;
+        /** ManifestWarning */
+        ManifestWarning: {
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
+            /** Path */
+            path: string;
+        };
+        /** MethodSummary */
+        MethodSummary: {
+            /** Adapter Id */
+            adapter_id: string;
+            /** Adapter Version */
+            adapter_version: string;
+            /** Checkpoint Id */
+            checkpoint_id: string | null;
+            /** Checkpoint Sha256 */
+            checkpoint_sha256: string | null;
+            /** Command */
+            command: string[];
+            /** Container Digest */
+            container_digest: string | null;
+            /** Container Image */
+            container_image: string | null;
+            /** Method Id */
+            method_id: string;
+            /** Random Seeds */
+            random_seeds: number[];
+            /** Source Commit */
+            source_commit: string | null;
+            /** Upstream Tool */
+            upstream_tool: string | null;
+            /** Upstream Version */
+            upstream_version: string | null;
+        };
         /** ProjectionPoint */
         ProjectionPoint: {
             /** Candidate Id */
@@ -206,6 +284,50 @@ export interface components {
             x: number;
             /** Y */
             y: number;
+        };
+        /** RunFailure */
+        RunFailure: {
+            /** Category */
+            category: string;
+            /** Details */
+            details: {
+                [key: string]: components["schemas"]["JsonValue"];
+            };
+            /** Exit Code */
+            exit_code?: number | null;
+            /** Message */
+            message: string;
+            /** Stage */
+            stage?: string | null;
+        };
+        /** RunSummary */
+        RunSummary: {
+            /** Artifact Count */
+            artifact_count: number;
+            /** Expected Outputs */
+            expected_outputs: string[];
+            failure: components["schemas"]["RunFailure"] | null;
+            /** Finished At */
+            finished_at: string | null;
+            method: components["schemas"]["MethodSummary"];
+            /** Missing Outputs */
+            missing_outputs: string[];
+            /** Prediction Count */
+            prediction_count: number;
+            /** Run Id */
+            run_id: string;
+            /** Schema Version */
+            schema_version: string;
+            /** Started At */
+            started_at: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "succeeded" | "failed" | "partial" | "cancelled" | "unknown";
+            validation_counts: components["schemas"]["ValidationCounts"];
+            /** Warnings */
+            warnings: components["schemas"]["ManifestWarning"][];
         };
         /** SimilarityNeighbor */
         SimilarityNeighbor: {
@@ -269,6 +391,19 @@ export interface components {
             triage_flags: components["schemas"]["TriageFlags"];
             /** Validation Notes */
             validation_notes: components["schemas"]["ValidationNote"][];
+        };
+        /** ValidationCounts */
+        ValidationCounts: {
+            /** Error Count */
+            error_count: number;
+            /** Fail Count */
+            fail_count: number;
+            /** Pass Count */
+            pass_count: number;
+            /** Unavailable Count */
+            unavailable_count: number;
+            /** Warning Count */
+            warning_count: number;
         };
         /** ValidationError */
         ValidationError: {
@@ -427,6 +562,48 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProjectionPoint"][];
+                };
+            };
+        };
+    };
+    get_run_summary: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Correlation-ID"?: string | null;
+            };
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetRunSummaryOutput"];
+                };
+            };
+            /** @description Evidence run not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

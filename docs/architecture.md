@@ -27,17 +27,23 @@ evidence core. The workbench loads a bundled candidate set, uses RDKit to valida
 molecules, and exposes typed API responses to the frontend. The separately packaged evidence core
 validates versioned local run manifests, hashes artifacts, audits provenance, and produces canonical
 JSON, JSON Schema, and deterministic Markdown or self-contained HTML reports without importing
-FastAPI.
+FastAPI. Milestone 3 has introduced the first application capability: a permission-aware, bounded
+`get_run_summary` query over local evidence, exposed through a thin HTTP handler with an explicit
+operation and correlation ID.
 
 Current boundaries are enforced by tests:
 
 ```text
-main -> api -> services -> chem/adapters -> models
+main -> api -> application capabilities -> core/ports
+                   ^                         ^
+                   └──── infrastructure ─────┘
+
+main -> api -> existing candidate services -> chem/adapters -> models
 ```
 
-The current service layer is a useful precursor but is not yet a formal capability catalog. When
-Milestone 3 introduces evidence import over HTTP, add the application capability boundary around new
-operations and migrate existing services only when a feature requires it.
+The explicit capability catalog begins with evidence review operations. Existing candidate services
+remain unchanged and migrate only when a feature needs the shared capability boundary. Repository
+helpers and low-level storage operations are not catalog entries.
 
 Generated OpenAPI types, strict Python typing, frontend tests, Playwright tests, and container smoke tests remain required.
 
@@ -50,8 +56,9 @@ molecule-atlas CLI ──────────────┘
 ```
 
 `molecule_atlas.evidence` has no dependency on `app`, FastAPI, RDKit, persistence, schedulers, GPU
-runtimes, or model providers. The current FastAPI API does not yet expose evidence endpoints; web
-import belongs to Milestone 3.
+runtimes, or model providers. FastAPI now exposes the read-only `get_run_summary` capability for
+checked-in local evidence. Browser upload remains the next Milestone 3 slice; PostgreSQL and durable
+run history remain deferred.
 
 ## Target system
 

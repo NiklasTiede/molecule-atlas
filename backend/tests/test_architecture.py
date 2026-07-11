@@ -10,7 +10,9 @@ _ALLOWED_APP_IMPORTS: dict[str, frozenset[str]] = {
     "chem": frozenset({"chem", "models"}),
     "adapters": frozenset({"adapters", "models"}),
     "services": frozenset({"services", "adapters", "chem", "models"}),
-    "api": frozenset({"api", "services", "models"}),
+    "application": frozenset({"application", "models"}),
+    "infrastructure": frozenset({"application", "infrastructure"}),
+    "api": frozenset({"api", "application", "infrastructure", "services", "models"}),
     "main": frozenset({"api", "models"}),
 }
 
@@ -18,7 +20,7 @@ _EXTERNAL_IMPORT_OWNERS: dict[str, frozenset[str]] = {
     "fastapi": frozenset({"api", "main"}),
     "numpy": frozenset({"chem"}),
     "pandas": frozenset({"adapters"}),
-    "pydantic": frozenset({"models"}),
+    "pydantic": frozenset({"application", "models"}),
     "rdkit": frozenset({"chem"}),
     "sklearn": frozenset({"services"}),
 }

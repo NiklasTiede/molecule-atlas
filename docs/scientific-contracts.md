@@ -34,6 +34,13 @@ Capability payloads identify domain records and semantic artifacts explicitly. D
 only authorized capabilities and never direct database, storage, executor, cluster, or provider
 access.
 
+The first implemented definition is `get_run_summary` version `0.1.0`, a bounded query requiring
+`evidence:read`. Its strict input identifies one run; its output preserves run state and failure,
+method provenance, typed evidence counts, validation statuses, audit warnings, and an ephemeral
+correlation ID. The FastAPI operation uses the same `get_run_summary` identifier. This is an
+application projection over `RunManifest 0.1.0`, not a replacement or mutation of the portable
+manifest.
+
 ## Run manifest
 
 Every imported or managed run should normalize into a versioned manifest such as `molecule-atlas-run.json`.
