@@ -10,5 +10,6 @@ class TestClient:
         url: str,
         *,
         files: object | None = None,
+        json: object | None = None,
         headers: Mapping[str, str] | None = None,
     ) -> Response: ...

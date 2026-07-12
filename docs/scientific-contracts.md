@@ -59,6 +59,26 @@ preview metadata remain distinct fields. Artifact validation returns every `veri
 counts. An external artifact is reported but never fetched implicitly. These integrity checks do not
 replace scientific validation results such as PoseBusters checks and do not define a generic score.
 
+`get_candidate_evidence` version `0.1.0` is a bounded read-only query requiring `evidence:read`.
+Inputs identify the run, candidate application ID, optional candidate external ID, and independent
+prediction/validation limits. Binding uses exact equality against recorded ligand input IDs and
+upstream IDs only. The response records the checked references, matched input/artifact IDs, binding
+status, method identity, lineage availability, related artifact IDs, total and returned evidence,
+and structured warnings. Predictions remain the original discriminated union—docking energy, pose
+confidence, structure confidence, binder probability, and predicted affinity are never converted to
+one score. Validation results remain separate evidence. Filename matching and whole-run assignment
+are forbidden fallbacks.
+
+`list_evidence_runs`, `compare_candidates`, and `generate_evidence_report` version `0.1.0` are also
+bounded read-only `evidence:read` queries. Run listing exposes only the summary needed to select a
+record, including recorded ligand inputs, and never exposes local repository paths. Comparison takes
+two to ten explicitly named subjects and groups predictions only when their type, unit, and
+optimization direction agree; it returns unbound/ambiguous and no-shared-group warnings rather than
+inventing a combined score or rank. Report generation audits the stored bytes again and returns
+deterministic Markdown or self-contained HTML content with typed predictions, integrity checks,
+validation evidence, provenance, licenses, and caveats. It creates no persistent artifact in this
+temporary local profile.
+
 ## Run manifest
 
 Every imported or managed run should normalize into a versioned manifest such as `molecule-atlas-run.json`.

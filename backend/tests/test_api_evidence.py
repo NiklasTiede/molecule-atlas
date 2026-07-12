@@ -154,3 +154,87 @@ def test_artifact_endpoints_have_stable_openapi_operation_ids() -> None:
         paths["/api/evidence/runs/{run_id}/artifact-validation"]["get"]["operationId"]
         == "validate_evidence_artifacts"
     )
+
+
+def test_get_candidate_evidence_endpoint_returns_typed_bounded_evidence() -> None:
+    response = TestClient(app).get(
+        "/api/evidence/runs/fixture-succeeded/candidates/candidate-1/evidence"
+        "?candidate_external_id=synthetic-ligand-1&prediction_limit=1&validation_limit=1",
+        headers={"X-Correlation-ID": "corr-http-candidate-evidence"},
+    )
+
+    assert response.status_code == 200
+    assert response.headers["X-Correlation-ID"] == "corr-http-candidate-evidence"
+    body = response.json()
+    assert body["binding"]["status"] == "bound"
+    assert body["prediction_total"] == 2
+    assert len(body["predictions"]) == 1
+    assert body["predictions"][0]["type"] == "docking_energy"
+    assert "score" not in body["predictions"][0]
+    assert body["validation_total"] == 2
+    assert len(body["validation_results"]) == 1
+
+
+def test_get_candidate_evidence_has_stable_openapi_operation_id() -> None:
+    operation = app.openapi()["paths"][
+        "/api/evidence/runs/{run_id}/candidates/{candidate_id}/evidence"
+    ]["get"]
+
+    assert operation["operationId"] == "get_candidate_evidence"
+
+
+def test_slice_five_evidence_endpoints_use_typed_capability_contracts() -> None:
+    client = TestClient(app)
+
+    runs_response = client.get(
+        "/api/evidence/runs?limit=2",
+        headers={"X-Correlation-ID": "corr-http-runs"},
+    )
+    comparison_response = client.post(
+        "/api/evidence/comparisons",
+        json={
+            "contract_version": "0.1.0",
+            "subjects": [
+                {
+                    "subject_id": "method-a",
+                    "label": "Synthetic method A",
+                    "run_id": "fixture-succeeded",
+                    "candidate_id": "synthetic-ligand-1",
+                    "candidate_external_id": None,
+                },
+                {
+                    "subject_id": "method-b",
+                    "label": "Synthetic method B",
+                    "run_id": "fixture-alternative",
+                    "candidate_id": "synthetic-ligand-1",
+                    "candidate_external_id": None,
+                },
+            ],
+        },
+        headers={"X-Correlation-ID": "corr-http-comparison"},
+    )
+    report_response = client.get(
+        "/api/evidence/runs/fixture-succeeded/report?report_format=html",
+        headers={"X-Correlation-ID": "corr-http-report"},
+    )
+
+    assert runs_response.status_code == 200
+    assert runs_response.headers["X-Correlation-ID"] == "corr-http-runs"
+    assert runs_response.json()["total"] == 4
+    assert comparison_response.status_code == 200
+    assert comparison_response.json()["prediction_groups"][0]["prediction_type"] == (
+        "docking_energy"
+    )
+    assert report_response.status_code == 200
+    assert report_response.json()["media_type"] == "text/html; charset=utf-8"
+
+
+def test_slice_five_endpoints_have_stable_openapi_operation_ids() -> None:
+    paths = app.openapi()["paths"]
+
+    assert paths["/api/evidence/runs"]["get"]["operationId"] == "list_evidence_runs"
+    assert paths["/api/evidence/comparisons"]["post"]["operationId"] == "compare_candidates"
+    assert (
+        paths["/api/evidence/runs/{run_id}/report"]["get"]["operationId"]
+        == "generate_evidence_report"
+    )

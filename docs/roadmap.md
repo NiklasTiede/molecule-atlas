@@ -139,10 +139,11 @@ import in Milestone 3 and is not represented as verified operational compatibili
 
 ## Milestone 3 — Evidence import in the web workbench
 
-Status: in progress. Slices 1–3 implement the capability catalog, permission-aware invocation
-context, bounded local run/artifact queries, explicit correlation IDs, safe idempotent ZIP import,
-semantic artifact discovery, and structured artifact integrity/provenance validation. Candidate
-evidence, comparison, reports, and the review UI follow in the next slices.
+Status: implemented. The local/offline workbench now provides capability-backed evidence import,
+run listing and review, artifact inspection, conservative query-time candidate binding, typed
+like-for-like comparison, and deterministic report delivery. It keeps imports and idempotency
+records process-local; persistent projects, authenticated users, durable runs, and jobs remain
+deferred to Milestone 5.
 
 Goal: make the visual application useful for reviewing imported model evidence.
 

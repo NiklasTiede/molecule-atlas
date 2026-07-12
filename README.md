@@ -23,6 +23,7 @@ Molecule Atlas is not a drug-discovery oracle. It does not claim that a candidat
 - Bounded local evidence run-summary API with explicit correlation IDs
 - Safe, idempotent portable evidence ZIP import into temporary local storage
 - Bounded semantic artifact inventory and structured integrity/provenance validation APIs
+- Conservative candidate/run evidence binding with typed predictions and validation results
 - FastAPI-independent portable evidence core
 - Versioned run and semantic artifact manifests with typed prediction and validation semantics
 - SHA-256 artifact inventory and offline verification
@@ -123,6 +124,7 @@ Useful backend URLs:
 - `POST http://localhost:8000/api/evidence/imports`
 - `http://localhost:8000/api/evidence/runs/fixture-succeeded/artifacts`
 - `http://localhost:8000/api/evidence/runs/fixture-succeeded/artifact-validation`
+- `http://localhost:8000/api/evidence/runs/fixture-succeeded/candidates/candidate-1/evidence?candidate_external_id=synthetic-ligand-1`
 
 The import operation accepts one `multipart/form-data` field named `bundle`, with media type
 `application/zip`, plus a required `Idempotency-Key` header. A bundle root contains
@@ -187,12 +189,11 @@ UV_CACHE_DIR=../.uv-cache uv sync --extra validation
 
 ## Current implementation priority
 
-Milestones 1 and 2 are implemented: the portable core includes typed external-output normalization,
-PoseBusters-backed checks, semantic artifact lineage, and deterministic Markdown/HTML evidence
-reports. Milestone 3 is in progress. Its first three slices introduce the shared capability
-boundary, bounded run and semantic-artifact queries, safe temporary evidence-bundle upload, and
-structured integrity/provenance validation. Candidate evidence is next, followed by comparison,
-reports, and the evidence review UI. Genuine Boltz/DiffDock execution fixtures and adapter
-registration remain with Milestone 8. AI integration remains deferred until the governed-assistance
-milestone. See
+Milestones 1–3 are implemented: the portable core includes typed external-output normalization,
+PoseBusters-backed checks, semantic artifact lineage, deterministic Markdown/HTML evidence reports,
+and an offline Evidence Runs web workspace. The workspace imports bounded temporary bundles and
+shows run state, provenance, typed predictions, validation evidence, artifact integrity, explicit
+candidate bindings, and like-for-like method comparisons without creating a generic ranking. Genuine
+Boltz/DiffDock execution fixtures and adapter registration remain with Milestone 8. AI integration
+remains deferred until the governed-assistance milestone. See
 [the roadmap](docs/roadmap.md) for later acceptance criteria.

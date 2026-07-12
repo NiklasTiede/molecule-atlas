@@ -365,6 +365,14 @@ immutable Pydantic contracts in the portable core. These records are file-backed
 database identity or persistence mapping. Stable manifest IDs and explicit artifact references
 provide local lineage.
 
+Milestone 3 introduces a temporary query-time `CandidateEvidenceBinding` projection without changing
+the portable manifest. A candidate application ID or external ID must exactly match one recorded
+ligand input ID or upstream ID. Exactly one match is `bound`; no match is `unbound`; multiple matches
+are `ambiguous` and evidence is not assigned automatically. Once bound, semantic artifact derivation
+connects the ligand input to prediction raw sources and validation artifacts. Missing lineage
+produces a warning and limits the result to direct relationships. Persistent candidate/run links and
+project identity remain deferred to Milestone 5.
+
 The evidence `Prediction` contract is a discriminated union. Docking energy, pose confidence,
 structure confidence, binder probability, and predicted affinity remain distinct types with their
 own unit and optimization-direction constraints. The legacy candidate workbench's optional mock

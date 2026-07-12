@@ -1,7 +1,7 @@
 # Milestone 3 Implementation Plan: Evidence Web Workbench
 
-- Status: In progress
-- Current slice: Slices 1–3 implemented; Slice 4 — candidate evidence query — is next
+- Status: Complete
+- Current slice: All eight slices implemented and verified
 - Roadmap milestone: 3 — Evidence import in the web workbench
 - Planning date: 2026-07-11
 
@@ -78,14 +78,14 @@ approval policy.
 | Query/command/job/proposal semantics | `CapabilityKind`; catalog contains commands and queries only in this milestone | no ambiguous `/run` or `/execute` route; no jobs/proposals claimed | catalog semantics tests | AI-first readiness cross-reference |
 | Upload manifest and referenced artifacts | local ZIP ingress adapter and bounded local evidence repository; `ImportEvidenceBundleInput/Output` | `POST /api/evidence/imports`, `operation_id=import_evidence_bundle` | tiny valid, traversal, oversized, duplicate, invalid-manifest, missing/mismatch fixtures | README upload format and temporary-storage warning |
 | Run summary and provenance | `RunSummary`, `MethodSummary`, warning/failure summaries | `GET /api/evidence/runs/{run_id}`, `operation_id=get_run_summary`; summary/provenance sections | succeeded, partial, failed, missing provenance | README and UI copy |
-| Typed prediction panel | `PredictionEvidence` preserves the core discriminated union | prediction cards with source/method links | every prediction type, units, caveats, no generic score | scientific contracts UI projection |
-| Validation evidence panel | `ValidationEvidenceSummary`; core `ValidationResult` unchanged | status-filterable table; fail/error visually prominent | pass/fail/warning/unavailable/error states and raw source preservation | README caveats |
+| Typed prediction panel | `GetCandidateEvidenceOutput` preserves the core discriminated union | prediction cards with source/method links | typed values, units, caveats, no generic score | scientific contracts UI projection |
+| Validation evidence panel | core `ValidationResult` and artifact audit checks remain separate | integrity counts and scientific validation evidence; failures visually prominent | pass/fail evidence and raw source preservation | README caveats |
 | Candidate/run relationship | explicit local `CandidateEvidenceBinding` derived only from recorded scope/upstream IDs | linked candidate evidence section; unbound state remains visible | bound and intentionally unbound scope fixtures | domain model relationship note |
 | Compare at least two poses/methods | `CompareCandidatesInput/Output`, typed comparison groups | selection tray and comparison view | 2 minimum, 10 maximum, incompatible types remain separate | UI behavior and scientific caveat |
 | Bounded context queries | four named query handlers and explicit result/page limits | stable routes for summary, artifacts, candidate evidence, comparison | limit enforcement, not-found, no raw database/filesystem enumeration | AI-readiness bounded-query section |
 | Correlation identifiers | ephemeral `CapabilityContext` and response metadata; no persistent run fields invented | accept/validate `X-Correlation-ID`, return it in body/header | supplied/generated/invalid identifiers | architecture notes temporary semantics |
 | Partial and failed states | existing `RunMetadata`/`RunFailure` projected without rewriting | state banners, missing outputs, failure detail | succeeded/partial/failed fixture UI and API tests | README caveats |
-| UI uses shared contracts | generated `openapi.d.ts`; evidence feature API/client/components | Candidates and Evidence runs workspaces | Vitest loading/empty/error/partial/failed tests and Playwright import/review/compare flow | README screenshots deferred; usage documented |
+| UI uses shared contracts | generated `openapi.d.ts`; evidence feature API/client/components | Candidates and Evidence runs workspaces | Vitest loading/empty/import states and Playwright review/partial/comparison flow | README usage documented |
 | Preserve current behavior and CI gates | existing packages stay in place; new imports follow enforced directions | current candidate endpoints and workbench remain unchanged | full pytest, Ruff, format, strict Pyright, frontend lint/test/build, OpenAPI check, Playwright | update commands only if they truly change |
 
 The portable CLI keeps its existing `adapters`, `audit`, `inspect`, `schema`, and `report` behavior.

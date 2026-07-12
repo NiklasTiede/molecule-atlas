@@ -2,6 +2,81 @@ from collections.abc import Iterable
 
 from app.application.capabilities.models import CapabilityDefinition
 
+LIST_EVIDENCE_RUNS = CapabilityDefinition(
+    capability_id="list_evidence_runs",
+    capability_version="0.1.0",
+    title="List evidence runs",
+    description="Read a bounded index of locally available portable evidence runs.",
+    kind="query",
+    input_schema="ListEvidenceRunsInput.0.1.0",
+    output_schema="ListEvidenceRunsOutput.0.1.0",
+    required_permissions=("evidence:read",),
+    risk_level="low",
+    side_effects=(),
+    cost_class="small_cpu",
+    runtime_class="interactive",
+    supports_idempotency=False,
+    supports_cancellation=False,
+    supports_dry_run=False,
+)
+
+COMPARE_CANDIDATES = CapabilityDefinition(
+    capability_id="compare_candidates",
+    capability_version="0.1.0",
+    title="Compare candidate evidence",
+    description="Compare only compatible typed predictions without producing a universal rank.",
+    kind="query",
+    input_schema="CompareCandidatesInput.0.1.0",
+    output_schema="CompareCandidatesOutput.0.1.0",
+    required_permissions=("evidence:read",),
+    risk_level="low",
+    side_effects=(),
+    cost_class="small_cpu",
+    runtime_class="interactive",
+    supports_idempotency=False,
+    supports_cancellation=False,
+    supports_dry_run=False,
+)
+
+GENERATE_EVIDENCE_REPORT = CapabilityDefinition(
+    capability_id="generate_evidence_report",
+    capability_version="0.1.0",
+    title="Generate evidence report",
+    description="Render a deterministic Markdown or HTML review report for one evidence run.",
+    kind="query",
+    input_schema="GenerateEvidenceReportInput.0.1.0",
+    output_schema="GenerateEvidenceReportOutput.0.1.0",
+    required_permissions=("evidence:read",),
+    risk_level="low",
+    side_effects=(),
+    cost_class="small_cpu",
+    runtime_class="interactive",
+    supports_idempotency=False,
+    supports_cancellation=False,
+    supports_dry_run=False,
+)
+
+GET_CANDIDATE_EVIDENCE = CapabilityDefinition(
+    capability_id="get_candidate_evidence",
+    capability_version="0.1.0",
+    title="Get candidate evidence",
+    description=(
+        "Read typed predictions and validation evidence linked through recorded candidate "
+        "references and artifact lineage."
+    ),
+    kind="query",
+    input_schema="GetCandidateEvidenceInput.0.1.0",
+    output_schema="GetCandidateEvidenceOutput.0.1.0",
+    required_permissions=("evidence:read",),
+    risk_level="low",
+    side_effects=(),
+    cost_class="small_cpu",
+    runtime_class="interactive",
+    supports_idempotency=False,
+    supports_cancellation=False,
+    supports_dry_run=False,
+)
+
 LIST_AVAILABLE_ARTIFACTS = CapabilityDefinition(
     capability_id="list_available_artifacts",
     capability_version="0.1.0",
@@ -103,6 +178,10 @@ class CapabilityCatalog:
 CAPABILITY_CATALOG = CapabilityCatalog(
     (
         IMPORT_EVIDENCE_BUNDLE,
+        LIST_EVIDENCE_RUNS,
+        COMPARE_CANDIDATES,
+        GENERATE_EVIDENCE_REPORT,
+        GET_CANDIDATE_EVIDENCE,
         GET_RUN_SUMMARY,
         LIST_AVAILABLE_ARTIFACTS,
         VALIDATE_EVIDENCE_ARTIFACTS,

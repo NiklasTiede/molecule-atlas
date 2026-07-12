@@ -2,9 +2,13 @@ import pytest
 from pydantic import ValidationError
 
 from app.application.capabilities.catalog import (
+    COMPARE_CANDIDATES,
+    GENERATE_EVIDENCE_REPORT,
+    GET_CANDIDATE_EVIDENCE,
     GET_RUN_SUMMARY,
     IMPORT_EVIDENCE_BUNDLE,
     LIST_AVAILABLE_ARTIFACTS,
+    LIST_EVIDENCE_RUNS,
     VALIDATE_EVIDENCE_ARTIFACTS,
     CapabilityCatalog,
 )
@@ -26,6 +30,81 @@ def test_get_run_summary_has_stable_complete_metadata() -> None:
         "kind": "query",
         "input_schema": "GetRunSummaryInput.0.1.0",
         "output_schema": "GetRunSummaryOutput.0.1.0",
+        "required_permissions": ["evidence:read"],
+        "risk_level": "low",
+        "side_effects": [],
+        "cost_class": "small_cpu",
+        "runtime_class": "interactive",
+        "supports_idempotency": False,
+        "supports_cancellation": False,
+        "supports_dry_run": False,
+    }
+
+
+def test_get_candidate_evidence_has_stable_complete_metadata() -> None:
+    assert GET_CANDIDATE_EVIDENCE.model_dump(mode="json") == {
+        "capability_id": "get_candidate_evidence",
+        "capability_version": "0.1.0",
+        "title": "Get candidate evidence",
+        "description": (
+            "Read typed predictions and validation evidence linked through recorded candidate "
+            "references and artifact lineage."
+        ),
+        "kind": "query",
+        "input_schema": "GetCandidateEvidenceInput.0.1.0",
+        "output_schema": "GetCandidateEvidenceOutput.0.1.0",
+        "required_permissions": ["evidence:read"],
+        "risk_level": "low",
+        "side_effects": [],
+        "cost_class": "small_cpu",
+        "runtime_class": "interactive",
+        "supports_idempotency": False,
+        "supports_cancellation": False,
+        "supports_dry_run": False,
+    }
+
+
+@pytest.mark.parametrize(
+    ("definition", "capability_id", "title", "input_schema", "output_schema"),
+    (
+        (
+            LIST_EVIDENCE_RUNS,
+            "list_evidence_runs",
+            "List evidence runs",
+            "ListEvidenceRunsInput.0.1.0",
+            "ListEvidenceRunsOutput.0.1.0",
+        ),
+        (
+            COMPARE_CANDIDATES,
+            "compare_candidates",
+            "Compare candidate evidence",
+            "CompareCandidatesInput.0.1.0",
+            "CompareCandidatesOutput.0.1.0",
+        ),
+        (
+            GENERATE_EVIDENCE_REPORT,
+            "generate_evidence_report",
+            "Generate evidence report",
+            "GenerateEvidenceReportInput.0.1.0",
+            "GenerateEvidenceReportOutput.0.1.0",
+        ),
+    ),
+)
+def test_slice_five_capabilities_have_stable_query_metadata(
+    definition: CapabilityDefinition,
+    capability_id: str,
+    title: str,
+    input_schema: str,
+    output_schema: str,
+) -> None:
+    assert definition.model_dump(mode="json") == {
+        "capability_id": capability_id,
+        "capability_version": "0.1.0",
+        "title": title,
+        "description": definition.description,
+        "kind": "query",
+        "input_schema": input_schema,
+        "output_schema": output_schema,
         "required_permissions": ["evidence:read"],
         "risk_level": "low",
         "side_effects": [],

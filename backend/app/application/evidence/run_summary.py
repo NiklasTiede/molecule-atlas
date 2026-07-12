@@ -1,11 +1,12 @@
 from molecule_atlas.evidence.audit import audit_manifest
-from molecule_atlas.evidence.models import RunManifest
+from molecule_atlas.evidence.models import MethodMetadata, RunManifest
 
 from app.application.capabilities.catalog import GET_RUN_SUMMARY
 from app.application.capabilities.models import CapabilityContext, require_permissions
 from app.application.evidence.contracts import (
     GetRunSummaryInput,
     GetRunSummaryOutput,
+    LigandInputSummary,
     MethodSummary,
     RunSummary,
     ValidationCounts,
@@ -28,6 +29,23 @@ def _validation_counts(manifest: RunManifest) -> ValidationCounts:
     )
 
 
+def build_method_summary(method: MethodMetadata) -> MethodSummary:
+    return MethodSummary(
+        method_id=method.id,
+        adapter_id=method.adapter_id,
+        adapter_version=method.adapter_version,
+        upstream_tool=method.upstream_tool,
+        upstream_version=method.upstream_version,
+        source_commit=method.source_commit,
+        checkpoint_id=method.checkpoint_id,
+        checkpoint_sha256=method.checkpoint_sha256,
+        container_image=method.container_image,
+        container_digest=method.container_digest,
+        command=method.command,
+        random_seeds=method.random_seeds,
+    )
+
+
 def _summary(manifest: RunManifest) -> RunSummary:
     method = manifest.method
     return RunSummary(
@@ -39,19 +57,16 @@ def _summary(manifest: RunManifest) -> RunSummary:
         expected_outputs=manifest.run.expected_outputs,
         missing_outputs=manifest.run.missing_outputs,
         failure=manifest.run.failure,
-        method=MethodSummary(
-            method_id=method.id,
-            adapter_id=method.adapter_id,
-            adapter_version=method.adapter_version,
-            upstream_tool=method.upstream_tool,
-            upstream_version=method.upstream_version,
-            source_commit=method.source_commit,
-            checkpoint_id=method.checkpoint_id,
-            checkpoint_sha256=method.checkpoint_sha256,
-            container_image=method.container_image,
-            container_digest=method.container_digest,
-            command=method.command,
-            random_seeds=method.random_seeds,
+        method=build_method_summary(method),
+        ligand_inputs=tuple(
+            LigandInputSummary(
+                input_id=input_reference.id,
+                artifact_id=input_reference.artifact_id,
+                representation=input_reference.representation,
+                upstream_id=input_reference.upstream_id,
+            )
+            for input_reference in manifest.inputs
+            if input_reference.kind == "ligand"
         ),
         artifact_count=len(manifest.artifacts),
         prediction_count=len(manifest.predictions),

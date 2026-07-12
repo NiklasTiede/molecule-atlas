@@ -190,6 +190,99 @@
         "title": "AvailableArtifact",
         "type": "object"
       },
+      "BinderProbabilityPrediction": {
+        "additionalProperties": false,
+        "properties": {
+          "caveats": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Caveats",
+            "type": "array"
+          },
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "interpretation": {
+            "minLength": 1,
+            "title": "Interpretation",
+            "type": "string"
+          },
+          "method_id": {
+            "minLength": 1,
+            "title": "Method Id",
+            "type": "string"
+          },
+          "optimization_direction": {
+            "const": "higher_is_better",
+            "default": "higher_is_better",
+            "title": "Optimization Direction",
+            "type": "string"
+          },
+          "raw_source": {
+            "$ref": "#/components/schemas/PredictionRawSource"
+          },
+          "scope": {
+            "enum": [
+              "complex",
+              "pose",
+              "ligand",
+              "residue",
+              "atom"
+            ],
+            "title": "Scope",
+            "type": "string"
+          },
+          "scope_id": {
+            "minLength": 1,
+            "title": "Scope Id",
+            "type": "string"
+          },
+          "type": {
+            "const": "binder_probability",
+            "default": "binder_probability",
+            "title": "Type",
+            "type": "string"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PredictionUncertainty"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unit": {
+            "const": "probability",
+            "default": "probability",
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "value",
+          "scope",
+          "scope_id",
+          "method_id",
+          "raw_source",
+          "uncertainty",
+          "interpretation",
+          "caveats"
+        ],
+        "title": "BinderProbabilityPrediction",
+        "type": "object"
+      },
       "Body_import_evidence_bundle": {
         "properties": {
           "bundle": {
@@ -203,6 +296,97 @@
           "bundle"
         ],
         "title": "Body_import_evidence_bundle",
+        "type": "object"
+      },
+      "CandidateEvidenceBinding": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_external_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate External Id"
+          },
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "matched_input_artifact_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Matched Input Artifact Ids",
+            "type": "array"
+          },
+          "matched_input_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Matched Input Ids",
+            "type": "array"
+          },
+          "reference_ids_checked": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reference Ids Checked",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "bound",
+              "unbound",
+              "ambiguous"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "candidate_id",
+          "candidate_external_id",
+          "reference_ids_checked",
+          "matched_input_ids",
+          "matched_input_artifact_ids",
+          "explanation"
+        ],
+        "title": "CandidateEvidenceBinding",
+        "type": "object"
+      },
+      "CandidateEvidenceWarning": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "enum": [
+              "candidate_not_bound",
+              "ambiguous_candidate_binding",
+              "semantic_lineage_unavailable",
+              "prediction_limit_reached",
+              "validation_limit_reached"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "CandidateEvidenceWarning",
         "type": "object"
       },
       "CandidateSet": {
@@ -246,6 +430,294 @@
           "candidates"
         ],
         "title": "CandidateSet",
+        "type": "object"
+      },
+      "CompareCandidatesInput": {
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "subjects": {
+            "items": {
+              "$ref": "#/components/schemas/ComparisonSubjectInput"
+            },
+            "maxItems": 10,
+            "minItems": 2,
+            "title": "Subjects",
+            "type": "array"
+          }
+        },
+        "required": [
+          "subjects"
+        ],
+        "title": "CompareCandidatesInput",
+        "type": "object"
+      },
+      "CompareCandidatesOutput": {
+        "additionalProperties": false,
+        "properties": {
+          "capability_id": {
+            "const": "compare_candidates",
+            "default": "compare_candidates",
+            "title": "Capability Id",
+            "type": "string"
+          },
+          "capability_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Capability Version",
+            "type": "string"
+          },
+          "contract_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "correlation_id": {
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "excluded_prediction_count": {
+            "minimum": 0.0,
+            "title": "Excluded Prediction Count",
+            "type": "integer"
+          },
+          "prediction_groups": {
+            "items": {
+              "$ref": "#/components/schemas/PredictionComparisonGroup"
+            },
+            "title": "Prediction Groups",
+            "type": "array"
+          },
+          "subjects": {
+            "items": {
+              "$ref": "#/components/schemas/ComparisonSubjectResult"
+            },
+            "title": "Subjects",
+            "type": "array"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/ComparisonWarning"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "correlation_id",
+          "subjects",
+          "prediction_groups",
+          "excluded_prediction_count",
+          "warnings"
+        ],
+        "title": "CompareCandidatesOutput",
+        "type": "object"
+      },
+      "ComparisonPredictionEntry": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "prediction": {
+            "discriminator": {
+              "mapping": {
+                "binder_probability": "#/components/schemas/BinderProbabilityPrediction",
+                "docking_energy": "#/components/schemas/DockingEnergyPrediction",
+                "pose_confidence": "#/components/schemas/PoseConfidencePrediction",
+                "predicted_affinity": "#/components/schemas/PredictedAffinityPrediction",
+                "structure_confidence": "#/components/schemas/StructureConfidencePrediction"
+              },
+              "propertyName": "type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DockingEnergyPrediction"
+              },
+              {
+                "$ref": "#/components/schemas/PoseConfidencePrediction"
+              },
+              {
+                "$ref": "#/components/schemas/StructureConfidencePrediction"
+              },
+              {
+                "$ref": "#/components/schemas/BinderProbabilityPrediction"
+              },
+              {
+                "$ref": "#/components/schemas/PredictedAffinityPrediction"
+              }
+            ],
+            "title": "Prediction"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "subject_id": {
+            "title": "Subject Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subject_id",
+          "run_id",
+          "candidate_id",
+          "prediction"
+        ],
+        "title": "ComparisonPredictionEntry",
+        "type": "object"
+      },
+      "ComparisonSubjectInput": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_external_id": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate External Id"
+          },
+          "candidate_id": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "label": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "run_id": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Run Id",
+            "type": "string"
+          },
+          "subject_id": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Subject Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subject_id",
+          "label",
+          "run_id",
+          "candidate_id"
+        ],
+        "title": "ComparisonSubjectInput",
+        "type": "object"
+      },
+      "ComparisonSubjectResult": {
+        "additionalProperties": false,
+        "properties": {
+          "binding": {
+            "$ref": "#/components/schemas/CandidateEvidenceBinding"
+          },
+          "candidate_external_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate External Id"
+          },
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "method": {
+            "$ref": "#/components/schemas/MethodSummary"
+          },
+          "related_artifact_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Artifact Ids",
+            "type": "array"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "subject_id": {
+            "title": "Subject Id",
+            "type": "string"
+          },
+          "validation_counts": {
+            "$ref": "#/components/schemas/ValidationCounts"
+          }
+        },
+        "required": [
+          "subject_id",
+          "label",
+          "run_id",
+          "candidate_id",
+          "candidate_external_id",
+          "binding",
+          "method",
+          "validation_counts",
+          "related_artifact_ids"
+        ],
+        "title": "ComparisonSubjectResult",
+        "type": "object"
+      },
+      "ComparisonWarning": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "enum": [
+              "comparison_subject_unbound",
+              "comparison_subject_ambiguous",
+              "no_shared_prediction_groups"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "subject_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject Id"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ComparisonWarning",
         "type": "object"
       },
       "ConformerResponse": {
@@ -344,6 +816,97 @@
         "title": "DescriptorSet",
         "type": "object"
       },
+      "DockingEnergyPrediction": {
+        "additionalProperties": false,
+        "properties": {
+          "caveats": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Caveats",
+            "type": "array"
+          },
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "interpretation": {
+            "minLength": 1,
+            "title": "Interpretation",
+            "type": "string"
+          },
+          "method_id": {
+            "minLength": 1,
+            "title": "Method Id",
+            "type": "string"
+          },
+          "optimization_direction": {
+            "const": "lower_is_better",
+            "default": "lower_is_better",
+            "title": "Optimization Direction",
+            "type": "string"
+          },
+          "raw_source": {
+            "$ref": "#/components/schemas/PredictionRawSource"
+          },
+          "scope": {
+            "enum": [
+              "complex",
+              "pose",
+              "ligand",
+              "residue",
+              "atom"
+            ],
+            "title": "Scope",
+            "type": "string"
+          },
+          "scope_id": {
+            "minLength": 1,
+            "title": "Scope Id",
+            "type": "string"
+          },
+          "type": {
+            "const": "docking_energy",
+            "default": "docking_energy",
+            "title": "Type",
+            "type": "string"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PredictionUncertainty"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unit": {
+            "minLength": 1,
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "value",
+          "scope",
+          "scope_id",
+          "method_id",
+          "raw_source",
+          "uncertainty",
+          "interpretation",
+          "caveats",
+          "unit"
+        ],
+        "title": "DockingEnergyPrediction",
+        "type": "object"
+      },
       "ErrorResponse": {
         "additionalProperties": false,
         "properties": {
@@ -357,6 +920,201 @@
           "detail"
         ],
         "title": "ErrorResponse",
+        "type": "object"
+      },
+      "GenerateEvidenceReportOutput": {
+        "additionalProperties": false,
+        "properties": {
+          "capability_id": {
+            "const": "generate_evidence_report",
+            "default": "generate_evidence_report",
+            "title": "Capability Id",
+            "type": "string"
+          },
+          "capability_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Capability Version",
+            "type": "string"
+          },
+          "content": {
+            "title": "Content",
+            "type": "string"
+          },
+          "contract_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "correlation_id": {
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "media_type": {
+            "title": "Media Type",
+            "type": "string"
+          },
+          "report_format": {
+            "enum": [
+              "markdown",
+              "html"
+            ],
+            "title": "Report Format",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "correlation_id",
+          "run_id",
+          "report_format",
+          "media_type",
+          "filename",
+          "content"
+        ],
+        "title": "GenerateEvidenceReportOutput",
+        "type": "object"
+      },
+      "GetCandidateEvidenceOutput": {
+        "additionalProperties": false,
+        "properties": {
+          "binding": {
+            "$ref": "#/components/schemas/CandidateEvidenceBinding"
+          },
+          "capability_id": {
+            "const": "get_candidate_evidence",
+            "default": "get_candidate_evidence",
+            "title": "Capability Id",
+            "type": "string"
+          },
+          "capability_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Capability Version",
+            "type": "string"
+          },
+          "contract_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "correlation_id": {
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "lineage_available": {
+            "title": "Lineage Available",
+            "type": "boolean"
+          },
+          "method": {
+            "$ref": "#/components/schemas/MethodSummary"
+          },
+          "prediction_limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Prediction Limit",
+            "type": "integer"
+          },
+          "prediction_total": {
+            "minimum": 0.0,
+            "title": "Prediction Total",
+            "type": "integer"
+          },
+          "predictions": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "binder_probability": "#/components/schemas/BinderProbabilityPrediction",
+                  "docking_energy": "#/components/schemas/DockingEnergyPrediction",
+                  "pose_confidence": "#/components/schemas/PoseConfidencePrediction",
+                  "predicted_affinity": "#/components/schemas/PredictedAffinityPrediction",
+                  "structure_confidence": "#/components/schemas/StructureConfidencePrediction"
+                },
+                "propertyName": "type"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/DockingEnergyPrediction"
+                },
+                {
+                  "$ref": "#/components/schemas/PoseConfidencePrediction"
+                },
+                {
+                  "$ref": "#/components/schemas/StructureConfidencePrediction"
+                },
+                {
+                  "$ref": "#/components/schemas/BinderProbabilityPrediction"
+                },
+                {
+                  "$ref": "#/components/schemas/PredictedAffinityPrediction"
+                }
+              ]
+            },
+            "title": "Predictions",
+            "type": "array"
+          },
+          "related_artifact_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Artifact Ids",
+            "type": "array"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "validation_limit": {
+            "maximum": 200.0,
+            "minimum": 1.0,
+            "title": "Validation Limit",
+            "type": "integer"
+          },
+          "validation_results": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationResult"
+            },
+            "title": "Validation Results",
+            "type": "array"
+          },
+          "validation_total": {
+            "minimum": 0.0,
+            "title": "Validation Total",
+            "type": "integer"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateEvidenceWarning"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "correlation_id",
+          "run_id",
+          "binding",
+          "method",
+          "lineage_available",
+          "related_artifact_ids",
+          "prediction_total",
+          "prediction_limit",
+          "predictions",
+          "validation_total",
+          "validation_limit",
+          "validation_results",
+          "warnings"
+        ],
+        "title": "GetCandidateEvidenceOutput",
         "type": "object"
       },
       "GetRunSummaryOutput": {
@@ -589,6 +1347,49 @@
         "type": "object"
       },
       "JsonValue": {},
+      "LigandInputSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "input_id": {
+            "title": "Input Id",
+            "type": "string"
+          },
+          "representation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Representation"
+          },
+          "upstream_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upstream Id"
+          }
+        },
+        "required": [
+          "input_id",
+          "artifact_id",
+          "representation",
+          "upstream_id"
+        ],
+        "title": "LigandInputSummary",
+        "type": "object"
+      },
       "ListAvailableArtifactsOutput": {
         "additionalProperties": false,
         "properties": {
@@ -651,6 +1452,65 @@
           "artifacts"
         ],
         "title": "ListAvailableArtifactsOutput",
+        "type": "object"
+      },
+      "ListEvidenceRunsOutput": {
+        "additionalProperties": false,
+        "properties": {
+          "capability_id": {
+            "const": "list_evidence_runs",
+            "default": "list_evidence_runs",
+            "title": "Capability Id",
+            "type": "string"
+          },
+          "capability_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Capability Version",
+            "type": "string"
+          },
+          "contract_version": {
+            "const": "0.1.0",
+            "default": "0.1.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "correlation_id": {
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "minimum": 0.0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/RunSummary"
+            },
+            "title": "Runs",
+            "type": "array"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "correlation_id",
+          "total",
+          "offset",
+          "limit",
+          "runs"
+        ],
+        "title": "ListEvidenceRunsOutput",
         "type": "object"
       },
       "ManifestWarning": {
@@ -804,6 +1664,306 @@
         "title": "MethodSummary",
         "type": "object"
       },
+      "PoseConfidencePrediction": {
+        "additionalProperties": false,
+        "properties": {
+          "caveats": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Caveats",
+            "type": "array"
+          },
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "interpretation": {
+            "minLength": 1,
+            "title": "Interpretation",
+            "type": "string"
+          },
+          "method_id": {
+            "minLength": 1,
+            "title": "Method Id",
+            "type": "string"
+          },
+          "optimization_direction": {
+            "const": "higher_is_better",
+            "default": "higher_is_better",
+            "title": "Optimization Direction",
+            "type": "string"
+          },
+          "raw_source": {
+            "$ref": "#/components/schemas/PredictionRawSource"
+          },
+          "scope": {
+            "enum": [
+              "complex",
+              "pose",
+              "ligand",
+              "residue",
+              "atom"
+            ],
+            "title": "Scope",
+            "type": "string"
+          },
+          "scope_id": {
+            "minLength": 1,
+            "title": "Scope Id",
+            "type": "string"
+          },
+          "type": {
+            "const": "pose_confidence",
+            "default": "pose_confidence",
+            "title": "Type",
+            "type": "string"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PredictionUncertainty"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "null"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "value",
+          "scope",
+          "scope_id",
+          "method_id",
+          "raw_source",
+          "uncertainty",
+          "interpretation",
+          "caveats"
+        ],
+        "title": "PoseConfidencePrediction",
+        "type": "object"
+      },
+      "PredictedAffinityPrediction": {
+        "additionalProperties": false,
+        "properties": {
+          "caveats": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Caveats",
+            "type": "array"
+          },
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "interpretation": {
+            "minLength": 1,
+            "title": "Interpretation",
+            "type": "string"
+          },
+          "method_id": {
+            "minLength": 1,
+            "title": "Method Id",
+            "type": "string"
+          },
+          "optimization_direction": {
+            "enum": [
+              "lower_is_better",
+              "higher_is_better"
+            ],
+            "title": "Optimization Direction",
+            "type": "string"
+          },
+          "raw_source": {
+            "$ref": "#/components/schemas/PredictionRawSource"
+          },
+          "scope": {
+            "enum": [
+              "complex",
+              "pose",
+              "ligand",
+              "residue",
+              "atom"
+            ],
+            "title": "Scope",
+            "type": "string"
+          },
+          "scope_id": {
+            "minLength": 1,
+            "title": "Scope Id",
+            "type": "string"
+          },
+          "type": {
+            "const": "predicted_affinity",
+            "default": "predicted_affinity",
+            "title": "Type",
+            "type": "string"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PredictionUncertainty"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unit": {
+            "minLength": 1,
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "value",
+          "scope",
+          "scope_id",
+          "method_id",
+          "raw_source",
+          "uncertainty",
+          "interpretation",
+          "caveats",
+          "unit",
+          "optimization_direction"
+        ],
+        "title": "PredictedAffinityPrediction",
+        "type": "object"
+      },
+      "PredictionComparisonGroup": {
+        "additionalProperties": false,
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/ComparisonPredictionEntry"
+            },
+            "title": "Entries",
+            "type": "array"
+          },
+          "optimization_direction": {
+            "enum": [
+              "lower_is_better",
+              "higher_is_better",
+              "none"
+            ],
+            "title": "Optimization Direction",
+            "type": "string"
+          },
+          "prediction_type": {
+            "enum": [
+              "docking_energy",
+              "pose_confidence",
+              "structure_confidence",
+              "binder_probability",
+              "predicted_affinity"
+            ],
+            "title": "Prediction Type",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          }
+        },
+        "required": [
+          "prediction_type",
+          "unit",
+          "optimization_direction",
+          "entries"
+        ],
+        "title": "PredictionComparisonGroup",
+        "type": "object"
+      },
+      "PredictionRawSource": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "minLength": 1,
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "field": {
+            "minLength": 1,
+            "title": "Field",
+            "type": "string"
+          },
+          "upstream_record_id": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upstream Record Id"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "field"
+        ],
+        "title": "PredictionRawSource",
+        "type": "object"
+      },
+      "PredictionUncertainty": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "minLength": 1,
+            "title": "Kind",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value": {
+            "minimum": 0.0,
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "kind",
+          "value"
+        ],
+        "title": "PredictionUncertainty",
+        "type": "object"
+      },
       "ProjectionPoint": {
         "additionalProperties": false,
         "properties": {
@@ -924,6 +2084,13 @@
             ],
             "title": "Finished At"
           },
+          "ligand_inputs": {
+            "items": {
+              "$ref": "#/components/schemas/LigandInputSummary"
+            },
+            "title": "Ligand Inputs",
+            "type": "array"
+          },
           "method": {
             "$ref": "#/components/schemas/MethodSummary"
           },
@@ -991,6 +2158,7 @@
           "missing_outputs",
           "failure",
           "method",
+          "ligand_inputs",
           "artifact_count",
           "prediction_count",
           "validation_counts",
@@ -1105,6 +2273,95 @@
           "similarity"
         ],
         "title": "SimilarityNeighbor",
+        "type": "object"
+      },
+      "StructureConfidencePrediction": {
+        "additionalProperties": false,
+        "properties": {
+          "caveats": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Caveats",
+            "type": "array"
+          },
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "interpretation": {
+            "minLength": 1,
+            "title": "Interpretation",
+            "type": "string"
+          },
+          "method_id": {
+            "minLength": 1,
+            "title": "Method Id",
+            "type": "string"
+          },
+          "optimization_direction": {
+            "const": "higher_is_better",
+            "default": "higher_is_better",
+            "title": "Optimization Direction",
+            "type": "string"
+          },
+          "raw_source": {
+            "$ref": "#/components/schemas/PredictionRawSource"
+          },
+          "scope": {
+            "enum": [
+              "complex",
+              "pose",
+              "ligand",
+              "residue",
+              "atom"
+            ],
+            "title": "Scope",
+            "type": "string"
+          },
+          "scope_id": {
+            "minLength": 1,
+            "title": "Scope Id",
+            "type": "string"
+          },
+          "type": {
+            "const": "structure_confidence",
+            "default": "structure_confidence",
+            "title": "Type",
+            "type": "string"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PredictionUncertainty"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "null"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "value",
+          "scope",
+          "scope_id",
+          "method_id",
+          "raw_source",
+          "uncertainty",
+          "interpretation",
+          "caveats"
+        ],
+        "title": "StructureConfidencePrediction",
         "type": "object"
       },
       "TriageFlags": {
@@ -1434,6 +2691,110 @@
         ],
         "title": "ValidationNote",
         "type": "object"
+      },
+      "ValidationResult": {
+        "additionalProperties": false,
+        "properties": {
+          "check_id": {
+            "minLength": 1,
+            "title": "Check Id",
+            "type": "string"
+          },
+          "explanation": {
+            "minLength": 1,
+            "title": "Explanation",
+            "type": "string"
+          },
+          "id": {
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "input_artifact_id": {
+            "minLength": 1,
+            "title": "Input Artifact Id",
+            "type": "string"
+          },
+          "measured_value": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measured Value"
+          },
+          "raw_output_artifact_id": {
+            "minLength": 1,
+            "title": "Raw Output Artifact Id",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "pass",
+              "fail",
+              "warning",
+              "unavailable",
+              "error"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "threshold_or_configuration": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "title": "Threshold Or Configuration",
+            "type": "object"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "validator": {
+            "minLength": 1,
+            "title": "Validator",
+            "type": "string"
+          },
+          "validator_version": {
+            "minLength": 1,
+            "title": "Validator Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "validator",
+          "validator_version",
+          "check_id",
+          "status",
+          "measured_value",
+          "threshold_or_configuration",
+          "explanation",
+          "input_artifact_id",
+          "raw_output_artifact_id"
+        ],
+        "title": "ValidationResult",
+        "type": "object"
       }
     }
   },
@@ -1608,6 +2969,78 @@
         ]
       }
     },
+    "/api/evidence/comparisons": {
+      "post": {
+        "operationId": "compare_candidates",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompareCandidatesInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompareCandidatesOutput"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Evidence run not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Compare Candidates",
+        "tags": [
+          "evidence"
+        ]
+      }
+    },
     "/api/evidence/imports": {
       "post": {
         "operationId": "import_evidence_bundle",
@@ -1707,6 +3140,81 @@
           }
         },
         "summary": "Import Evidence Bundle",
+        "tags": [
+          "evidence"
+        ]
+      }
+    },
+    "/api/evidence/runs": {
+      "get": {
+        "operationId": "list_evidence_runs",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListEvidenceRunsOutput"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Evidence Runs",
         "tags": [
           "evidence"
         ]
@@ -1943,6 +3451,213 @@
           }
         },
         "summary": "List Available Artifacts",
+        "tags": [
+          "evidence"
+        ]
+      }
+    },
+    "/api/evidence/runs/{run_id}/candidates/{candidate_id}/evidence": {
+      "get": {
+        "operationId": "get_candidate_evidence",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "candidate_id",
+            "required": true,
+            "schema": {
+              "title": "Candidate Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "candidate_external_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Candidate External Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "prediction_limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Prediction Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "validation_limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Validation Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCandidateEvidenceOutput"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Evidence run not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Candidate Evidence",
+        "tags": [
+          "evidence"
+        ]
+      }
+    },
+    "/api/evidence/runs/{run_id}/report": {
+      "get": {
+        "operationId": "generate_evidence_report",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "report_format",
+            "required": false,
+            "schema": {
+              "default": "markdown",
+              "enum": [
+                "markdown",
+                "html"
+              ],
+              "title": "Report Format",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Correlation-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Correlation-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateEvidenceReportOutput"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Evidence run not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate Evidence Report",
         "tags": [
           "evidence"
         ]

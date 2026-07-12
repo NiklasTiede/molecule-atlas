@@ -27,12 +27,16 @@ evidence core. The workbench loads a bundled candidate set, uses RDKit to valida
 molecules, and exposes typed API responses to the frontend. The separately packaged evidence core
 validates versioned local run manifests, hashes artifacts, audits provenance, and produces canonical
 JSON, JSON Schema, and deterministic Markdown or self-contained HTML reports without importing
-FastAPI. Milestone 3 has introduced permission-aware `get_run_summary` and
-`import_evidence_bundle`, `list_available_artifacts`, and `validate_evidence_artifacts`
-capabilities. Thin HTTP handlers expose explicit operation and correlation IDs; uploaded ZIP
+FastAPI. Milestone 3 has introduced permission-aware `get_run_summary`, `import_evidence_bundle`,
+`list_evidence_runs`, `list_available_artifacts`, `validate_evidence_artifacts`,
+`get_candidate_evidence`, `compare_candidates`, and `generate_evidence_report` capabilities. Thin
+HTTP handlers expose explicit operation and correlation IDs; uploaded ZIP
 transport envelopes are validated and published through a bounded temporary local storage adapter
 rather than interpreted in the route. Stored runs retain an optional validated semantic artifact
 manifest so bounded clients can discover types and lineage without reading filenames or raw JSON.
+The React Evidence Runs workspace uses generated contracts to show run state, typed prediction
+semantics, scientific validation alongside integrity checks, provenance, deterministic reports, and
+like-for-like comparisons. It retains failed and partial records and does not synthesize a score.
 
 Current boundaries are enforced by tests:
 
@@ -70,6 +74,16 @@ portable inventory, optional semantic metadata, and current verification result.
 `validate_evidence_artifacts` rechecks local bytes and provenance and returns each typed status plus
 counts and warnings. It does not fetch external URIs, execute PoseBusters, invoke a scientific
 plugin, or collapse validation evidence into a universal verdict.
+
+`get_candidate_evidence` provides a bounded query-time relationship before persistent projects
+exist. It binds exactly one candidate only when the supplied application ID or external ID matches a
+recorded ligand input ID or upstream ID. Related artifacts are traversed through the validated
+semantic derivation graph; predictions retain their discriminated scientific type and raw source,
+and validation results retain their validator and artifact references. Missing or multiple input
+matches return explicit unbound/ambiguous states. When semantic lineage is absent, the query returns
+only direct artifact or ligand-scope relationships and warns instead of assigning all run evidence
+to the candidate. These query-time bindings are not durable project relationships; Milestone 5 owns
+their persistent identity and authorization.
 
 ## Target system
 

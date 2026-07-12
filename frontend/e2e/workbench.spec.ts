@@ -50,3 +50,30 @@ test('renders the chemical-space section', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Chemical Space' })).toBeVisible();
   await expect(page.getByText('Morgan fingerprints · PCA')).toBeVisible();
 });
+
+test('reviews portable evidence, partial runs, and like-for-like comparison', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Evidence Runs' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Evidence Runs' })).toBeVisible();
+  await expect(page.getByText('fixture-alternative')).toBeVisible();
+  await expect(page.getByText('fixture-succeeded')).toBeVisible();
+  await expect(page.getByText('fixture-partial')).toBeVisible();
+  await expect(page.getByText('fixture-failed')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Docking energy' })).toBeVisible();
+  await expect(page.getByText('Computational predictions are evidence for expert review, not experimental conclusions.')).toBeVisible();
+
+  await page.getByRole('button', { name: /fixture-failed/ }).click();
+  await expect(page.getByText('Run failed')).toBeVisible();
+
+  await page.getByRole('button', { name: /fixture-partial/ }).click();
+  await expect(page.getByText('Run completed partially')).toBeVisible();
+
+  await page.locator('.run-card').filter({ hasText: 'fixture-alternative' }).getByLabel('Compare').check();
+  await page.locator('.run-card').filter({ hasText: 'fixture-succeeded' }).getByLabel('Compare').check();
+  await page.getByRole('button', { name: 'Compare selected' }).click();
+  await expect(page.getByRole('heading', { name: 'Like-for-like comparison' })).toBeVisible();
+  await expect(page.getByText('This view does not create a combined ranking.')).toBeVisible();
+
+  await page.screenshot({ path: 'test-results/evidence-workbench.png', fullPage: true });
+});

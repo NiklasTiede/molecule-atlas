@@ -72,6 +72,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/evidence/comparisons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Compare Candidates */
+        post: operations["compare_candidates"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/evidence/imports": {
         parameters: {
             query?: never;
@@ -83,6 +100,23 @@ export interface paths {
         put?: never;
         /** Import Evidence Bundle */
         post: operations["import_evidence_bundle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/evidence/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Evidence Runs */
+        get: operations["list_evidence_runs"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -132,6 +166,40 @@ export interface paths {
         };
         /** List Available Artifacts */
         get: operations["list_available_artifacts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/evidence/runs/{run_id}/candidates/{candidate_id}/evidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Candidate Evidence */
+        get: operations["get_candidate_evidence"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/evidence/runs/{run_id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Generate Evidence Report */
+        get: operations["generate_evidence_report"];
         put?: never;
         post?: never;
         delete?: never;
@@ -220,6 +288,45 @@ export interface components {
             };
             verification: components["schemas"]["ArtifactCheck"];
         };
+        /** BinderProbabilityPrediction */
+        BinderProbabilityPrediction: {
+            /** Caveats */
+            caveats: string[];
+            /** Id */
+            id: string;
+            /** Interpretation */
+            interpretation: string;
+            /** Method Id */
+            method_id: string;
+            /**
+             * Optimization Direction
+             * @default higher_is_better
+             * @constant
+             */
+            optimization_direction: "higher_is_better";
+            raw_source: components["schemas"]["PredictionRawSource"];
+            /**
+             * Scope
+             * @enum {string}
+             */
+            scope: "complex" | "pose" | "ligand" | "residue" | "atom";
+            /** Scope Id */
+            scope_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "binder_probability";
+            uncertainty: components["schemas"]["PredictionUncertainty"] | null;
+            /**
+             * Unit
+             * @default probability
+             * @constant
+             */
+            unit: "probability";
+            /** Value */
+            value: number;
+        };
         /** Body_import_evidence_bundle */
         Body_import_evidence_bundle: {
             /**
@@ -227,6 +334,36 @@ export interface components {
              * @description Portable Molecule Atlas evidence bundle ZIP
              */
             bundle: string;
+        };
+        /** CandidateEvidenceBinding */
+        CandidateEvidenceBinding: {
+            /** Candidate External Id */
+            candidate_external_id: string | null;
+            /** Candidate Id */
+            candidate_id: string;
+            /** Explanation */
+            explanation: string;
+            /** Matched Input Artifact Ids */
+            matched_input_artifact_ids: string[];
+            /** Matched Input Ids */
+            matched_input_ids: string[];
+            /** Reference Ids Checked */
+            reference_ids_checked: string[];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "bound" | "unbound" | "ambiguous";
+        };
+        /** CandidateEvidenceWarning */
+        CandidateEvidenceWarning: {
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "candidate_not_bound" | "ambiguous_candidate_binding" | "semantic_lineage_unavailable" | "prediction_limit_reached" | "validation_limit_reached";
+            /** Message */
+            message: string;
         };
         /** CandidateSet */
         CandidateSet: {
@@ -236,6 +373,102 @@ export interface components {
             id: string;
             /** Name */
             name: string;
+        };
+        /** CompareCandidatesInput */
+        CompareCandidatesInput: {
+            /**
+             * Contract Version
+             * @default 0.1.0
+             * @constant
+             */
+            contract_version: "0.1.0";
+            /** Subjects */
+            subjects: components["schemas"]["ComparisonSubjectInput"][];
+        };
+        /** CompareCandidatesOutput */
+        CompareCandidatesOutput: {
+            /**
+             * Capability Id
+             * @default compare_candidates
+             * @constant
+             */
+            capability_id: "compare_candidates";
+            /**
+             * Capability Version
+             * @default 0.1.0
+             * @constant
+             */
+            capability_version: "0.1.0";
+            /**
+             * Contract Version
+             * @default 0.1.0
+             * @constant
+             */
+            contract_version: "0.1.0";
+            /** Correlation Id */
+            correlation_id: string;
+            /** Excluded Prediction Count */
+            excluded_prediction_count: number;
+            /** Prediction Groups */
+            prediction_groups: components["schemas"]["PredictionComparisonGroup"][];
+            /** Subjects */
+            subjects: components["schemas"]["ComparisonSubjectResult"][];
+            /** Warnings */
+            warnings: components["schemas"]["ComparisonWarning"][];
+        };
+        /** ComparisonPredictionEntry */
+        ComparisonPredictionEntry: {
+            /** Candidate Id */
+            candidate_id: string;
+            /** Prediction */
+            prediction: components["schemas"]["DockingEnergyPrediction"] | components["schemas"]["PoseConfidencePrediction"] | components["schemas"]["StructureConfidencePrediction"] | components["schemas"]["BinderProbabilityPrediction"] | components["schemas"]["PredictedAffinityPrediction"];
+            /** Run Id */
+            run_id: string;
+            /** Subject Id */
+            subject_id: string;
+        };
+        /** ComparisonSubjectInput */
+        ComparisonSubjectInput: {
+            /** Candidate External Id */
+            candidate_external_id?: string | null;
+            /** Candidate Id */
+            candidate_id: string;
+            /** Label */
+            label: string;
+            /** Run Id */
+            run_id: string;
+            /** Subject Id */
+            subject_id: string;
+        };
+        /** ComparisonSubjectResult */
+        ComparisonSubjectResult: {
+            binding: components["schemas"]["CandidateEvidenceBinding"];
+            /** Candidate External Id */
+            candidate_external_id: string | null;
+            /** Candidate Id */
+            candidate_id: string;
+            /** Label */
+            label: string;
+            method: components["schemas"]["MethodSummary"];
+            /** Related Artifact Ids */
+            related_artifact_ids: string[];
+            /** Run Id */
+            run_id: string;
+            /** Subject Id */
+            subject_id: string;
+            validation_counts: components["schemas"]["ValidationCounts"];
+        };
+        /** ComparisonWarning */
+        ComparisonWarning: {
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "comparison_subject_unbound" | "comparison_subject_ambiguous" | "no_shared_prediction_groups";
+            /** Message */
+            message: string;
+            /** Subject Id */
+            subject_id?: string | null;
         };
         /** ConformerResponse */
         ConformerResponse: {
@@ -267,10 +500,126 @@ export interface components {
             /** Tpsa */
             tpsa: number;
         };
+        /** DockingEnergyPrediction */
+        DockingEnergyPrediction: {
+            /** Caveats */
+            caveats: string[];
+            /** Id */
+            id: string;
+            /** Interpretation */
+            interpretation: string;
+            /** Method Id */
+            method_id: string;
+            /**
+             * Optimization Direction
+             * @default lower_is_better
+             * @constant
+             */
+            optimization_direction: "lower_is_better";
+            raw_source: components["schemas"]["PredictionRawSource"];
+            /**
+             * Scope
+             * @enum {string}
+             */
+            scope: "complex" | "pose" | "ligand" | "residue" | "atom";
+            /** Scope Id */
+            scope_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "docking_energy";
+            uncertainty: components["schemas"]["PredictionUncertainty"] | null;
+            /** Unit */
+            unit: string;
+            /** Value */
+            value: number;
+        };
         /** ErrorResponse */
         ErrorResponse: {
             /** Detail */
             detail: string;
+        };
+        /** GenerateEvidenceReportOutput */
+        GenerateEvidenceReportOutput: {
+            /**
+             * Capability Id
+             * @default generate_evidence_report
+             * @constant
+             */
+            capability_id: "generate_evidence_report";
+            /**
+             * Capability Version
+             * @default 0.1.0
+             * @constant
+             */
+            capability_version: "0.1.0";
+            /** Content */
+            content: string;
+            /**
+             * Contract Version
+             * @default 0.1.0
+             * @constant
+             */
+            contract_version: "0.1.0";
+            /** Correlation Id */
+            correlation_id: string;
+            /** Filename */
+            filename: string;
+            /** Media Type */
+            media_type: string;
+            /**
+             * Report Format
+             * @enum {string}
+             */
+            report_format: "markdown" | "html";
+            /** Run Id */
+            run_id: string;
+        };
+        /** GetCandidateEvidenceOutput */
+        GetCandidateEvidenceOutput: {
+            binding: components["schemas"]["CandidateEvidenceBinding"];
+            /**
+             * Capability Id
+             * @default get_candidate_evidence
+             * @constant
+             */
+            capability_id: "get_candidate_evidence";
+            /**
+             * Capability Version
+             * @default 0.1.0
+             * @constant
+             */
+            capability_version: "0.1.0";
+            /**
+             * Contract Version
+             * @default 0.1.0
+             * @constant
+             */
+            contract_version: "0.1.0";
+            /** Correlation Id */
+            correlation_id: string;
+            /** Lineage Available */
+            lineage_available: boolean;
+            method: components["schemas"]["MethodSummary"];
+            /** Prediction Limit */
+            prediction_limit: number;
+            /** Prediction Total */
+            prediction_total: number;
+            /** Predictions */
+            predictions: (components["schemas"]["DockingEnergyPrediction"] | components["schemas"]["PoseConfidencePrediction"] | components["schemas"]["StructureConfidencePrediction"] | components["schemas"]["BinderProbabilityPrediction"] | components["schemas"]["PredictedAffinityPrediction"])[];
+            /** Related Artifact Ids */
+            related_artifact_ids: string[];
+            /** Run Id */
+            run_id: string;
+            /** Validation Limit */
+            validation_limit: number;
+            /** Validation Results */
+            validation_results: components["schemas"]["ValidationResult"][];
+            /** Validation Total */
+            validation_total: number;
+            /** Warnings */
+            warnings: components["schemas"]["CandidateEvidenceWarning"][];
         };
         /** GetRunSummaryOutput */
         GetRunSummaryOutput: {
@@ -382,6 +731,17 @@ export interface components {
             validation_notes: components["schemas"]["ValidationNote"][];
         };
         JsonValue: unknown;
+        /** LigandInputSummary */
+        LigandInputSummary: {
+            /** Artifact Id */
+            artifact_id: string;
+            /** Input Id */
+            input_id: string;
+            /** Representation */
+            representation: string | null;
+            /** Upstream Id */
+            upstream_id: string | null;
+        };
         /** ListAvailableArtifactsOutput */
         ListAvailableArtifactsOutput: {
             /** Artifacts */
@@ -412,6 +772,37 @@ export interface components {
             offset: number;
             /** Run Id */
             run_id: string;
+            /** Total */
+            total: number;
+        };
+        /** ListEvidenceRunsOutput */
+        ListEvidenceRunsOutput: {
+            /**
+             * Capability Id
+             * @default list_evidence_runs
+             * @constant
+             */
+            capability_id: "list_evidence_runs";
+            /**
+             * Capability Version
+             * @default 0.1.0
+             * @constant
+             */
+            capability_version: "0.1.0";
+            /**
+             * Contract Version
+             * @default 0.1.0
+             * @constant
+             */
+            contract_version: "0.1.0";
+            /** Correlation Id */
+            correlation_id: string;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Runs */
+            runs: components["schemas"]["RunSummary"][];
             /** Total */
             total: number;
         };
@@ -451,6 +842,110 @@ export interface components {
             /** Upstream Version */
             upstream_version: string | null;
         };
+        /** PoseConfidencePrediction */
+        PoseConfidencePrediction: {
+            /** Caveats */
+            caveats: string[];
+            /** Id */
+            id: string;
+            /** Interpretation */
+            interpretation: string;
+            /** Method Id */
+            method_id: string;
+            /**
+             * Optimization Direction
+             * @default higher_is_better
+             * @constant
+             */
+            optimization_direction: "higher_is_better";
+            raw_source: components["schemas"]["PredictionRawSource"];
+            /**
+             * Scope
+             * @enum {string}
+             */
+            scope: "complex" | "pose" | "ligand" | "residue" | "atom";
+            /** Scope Id */
+            scope_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "pose_confidence";
+            uncertainty: components["schemas"]["PredictionUncertainty"] | null;
+            /** Unit */
+            unit?: null;
+            /** Value */
+            value: number;
+        };
+        /** PredictedAffinityPrediction */
+        PredictedAffinityPrediction: {
+            /** Caveats */
+            caveats: string[];
+            /** Id */
+            id: string;
+            /** Interpretation */
+            interpretation: string;
+            /** Method Id */
+            method_id: string;
+            /**
+             * Optimization Direction
+             * @enum {string}
+             */
+            optimization_direction: "lower_is_better" | "higher_is_better";
+            raw_source: components["schemas"]["PredictionRawSource"];
+            /**
+             * Scope
+             * @enum {string}
+             */
+            scope: "complex" | "pose" | "ligand" | "residue" | "atom";
+            /** Scope Id */
+            scope_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "predicted_affinity";
+            uncertainty: components["schemas"]["PredictionUncertainty"] | null;
+            /** Unit */
+            unit: string;
+            /** Value */
+            value: number;
+        };
+        /** PredictionComparisonGroup */
+        PredictionComparisonGroup: {
+            /** Entries */
+            entries: components["schemas"]["ComparisonPredictionEntry"][];
+            /**
+             * Optimization Direction
+             * @enum {string}
+             */
+            optimization_direction: "lower_is_better" | "higher_is_better" | "none";
+            /**
+             * Prediction Type
+             * @enum {string}
+             */
+            prediction_type: "docking_energy" | "pose_confidence" | "structure_confidence" | "binder_probability" | "predicted_affinity";
+            /** Unit */
+            unit: string | null;
+        };
+        /** PredictionRawSource */
+        PredictionRawSource: {
+            /** Artifact Id */
+            artifact_id: string;
+            /** Field */
+            field: string;
+            /** Upstream Record Id */
+            upstream_record_id?: string | null;
+        };
+        /** PredictionUncertainty */
+        PredictionUncertainty: {
+            /** Kind */
+            kind: string;
+            /** Unit */
+            unit?: string | null;
+            /** Value */
+            value: number;
+        };
         /** ProjectionPoint */
         ProjectionPoint: {
             /** Candidate Id */
@@ -486,6 +981,8 @@ export interface components {
             failure: components["schemas"]["RunFailure"] | null;
             /** Finished At */
             finished_at: string | null;
+            /** Ligand Inputs */
+            ligand_inputs: components["schemas"]["LigandInputSummary"][];
             method: components["schemas"]["MethodSummary"];
             /** Missing Outputs */
             missing_outputs: string[];
@@ -541,6 +1038,41 @@ export interface components {
             name: string;
             /** Similarity */
             similarity: number;
+        };
+        /** StructureConfidencePrediction */
+        StructureConfidencePrediction: {
+            /** Caveats */
+            caveats: string[];
+            /** Id */
+            id: string;
+            /** Interpretation */
+            interpretation: string;
+            /** Method Id */
+            method_id: string;
+            /**
+             * Optimization Direction
+             * @default higher_is_better
+             * @constant
+             */
+            optimization_direction: "higher_is_better";
+            raw_source: components["schemas"]["PredictionRawSource"];
+            /**
+             * Scope
+             * @enum {string}
+             */
+            scope: "complex" | "pose" | "ligand" | "residue" | "atom";
+            /** Scope Id */
+            scope_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "structure_confidence";
+            uncertainty: components["schemas"]["PredictionUncertainty"] | null;
+            /** Unit */
+            unit?: null;
+            /** Value */
+            value: number;
         };
         /** TriageFlags */
         TriageFlags: {
@@ -661,6 +1193,36 @@ export interface components {
             level: "info" | "warning" | "error";
             /** Message */
             message: string;
+        };
+        /** ValidationResult */
+        ValidationResult: {
+            /** Check Id */
+            check_id: string;
+            /** Explanation */
+            explanation: string;
+            /** Id */
+            id: string;
+            /** Input Artifact Id */
+            input_artifact_id: string;
+            /** Measured Value */
+            measured_value: boolean | number | string | null;
+            /** Raw Output Artifact Id */
+            raw_output_artifact_id: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pass" | "fail" | "warning" | "unavailable" | "error";
+            /** Threshold Or Configuration */
+            threshold_or_configuration: {
+                [key: string]: components["schemas"]["JsonValue"];
+            };
+            /** Unit */
+            unit?: string | null;
+            /** Validator */
+            validator: string;
+            /** Validator Version */
+            validator_version: string;
         };
     };
     responses: never;
@@ -800,6 +1362,50 @@ export interface operations {
             };
         };
     };
+    compare_candidates: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Correlation-ID"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompareCandidatesInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompareCandidatesOutput"];
+                };
+            };
+            /** @description Evidence run not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     import_evidence_bundle: {
         parameters: {
             query?: never;
@@ -850,6 +1456,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_evidence_runs: {
+        parameters: {
+            query?: {
+                offset?: number;
+                limit?: number;
+            };
+            header?: {
+                "X-Correlation-ID"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListEvidenceRunsOutput"];
                 };
             };
             /** @description Validation Error */
@@ -970,6 +1610,97 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ListAvailableArtifactsOutput"];
+                };
+            };
+            /** @description Evidence run not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_candidate_evidence: {
+        parameters: {
+            query?: {
+                candidate_external_id?: string | null;
+                prediction_limit?: number;
+                validation_limit?: number;
+            };
+            header?: {
+                "X-Correlation-ID"?: string | null;
+            };
+            path: {
+                run_id: string;
+                candidate_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetCandidateEvidenceOutput"];
+                };
+            };
+            /** @description Evidence run not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_evidence_report: {
+        parameters: {
+            query?: {
+                report_format?: "markdown" | "html";
+            };
+            header?: {
+                "X-Correlation-ID"?: string | null;
+            };
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GenerateEvidenceReportOutput"];
                 };
             };
             /** @description Evidence run not found */

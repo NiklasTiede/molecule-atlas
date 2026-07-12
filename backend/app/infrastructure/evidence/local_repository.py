@@ -194,6 +194,10 @@ class LocalEvidenceRunRepository:
         with self._lock:
             return self._by_run_id.get(run_id)
 
+    def list_runs(self) -> tuple[StoredEvidenceRun, ...]:
+        with self._lock:
+            return tuple(self._by_run_id.values())
+
     def import_bundle(self, archive_bytes: bytes) -> StoredEvidenceRun:
         if self._upload_root is None:
             raise EvidenceBundleInputError("Local evidence imports are not configured")

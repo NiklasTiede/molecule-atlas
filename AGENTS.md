@@ -23,9 +23,9 @@ Implement the earliest incomplete roadmap milestone unless the user explicitly s
 
 Do not implement future infrastructure merely because it appears in the long-term architecture. Each change should solve a current acceptance criterion and preserve the completed ligand-centric workbench.
 
-The immediate next milestone is evidence import in the web workbench. Introduce thin FastAPI
-transport handlers over an explicit application capability for manifest upload, validation,
-artifact inspection, report delivery, and UI review; keep the completed portable core independent.
+The immediate next milestone is the protein, pocket, and pose workspace. Keep the completed
+portable evidence workbench intact while introducing typed, capability-backed protein/pose review;
+do not pull persistence, remote execution, or AI orchestration forward.
 
 ## Non-negotiable scientific rules
 
